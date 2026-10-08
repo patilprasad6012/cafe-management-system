@@ -52,7 +52,7 @@ def generate_qr(table):
     
     # Generate URL (in production this would be the real domain)
     # Scanning this should take the user to the menu page with this table ID
-    url = f"http://localhost:5000/customer/menu?table={table.table_number}"
+    url = f"https://web-production-9dd7e.up.railway.app/customer/menu?table={table.table_number}"
     
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
     qr.add_data(url)
