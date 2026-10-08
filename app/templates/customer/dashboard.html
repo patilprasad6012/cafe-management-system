@@ -62,7 +62,90 @@
         <a href="javascript:void(0)" id="scanTableQR" class="hover-card animate-fade-up delay-200" style="background: var(--surface-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
             <i class='bx bx-qr-scan' style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
             <h3 style="font-size: 1.1rem; color: var(--text-main);">Scan Table-QR</h3>
-        </a>
+        </a> 
+        <script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+document.getElementById("scanTableQR").addEventListener("click", function () {
+
+    const scannerBox = document.createElement("div");
+
+    scannerBox.innerHTML = `
+        <div id="qrScannerModal"
+             style="
+                position:fixed;
+                inset:0;
+                background:rgba(0,0,0,.8);
+                z-index:9999;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+             ">
+
+            <div style="
+                background:white;
+                padding:20px;
+                border-radius:15px;
+                width:90%;
+                max-width:450px;
+                text-align:center;
+            ">
+
+                <h2>Scan Table QR</h2>
+
+                <div id="reader" style="width:100%;"></div>
+
+                <button onclick="closeQRScanner()"
+                        style="
+                        margin-top:15px;
+                        padding:10px 20px;
+                        border:0;
+                        border-radius:8px;
+                        cursor:pointer;
+                        ">
+                    Close
+                </button>
+
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(scannerBox);
+
+    const scanner = new Html5Qrcode("reader");
+
+    scanner.start(
+        { facingMode: "environment" },
+        {
+            fps: 10,
+            qrbox: 250
+        },
+        function(decodedText) {
+
+            console.log("QR SCANNED:", decodedText);
+
+            scanner.stop().then(() => {
+                window.location.href = decodedText;
+            });
+
+        },
+        function(errorMessage) {
+            // Ignore scanning errors
+        }
+    ).catch(function(error) {
+        console.error("Camera error:", error);
+        alert("Unable to access camera. Please allow camera permission.");
+    });
+
+    window.closeQRScanner = function() {
+        scanner.stop()
+            .catch(() => {})
+            .finally(() => {
+                document.getElementById("qrScannerModal")?.remove();
+            });
+    };
+});
+</script>
         <a href="{{ url_for('customer.cart') }}" class="hover-card animate-fade-up delay-300" style="background: var(--surface-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
             <i class='bx bx-shopping-bag' style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
             <h3 style="font-size: 1.1rem; color: var(--text-main);">My Cart</h3>
