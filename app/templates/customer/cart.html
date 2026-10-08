@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Cart - King Cafe{% endblock %}
+
+{% block body %}
+<header style="background: var(--surface-color); padding: 15px 20px; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <a href="{{ url_for('customer.menu') }}" style="color: var(--text-main); font-size: 1.5rem;"><i class='bx bx-arrow-back'></i></a>
+        <span style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1.2rem;">Your Cart</span>
+    </div>
+</header>
+
+<div class="container mt-4" style="max-width: 600px; margin: 0 auto; padding-bottom: 100px;">
+    
+    <div class="alerts">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    {% if cart_items %}
+        <div style="background: var(--surface-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 20px; margin-bottom: 20px;">
+            {% for item in cart_items %}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <div style="font-weight: 600; font-size: 1.1rem;">{{ item.name }}</div>
+                        <div style="color: var(--primary-color); font-weight: 500;">₹{{ item.price }}</div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <!-- Decrease -->
+                        <form method="POST" action="{{ url_for('customer.cart') }}" style="margin: 0;">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <input type="hidden" name="action" value="decrease">
+                            <button type="submit" style="background: var(--background-light); border: 1px solid var(--border-color); width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">-</button>
+                        </form>
+                        
+                        <span style="font-weight: 600; font-size: 1.1rem; width: 20px; text-align: center;">{{ item.quantity }}</span>
+                        
+                        <!-- Increase -->
+                        <form method="POST" action="{{ url_for('customer.cart') }}" style="margin: 0;">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <input type="hidden" name="action" value="add">
+                            <button type="submit" style="background: var(--primary-color); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Bill Summary -->
+        <div style="background: var(--surface-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 25px;">
+            <h3 style="margin-bottom: 15px; font-size: 1.2rem;">Bill Summary</h3>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--text-muted);">
+                <span>Subtotal</span>
+                <span>₹{{ "%.2f"|format(subtotal) }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-muted); border-bottom: 1px dashed var(--border-color); padding-bottom: 15px;">
+                <span>Tax (5%)</span>
+                <span>₹{{ "%.2f"|format(tax) }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.3rem; color: var(--secondary-color);">
+                <span>Grand Total</span>
+                <span>₹{{ "%.2f"|format(grand_total) }}</span>
+            </div>
+            
+            <form method="POST" action="{{ url_for('customer.checkout') }}" class="mt-4">
+                <button type="submit" class="btn btn-primary" style="padding: 16px; font-size: 1.1rem; box-shadow: var(--shadow-md);">Confirm & Place Order</button>
+            </form>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 50px 20px; background: var(--surface-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+            <i class='bx bx-shopping-bag' style="font-size: 4rem; color: var(--text-muted); margin-bottom: 15px; opacity: 0.5;"></i>
+            <h3>Your cart is empty</h3>
+            <p style="color: var(--text-muted); margin-top: 10px; margin-bottom: 20px;">Explore our menu and add something delicious!</p>
+            <a href="{{ url_for('customer.menu') }}" class="btn btn-primary" style="width: auto;">Browse Menu</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

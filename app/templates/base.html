@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}King Cafe{% endblock %}</title>
+    
+    <!-- Boxicons for modern icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    
+    {% block body %}
+    {% endblock %}
+    
+    <!-- Footer Section -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <!-- Brand & Links -->
+            <div class="footer-col">
+                <a href="/" class="footer-logo">
+                    <i class='bx bx-coffee'></i> KING CAFE
+                </a>
+                <ul class="footer-links">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Return Policy</a></li>
+                    <li><a href="#">Cancellation</a></li>
+                    <li><a href="#">Partner With Us</a></li>
+                    <li><a href="#">Join Our Team</a></li>
+                </ul>
+                <div class="social-icons">
+                    <a href="#"><i class='bx bxl-facebook'></i></a>
+                    <a href="#"><i class='bx bxl-instagram'></i></a>
+                </div>
+            </div>
+
+            <!-- Shop Online -->
+            <div class="footer-col">
+                <h3>SHOP ONLINE</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">Subscription</a></li>
+                    <li><a href="#">Starter Kits</a></li>
+                    <li><a href="#">Equipment & Merchandise</a></li>
+                </ul>
+            </div>
+
+            <!-- Address -->
+            <div class="footer-col">
+                <h3>ADDRESS</h3>
+                <div class="footer-address">
+                    Flagship Café & Roastery,<br>
+                    Sampigekatte,<br>
+                    Madikeri - Mysore Road,<br>
+                    Madikeri - 571201, India.
+                </div>
+                <div class="footer-contact">
+                    <i class='bx bxl-whatsapp' style="font-size: 1.2rem; color: #25D366;"></i> +91 94481 06100
+                </div>
+            </div>
+
+            <!-- Subscribe -->
+            <div class="footer-col">
+                <h3>SUBSCRIBE TO NEWSLETTER</h3>
+                <form class="subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
+                    <input type="email" placeholder="Your Email" class="subscribe-input" required>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            Copyright © 2026, King Cafe. All rights reserved.
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script>
+        // Auto-dismiss alerts after 4 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    alert.style.opacity = '0';
+                    alert.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => alert.remove(), 500);
+                });
+            }, 4000);
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

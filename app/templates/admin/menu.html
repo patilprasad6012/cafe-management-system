@@ -1,0 +1,149 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block page_title %}Menu Management{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div style="display: flex; gap: 10px;">
+        <button class="btn btn-primary" onclick="document.getElementById('addFoodModal').style.display='block'"
+            style="width: auto;">+ Add New Food</button>
+        <a href="{{ url_for('menu.manage_categories') }}" class="btn btn-outline" style="width: auto;">Manage
+            Categories</a>
+    </div>
+</div>
+
+<!-- Menu Table -->
+<div
+    style="background: var(--surface-color); padding: 25px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow-x: auto;">
+    <table style="width: 100%; text-align: left; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--border-color);">
+                <th style="padding: 15px 10px;">Item</th>
+                <th style="padding: 15px 10px;">Category</th>
+                <th style="padding: 15px 10px;">Price</th>
+                <th style="padding: 15px 10px;">Availability</th>
+                <th style="padding: 15px 10px;">Status</th>
+                <th style="padding: 15px 10px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr
+                style="border-bottom: 1px solid var(--border-color); {% if not item.is_active %}opacity: 0.6;{% endif %}">
+                <td style="padding: 15px 10px; display: flex; align-items: center; gap: 15px;">
+                    {% if item.image_path %}
+                    <img src="{{ url_for('static', filename=item.image_path) }}" alt="{{ item.name }}"
+                        style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                    {% else %}
+                    <div
+                        style="width: 40px; height: 40px; border-radius: 8px; background: var(--background-light); display: flex; align-items: center; justify-content: center;">
+                        <i class='bx bx-food-menu' style="color: var(--text-muted);"></i></div>
+                    {% endif %}
+                    <div>
+                        <div style="font-weight: 600;">{{ item.name }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">{{ 'Veg' if item.veg_type == 'veg'
+                            else 'Non-Veg' }}</div>
+                    </div>
+                </td>
+                <td style="padding: 15px 10px;">{{ item.category.name if item.category else 'None' }}</td>
+                <td style="padding: 15px 10px; font-weight: bold;">₹{{ item.price }}</td>
+                <td style="padding: 15px 10px;">
+                    <a href="{{ url_for('menu.toggle_availability', item_id=item.id) }}" style="text-decoration: none;">
+                        {% if item.is_available %}
+                        <span
+                            style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Available</span>
+                        {% else %}
+                        <span
+                            style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Unavailable</span>
+                        {% endif %}
+                    </a>
+                </td>
+                <td style="padding: 15px 10px;">
+                    {% if item.is_active %}
+                    <span style="color: var(--primary-color);">Active</span>
+                    {% else %}
+                    <span style="color: var(--text-muted);">Archived</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 15px 10px; display: flex; gap: 10px;">
+                    {% if item.is_active %}
+                    <a href="{{ url_for('menu.archive_food', item_id=item.id) }}" class="btn btn-outline"
+                        style="padding: 6px 12px; font-size: 0.8rem; width: auto; color: #dc2626; border-color: #dc2626;"
+                        onclick="return confirm('Are you sure you want to archive this item?');">Archive</a>
+                    {% else %}
+                    <a href="{{ url_for('menu.restore_food', item_id=item.id) }}" class="btn btn-outline"
+                        style="padding: 6px 12px; font-size: 0.8rem; width: auto; color: var(--accent-color); border-color: var(--accent-color);">Restore</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="padding: 20px; text-align: center; color: var(--text-muted);">No food items
+                    found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Food Modal (Simplified styling inline for now) -->
+<div id="addFoodModal"
+    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+    <div
+        style="background: var(--surface-color); padding: 30px; border-radius: var(--radius-md); width: 100%; max-width: 600px; margin: auto; position: relative; top: 50px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3>Add New Food Item</h3>
+            <button onclick="document.getElementById('addFoodModal').style.display='none'"
+                style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+
+        <form method="POST" action="{{ url_for('menu.add_food') }}" enctype="multipart/form-data">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label class="form-label">Food Name</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select name="category_id" class="form-control" required>
+                        <option value="">Select Category</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price (₹)</label>
+                    <input type="number" step="0.01" name="price" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Preparation Time (mins)</label>
+                    <input type="number" name="preparation_time" class="form-control" value="15">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select name="veg_type" class="form-control">
+                        <option value="veg">Vegetarian</option>
+                        <option value="non-veg">Non-Vegetarian</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Image Upload</label>
+                    <input type="file" name="image" class="form-control" accept="image/*">
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" name="is_available" id="is_available" checked
+                        style="width: 20px; height: 20px;">
+                    <label for="is_available" style="margin: 0;">Currently Available?</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Save Food Item</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

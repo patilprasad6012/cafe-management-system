@@ -1,0 +1,26 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Flask Session / Local DBs
+flask_session/
+instance/
+*.sqlite3
+*.db
+
+# Uploads
+app/static/uploads/qrcodes/*
+!app/static/uploads/qrcodes/.keep
+
+# IDEs
+.vscode/
+.idea/

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin - King Cafe{% endblock %}</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Admin Layout Specifics */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 250px;
+            background-color: var(--surface-color);
+            background-image: url("{{ url_for('static', filename='img/sidebar_bg.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-right: none;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Dark overlay so text remains readable */
+        .admin-sidebar::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(40, 20, 10, 0.82) 0%, rgba(60, 30, 15, 0.88) 100%);
+            z-index: 0;
+        }
+
+        /* All sidebar children above the overlay */
+        .admin-sidebar > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .admin-brand {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            margin-bottom: 20px;
+        }
+
+        .admin-nav {
+            list-style: none;
+        }
+
+        .admin-nav li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-nav li a:hover {
+            background-color: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            padding-left: 25px;
+        }
+
+        .admin-nav li a i {
+            font-size: 1.2rem;
+        }
+
+        .admin-main {
+            flex: 1;
+            padding: 30px;
+            background-color: var(--background-light);
+            overflow-y: auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-title {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        /* Premium Logout Button with Dynamic Glow & Hover */
+        @keyframes pulse-logout {
+            0% {
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.45), 0 4px 14px rgba(214, 48, 49, 0.3);
+            }
+            70% {
+                box-shadow: 0 0 0 8px rgba(231, 76, 60, 0), 0 4px 14px rgba(214, 48, 49, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0), 0 4px 14px rgba(214, 48, 49, 0.3);
+            }
+        }
+
+        .logout-btn-animated {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px 18px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #ff5e57 0%, #e74c3c 55%, #c0392b 100%);
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 0.92rem;
+            letter-spacing: 0.3px;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            animation: pulse-logout 2.2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 14px rgba(214, 48, 49, 0.35);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .logout-btn-animated::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            transform: skewX(-25deg);
+            transition: left 0.75s ease;
+        }
+
+        .logout-btn-animated i {
+            font-size: 1.15rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logout-btn-animated:hover {
+            background: linear-gradient(135deg, #ff6b6b 0%, #d63031 60%, #a71d2a 100%) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 22px rgba(214, 48, 49, 0.5) !important;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .logout-btn-animated:hover::before {
+            left: 125%;
+        }
+
+        .logout-btn-animated:hover i {
+            transform: translateX(-3px);
+        }
+
+        .logout-btn-animated:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 2px 10px rgba(214, 48, 49, 0.4) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <div class="brand-logo" style="color: #ffffff;">
+                    <i class='bx bx-coffee'></i> King Cafe
+                </div>
+                <div style="text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.6);">Admin Portal</div>
+            </div>
+            <ul class="admin-nav">
+                <li><a href="{{ url_for('admin.dashboard') }}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                <li><a href="{{ url_for('menu.manage_menu') }}"><i class='bx bx-restaurant'></i> Menu Management</a>
+                </li>
+                <li><a href="#"><i class='bx bx-receipt'></i> Orders</a></li>
+                <li><a href="#"><i class='bx bx-group'></i> Customers</a></li>
+                <li><a href="{{ url_for('table.manage_tables') }}"><i class='bx bx-qr-scan'></i> Tables & QR</a></li>
+                <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding: 15px 15px;">
+                    <a href="{{ url_for('auth.logout') }}" class="logout-btn-animated">
+                        <i class='bx bx-log-out'></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="admin-main hero-section">
+            <div class="hero-content" style="height: 100%;">
+            <header class="admin-header">
+                <h2>{% block page_title %}Dashboard{% endblock %}</h2>
+                <div class="admin-profile">
+                    <span>Welcome, {{ session.get('name') }}</span>
+                    <div
+                        style="width: 40px; height: 40px; background: var(--primary-color); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                        {{ session.get('name')[0].upper() }}
+                    </div>
+                </div>
+            </header>
+
+            <div class="alerts">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+
+            {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

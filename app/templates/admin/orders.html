@@ -1,0 +1,102 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block page_title %}Order Management{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 40px;">
+    <h3>Pending Verification <span style="background: #fef08a; color: #854d0e; padding: 2px 8px; border-radius: 20px; font-size: 0.9rem; margin-left: 10px;">{{ pending_orders|length }}</span></h3>
+    <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 0.9rem;">Review these orders before sending them to the kitchen.</p>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+        {% for order in pending_orders %}
+        <div style="background: var(--surface-color); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border-left: 4px solid #ca8a04; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <div>
+                    <h4 style="margin-bottom: 5px;">Order #{{ order.id }}</h4>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">{{ order.created_at.strftime('%I:%M %p') }}</span>
+                </div>
+                <div style="text-align: right;">
+                    <h4 style="color: var(--primary-color);">Table {{ order.table.table_number }}</h4>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">{{ order.customer.name }}</span>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px; max-height: 150px; overflow-y: auto;">
+                {% for item in order.items %}
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
+                    <span>{{ item.quantity }}x {{ item.menu_item.name }}</span>
+                    <span>₹{{ item.price_at_time * item.quantity }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; font-size: 1.1rem;">
+                <span>Total:</span>
+                <span>₹{{ order.grand_total }}</span>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <form method="POST" action="{{ url_for('admin.process_order', order_id=order.id, action='accept') }}" style="flex: 1; margin: 0;">
+                    <button type="submit" class="btn btn-primary" style="padding: 10px; font-size: 0.9rem;">Accept & Send to Kitchen</button>
+                </form>
+                <form method="POST" action="{{ url_for('admin.process_order', order_id=order.id, action='reject') }}" style="flex: 1; margin: 0;">
+                    <button type="button" onclick="const reason = prompt('Reason for rejection:'); if(reason) { this.form.insertAdjacentHTML('beforeend', '<input type=\'hidden\' name=\'reason\' value=\'' + reason + '\'>'); this.form.submit(); }" class="btn btn-outline" style="padding: 10px; font-size: 0.9rem; color: #dc2626; border-color: #dc2626;">Reject</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div style="grid-column: 1 / -1; padding: 20px; background: var(--surface-color); border-radius: var(--radius-md); text-align: center; color: var(--text-muted);">
+            No pending orders to review.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div>
+    <h3>Active Kitchen Orders <span style="background: #bae6fd; color: #0369a1; padding: 2px 8px; border-radius: 20px; font-size: 0.9rem; margin-left: 10px;">{{ active_orders|length }}</span></h3>
+    <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 0.9rem;">Orders currently being processed by the chef.</p>
+    
+    <div style="background: var(--surface-color); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden;">
+        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--border-color); background: var(--background-light);">
+                    <th style="padding: 15px 20px;">Order ID</th>
+                    <th style="padding: 15px 20px;">Table</th>
+                    <th style="padding: 15px 20px;">Status</th>
+                    <th style="padding: 15px 20px;">Time</th>
+                    <th style="padding: 15px 20px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in active_orders %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 15px 20px; font-weight: bold;">#{{ order.id }}</td>
+                    <td style="padding: 15px 20px;">{{ order.table.table_number }}</td>
+                    <td style="padding: 15px 20px;">
+                        {% if order.status == 'ACCEPTED' %}
+                            <span style="background: #e0e7ff; color: #4338ca; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: 500;">Sent to Kitchen</span>
+                        {% elif order.status == 'PREPARING' %}
+                            <span style="background: #fef08a; color: #854d0e; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: 500;">Chef Preparing</span>
+                        {% elif order.status == 'READY' %}
+                            <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: 500;">Ready to Serve</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 15px 20px; color: var(--text-muted);">{{ order.created_at.strftime('%I:%M %p') }}</td>
+                    <td style="padding: 15px 20px;">
+                        {% if order.status == 'READY' %}
+                            <a href="{{ url_for('admin.generate_bill', order_id=order.id) }}" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem; width: auto; display: inline-block;">Serve & Bill</a>
+                        {% else %}
+                            <span style="color: var(--text-muted); font-size: 0.9rem;">Waiting on Chef</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="padding: 30px; text-align: center; color: var(--text-muted);">No active orders in the kitchen.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

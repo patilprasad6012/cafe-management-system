@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Assistant - King Cafe{% endblock %}
+
+{% block body %}
+<header style="background: var(--surface-color); padding: 15px 20px; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <a href="{{ url_for('customer.dashboard') }}" style="color: var(--text-main); font-size: 1.5rem;"><i class='bx bx-arrow-back'></i></a>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 35px; height: 35px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                <i class='bx bx-bot' style="font-size: 1.5rem;"></i>
+            </div>
+            <span style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1.2rem;">Café AI</span>
+        </div>
+    </div>
+</header>
+
+<div class="container mt-4" style="max-width: 650px; margin: 0 auto; height: calc(100vh - 140px); display: flex; flex-direction: column;">
+    
+    <!-- Unified Chat Box Card Container -->
+    <div style="flex: 1; background: var(--surface-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; margin-bottom: 20px;">
+        
+        <!-- Chat Window / Messages Scroll Area -->
+        <div id="chatBox" style="flex: 1; padding: 25px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;">
+            
+            <!-- Welcome Message -->
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <div style="width: 34px; height: 34px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; margin-top: 2px; box-shadow: 0 2px 6px rgba(92,64,51,0.2);">
+                    <i class='bx bx-bot' style="font-size: 1.2rem;"></i>
+                </div>
+                <div style="background: var(--background-light); padding: 14px 18px; border-radius: 18px; border-top-left-radius: 4px; color: var(--text-main); font-size: 0.95rem; line-height: 1.5; max-width: 82%; border: 1px solid rgba(234, 224, 213, 0.6); box-shadow: var(--shadow-sm);">
+                    Hi there! I'm the King Cafe AI Assistant. I can help you find something delicious from our menu today. What are you craving?
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Input Area inside the Box -->
+        <div style="padding: 16px 20px; background: #ffffff; border-top: 1px solid var(--border-color);">
+            <form id="chatForm" style="display: flex; gap: 12px; align-items: center; margin: 0;">
+                <input type="text" id="userInput" class="form-control" placeholder="Ask about our menu..." style="border-radius: var(--radius-pill); padding: 14px 22px; border: 1.5px solid var(--border-color); font-size: 0.95rem; background: #faf8f5;" autocomplete="off" required>
+                <button type="submit" class="btn btn-primary" style="border-radius: 50%; width: 48px; height: 48px; min-width: 48px; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 4px 12px rgba(92, 64, 51, 0.25); flex-shrink: 0; cursor: pointer;">
+                    <i class='bx bx-send' style="font-size: 1.4rem; margin-left: 2px;"></i>
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const chatForm = document.getElementById('chatForm');
+    const userInput = document.getElementById('userInput');
+    const chatBox = document.getElementById('chatBox');
+
+    function addMessage(text, isUser) {
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.gap = '10px';
+        wrapper.style.alignItems = 'flex-start';
+        
+        if (isUser) {
+            wrapper.style.flexDirection = 'row-reverse';
+            wrapper.innerHTML = `
+                <div style="background: var(--primary-color); color: white; padding: 12px 16px; border-radius: 15px; border-top-right-radius: 0; font-size: 0.95rem; max-width: 80%; word-wrap: break-word;">
+                    ${text}
+                </div>
+            `;
+        } else {
+            wrapper.innerHTML = `
+                <div style="width: 30px; height: 30px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; margin-top: 5px;">
+                    <i class='bx bx-bot'></i>
+                </div>
+                <div style="background: var(--background-light); padding: 12px 16px; border-radius: 15px; border-top-left-radius: 0; color: var(--text-main); font-size: 0.95rem; max-width: 80%; word-wrap: break-word; white-space: pre-wrap;">${text}</div>
+            `;
+        }
+        
+        chatBox.appendChild(wrapper);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function addTypingIndicator() {
+        const wrapper = document.createElement('div');
+        wrapper.id = 'typingIndicator';
+        wrapper.style.display = 'flex';
+        wrapper.style.gap = '10px';
+        wrapper.style.alignItems = 'flex-start';
+        wrapper.innerHTML = `
+            <div style="width: 30px; height: 30px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; margin-top: 5px;">
+                <i class='bx bx-bot'></i>
+            </div>
+            <div style="background: var(--background-light); padding: 12px 16px; border-radius: 15px; border-top-left-radius: 0; color: var(--text-muted); font-size: 0.95rem; font-style: italic;">
+                Thinking...
+            </div>
+        `;
+        chatBox.appendChild(wrapper);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+        const indicator = document.getElementById('typingIndicator');
+        if (indicator) indicator.remove();
+    }
+
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        userInput.value = '';
+        
+        addTypingIndicator();
+
+        try {
+            const response = await fetch("{{ url_for('customer.ai_assistant') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            });
+            
+            const data = await response.json();
+            removeTypingIndicator();
+            
+            if (data.response) {
+                addMessage(data.response, false);
+            } else {
+                addMessage("Sorry, I encountered an error.", false);
+            }
+        } catch (error) {
+            removeTypingIndicator();
+            addMessage("Network error. Please try again.", false);
+        }
+    });
+</script>
+{% endblock %}

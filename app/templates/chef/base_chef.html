@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Chef - King Cafe{% endblock %}</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Chef Layout - optimized for speed and visibility */
+        .chef-layout {
+            min-height: 100vh;
+            background-color: var(--background-light);
+        }
+        .chef-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chef-brand {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chef-nav {
+            display: flex;
+            gap: 20px;
+        }
+        .chef-nav a {
+            color: rgba(255,255,255,0.8);
+            font-weight: 500;
+        }
+        .chef-nav a:hover {
+            color: white;
+        }
+        .chef-main {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="chef-layout">
+        <header class="chef-header">
+            <div class="chef-brand">
+                <i class='bx bx-restaurant'></i> King Cafe Kitchen
+            </div>
+            <div class="chef-nav">
+                <span>Chef {{ session.get('name') }}</span>
+                <a href="{{ url_for('auth.logout') }}" class="btn-logout"><i class='bx bx-log-out'></i> Logout</a>
+            </div>
+        </header>
+        
+        <main class="chef-main">
+            <div class="alerts">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

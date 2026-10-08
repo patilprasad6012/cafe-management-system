@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - King Cafe{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='img/hero_bg.jpg') }}");
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+    .hero-section {
+        background: transparent !important;
+        min-height: calc(100vh - 72px);
+    }
+    .hero-section::before {
+        background: linear-gradient(to right, rgba(253,251,247,0.88) 0%, rgba(253,251,247,0.6) 50%, rgba(253,251,247,0.1) 100%);
+    }
+    header {
+        background: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<header style="background: var(--surface-color); padding: 15px 20px; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
+    <div class="brand-logo" style="font-size: 1.5rem;">
+        <i class='bx bx-coffee'></i> King Cafe
+    </div>
+    <a href="{{ url_for('auth.logout') }}" class="btn-logout"><i class='bx bx-log-out'></i> Logout</a>
+</header>
+
+<div class="hero-section">
+<div class="container mt-4 animate-fade-up hero-content">
+    <div class="alerts">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="hover-card glass-panel" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white; padding: 30px 20px; border-radius: var(--radius-lg); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-lg);">
+        <div>
+            <h2>Hello, {{ session.get('name') }}!</h2>
+            <p style="opacity: 0.8; margin-top: 5px;">Ready to order something delicious?</p>
+        </div>
+        <i class='bx bx-user-circle' style="font-size: 4rem; opacity: 0.8;"></i>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
+        <a href="{{ url_for('customer.menu') }}" class="hover-card animate-fade-up delay-100" style="background: var(--surface-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
+            <i class='bx bx-food-menu' style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+            <h3 style="font-size: 1.1rem; color: var(--text-main);">Digital Menu</h3>
+        </a>
+        <a href="#" class="hover-card animate-fade-up delay-200" style="background: var(--surface-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
+            <i class='bx bx-qr-scan' style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+            <h3 style="font-size: 1.1rem; color: var(--text-main);">Scan Table QR</h3>
+        </a>
+        <a href="{{ url_for('customer.cart') }}" class="hover-card animate-fade-up delay-300" style="background: var(--surface-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
+            <i class='bx bx-shopping-bag' style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+            <h3 style="font-size: 1.1rem; color: var(--text-main);">My Cart</h3>
+        </a>
+        <a href="{{ url_for('customer.ai_assistant') }}" class="hover-card animate-fade-up delay-400" style="background: var(--surface-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
+            <i class='bx bx-bot' style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+            <h3 style="font-size: 1.1rem; color: var(--text-main);">Ask AI</h3>
+        </a>
+    </div>
+</div>
+</div>
+{% endblock %}
