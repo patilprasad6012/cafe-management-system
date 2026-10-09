@@ -160,7 +160,43 @@ def checkout():
     db.session.commit()
     flash('Your order has been placed successfully and is pending review!', 'success')
     return render_template('customer/order_confirmation.html', order=new_order)
+```python
+# Track active customer orders
+@customer_bp.route('/track-orders')
+@login_required
+def track_orders():
+    active_statuses = [
+        'PENDING_ADMIN_REVIEW',
+        'ACCEPTED',
+        'SENT_TO_CHEF',
+        'PREPARING',
+        'READY',
+        'SERVED'
+    ]
 
+    orders = Order.query.filter(
+        Order.customer_id == session['user_id'],
+        Order.status.in_(active_statuses)
+    ).order_by(Order.created_at.desc()).all()
+
+    return render_template(
+        'customer/track_orders.html',
+        orders=orders
+    )
+
+
+# View customer order history
+@customer_bp.route('/order-history')
+@login_required
+def order_history():
+    orders = Order.query.filter_by(
+        customer_id=session['user_id']
+    ).order_by(Order.created_at.desc()).all()
+
+    return render_template(
+        'customer/order_history.html',
+        orders=orders
+    )
 from app.services.ai_assistant import CafeAIAssistant
 
 @customer_bp.route('/ai-assistant', methods=['GET', 'POST'])
