@@ -193,6 +193,182 @@
             padding: 18px 15px;
         }
     }
+/* Order card entrance */
+.tracking-card {
+    animation: trackingEnter 0.75s cubic-bezier(.22, 1, .36, 1) both;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tracking-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 35px rgba(50, 35, 25, 0.14);
+}
+
+.tracking-card:nth-of-type(2) {
+    animation-delay: 0.12s;
+}
+
+.tracking-card:nth-of-type(3) {
+    animation-delay: 0.24s;
+}
+
+@keyframes trackingEnter {
+    from {
+        opacity: 0;
+        transform: translateY(28px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Animated heading shine */
+.tracking-heading {
+    position: relative;
+    overflow: hidden;
+}
+
+.tracking-heading::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 55%;
+    height: 100%;
+    background: linear-gradient(
+        110deg,
+        transparent,
+        rgba(255, 255, 255, 0.18),
+        transparent
+    );
+    animation: headingShine 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes headingShine {
+    0%, 65% {
+        left: -120%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+/* Timeline steps appear one after another */
+.tracking-step {
+    animation: stepReveal 0.55s ease-out both;
+}
+
+.tracking-step:nth-child(1) { animation-delay: 0.15s; }
+.tracking-step:nth-child(2) { animation-delay: 0.30s; }
+.tracking-step:nth-child(3) { animation-delay: 0.45s; }
+.tracking-step:nth-child(4) { animation-delay: 0.60s; }
+.tracking-step:nth-child(5) { animation-delay: 0.75s; }
+
+@keyframes stepReveal {
+    from {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Current step glowing pulse */
+.step-marker.current {
+    animation: currentPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes currentPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 4px rgba(32, 180, 70, 0.12),
+                    0 0 0 0 rgba(32, 180, 70, 0.28);
+    }
+    50% {
+        box-shadow: 0 0 0 7px rgba(32, 180, 70, 0.10),
+                    0 0 18px 5px rgba(32, 180, 70, 0.20);
+    }
+}
+
+/* Completed steps pop in */
+.step-marker.done {
+    animation: checkPop 0.5s cubic-bezier(.2, 1.5, .5, 1) both;
+}
+
+@keyframes checkPop {
+    0% {
+        transform: scale(0.55);
+        opacity: 0.4;
+    }
+    70% {
+        transform: scale(1.16);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Green connector glow */
+.step-connector.done {
+    background: linear-gradient(
+        to bottom,
+        #69e58a,
+        #20b446,
+        #168b36
+    );
+    background-size: 100% 200%;
+    animation: lineFlow 1.6s linear infinite;
+}
+
+@keyframes lineFlow {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 0 200%;
+    }
+}
+
+/* Status badge subtle glow */
+.order-status-badge {
+    animation: badgeGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes badgeGlow {
+    0%, 100% {
+        box-shadow: 0 0 0 rgba(32, 180, 70, 0);
+    }
+    50% {
+        box-shadow: 0 0 12px rgba(32, 180, 70, 0.18);
+    }
+}
+
+/* Item hover animation */
+.tracking-item {
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.tracking-item:hover {
+    transform: translateX(5px);
+    color: #168b36;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .tracking-card,
+    .tracking-step,
+    .step-marker,
+    .step-connector,
+    .order-status-badge,
+    .tracking-heading::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
 </style>
 {% endblock %}
 
