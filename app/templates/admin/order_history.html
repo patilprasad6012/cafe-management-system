@@ -1,0 +1,85 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block page_title %}Order History{% endblock %}
+
+{% block content %}
+
+<div style="margin-bottom: 20px;">
+    <a href="{{ url_for('admin.manage_orders') }}"
+       class="btn btn-outline"
+       style="width: auto; display: inline-block;">
+        ← Back to Orders
+    </a>
+</div>
+
+<div style="
+    background: var(--surface-color);
+    padding: 25px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+">
+
+    <h3 style="margin-bottom: 20px;">All Customer Orders</h3>
+
+    <table style="width: 100%; text-align: left; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--border-color);">
+                <th style="padding: 14px 10px;">Order ID</th>
+                <th style="padding: 14px 10px;">Table</th>
+                <th style="padding: 14px 10px;">Order Date</th>
+                <th style="padding: 14px 10px;">Total</th>
+                <th style="padding: 14px 10px;">Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for order in orders %}
+            <tr style="border-bottom: 1px solid var(--border-color);">
+
+                <td style="padding: 14px 10px; font-weight: 600;">
+                    #{{ order.id }}
+                </td>
+
+                <td style="padding: 14px 10px;">
+                    {{ order.table.table_number if order.table else 'N/A' }}
+                </td>
+
+                <td style="padding: 14px 10px;">
+                    {% if order.created_at %}
+                        {{ order.created_at.strftime('%d-%m-%Y %I:%M %p') }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+
+                <td style="padding: 14px 10px; font-weight: 600;">
+                    ₹{{ order.grand_total }}
+                </td>
+
+                <td style="padding: 14px 10px;">
+                    <span style="
+                        background: var(--background-light);
+                        padding: 6px 9px;
+                        border-radius: 5px;
+                        font-size: 0.85rem;
+                    ">
+                        {{ order.status.replace('_', ' ') }}
+                    </span>
+                </td>
+
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5"
+                    style="padding: 25px; text-align: center; color: var(--text-muted);">
+                    No orders found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}
