@@ -24,20 +24,39 @@ def dashboard():
 @chef_bp.route('/order/<int:order_id>/<action>', methods=['POST'])
 @chef_required
 def process_order(order_id, action):
+    from app.models.models import Notification
+
     order = Order.query.get_or_404(order_id)
-    
+
     if action == 'start' and order.status == 'ACCEPTED':
         order.status = 'PREPARING'
         flash(f'Started preparing Order #{order.id}', 'success')
+
     elif action == 'ready' and order.status == 'PREPARING':
         order.status = 'READY'
-        # Notify Admin
-        from app.models.models import Notification
-        db.session.add(Notification(role_target='admin', message=f'Order #{order.id} on Table {order.table.table_number} is READY to serve!'))
+
+        db.session.add(
+            Notification(
+                role_target='admin',
+                message=(
+                    f'Order #{order.id} on Table '
+                    f'{order.table.table_number} is READY to serve!'
+                )
+            )
+        )
         flash(f'Order #{order.id} is ready for service!', 'success')
-        
-    history = OrderStatusHistory(order_id=order.id, status=order.status)
-    db.session.add(history)
+
+    else:
+        flash('Invalid action or order status.', 'warning')
+        return redirect(url_for('chef.dashboard'))
+
+    db.session.add(
+        OrderStatusHistory(
+            order_id=order.id,
+            status=order.status
+        )
+    )
+
     db.session.commit()
-    
+
     return redirect(url_for('chef.dashboard'))
