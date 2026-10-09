@@ -1,1 +1,87 @@
+{% extends 'base.html' %}
 
+{% block title %}Track Orders - King Cafe{% endblock %}
+
+{% block body %}
+<div class="container mt-4" style="padding: 25px;">
+
+    <a href="{{ url_for('customer.dashboard') }}"
+       class="btn btn-outline"
+       style="display: inline-block; margin-bottom: 20px;">
+        ← Back to Dashboard
+    </a>
+
+    <h2 style="margin-bottom: 10px;">Track My Orders</h2>
+    <p style="color: var(--text-muted); margin-bottom: 25px;">
+        Check the latest status of your orders.
+    </p>
+
+    {% if orders %}
+        {% for order in orders %}
+        <div style="
+            background: var(--surface-color);
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        ">
+
+            <h3>Order #{{ order.id }}</h3>
+
+            <p>
+                <strong>Table:</strong>
+                {{ order.table.table_number if order.table else 'N/A' }}
+            </p>
+
+            <p>
+                <strong>Date:</strong>
+                {{ order.created_at.strftime('%d-%m-%Y %I:%M %p') }}
+            </p>
+
+            <p>
+                <strong>Total:</strong>
+                ₹{{ order.grand_total }}
+            </p>
+
+            <p>
+                <strong>Order Status:</strong>
+                <span style="color: var(--primary-color); font-weight: bold;">
+                    {{ order.status.replace('_', ' ') }}
+                </span>
+            </p>
+
+            <hr style="margin: 15px 0;">
+
+            <h4>Ordered Items</h4>
+
+            {% for item in order.items %}
+            <p>
+                {{ item.menu_item.name if item.menu_item else 'Food item' }}
+                × {{ item.quantity }}
+                — ₹{{ item.price_at_time * item.quantity }}
+            </p>
+            {% endfor %}
+
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="
+            background: var(--surface-color);
+            padding: 30px;
+            border-radius: var(--radius-md);
+            text-align: center;
+        ">
+            <h3>No Active Orders</h3>
+            <p>You haven't placed any active orders yet.</p>
+
+            <a href="{{ url_for('customer.menu') }}"
+               class="btn btn-primary"
+               style="display: inline-block; margin-top: 15px;">
+                Browse Menu
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+```
