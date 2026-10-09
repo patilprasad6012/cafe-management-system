@@ -197,27 +197,57 @@
 </head>
 
 <body>
-    <div class="admin-layout">
-        <aside class="admin-sidebar">
-            <div class="admin-brand">
-                <div class="brand-logo" style="color: #ffffff;">
-                    <i class='bx bx-coffee'></i> King Cafe
-                </div>
-                <div style="text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.6);">Admin Portal</div>
+    ```html
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            <div class="brand-logo" style="color: #ffffff;">
+                <i class='bx bx-coffee'></i> King Cafe
             </div>
-            <ul class="admin-nav">
-                <li><a href="{{ url_for('admin.dashboard') }}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
-                <li><a href="{{ url_for('menu.manage_menu') }}"><i class='bx bx-restaurant'></i> Menu Management</a></li>
-                <li><a href="{{ url_for('admin.orders') }}"><i class='bx bx-receipt'></i> Orders</a></li>
-                <li><a href="#"><i class='bx bx-group'></i> Customers</a></li>
-                <li><a href="{{ url_for('table.manage_tables') }}"><i class='bx bx-qr-scan'></i> Tables & QR</a></li>
-                <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding: 15px 15px;">
-                    <a href="{{ url_for('auth.logout') }}" class="logout-btn-animated">
-                        <i class='bx bx-log-out'></i> Logout
-                    </a>
-                </li>
-            </ul>
-        </aside>
+            <div style="text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.6);">
+                Admin Portal
+            </div>
+        </div>
+
+        <ul class="admin-nav">
+            <li>
+                <a href="{{ url_for('admin.dashboard') }}">
+                    <i class='bx bxs-dashboard'></i> Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('menu.manage_menu') }}">
+                    <i class='bx bx-restaurant'></i> Menu Management
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('admin.manage_orders') }}">
+                    <i class='bx bx-receipt'></i> Orders
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class='bx bx-group'></i> Customers
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('table.manage_tables') }}">
+                    <i class='bx bx-qr-scan'></i> Tables & QR
+                </a>
+            </li>
+
+            <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding: 15px;">
+                <a href="{{ url_for('auth.logout') }}" class="logout-btn-animated">
+                    <i class='bx bx-log-out'></i> Logout
+                </a>
+            </li>
+        </ul>
+    </aside>
+
 
         <main class="admin-main hero-section">
             <div class="hero-content" style="height: 100%;">
