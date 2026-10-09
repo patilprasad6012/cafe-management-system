@@ -102,3 +102,15 @@ def update_payment(order_id):
         flash(f'Payment status updated to {payment_status} for Order #{order.id}', 'success')
     
     return redirect(url_for('admin.generate_bill', order_id=order.id))
+    
+@admin_bp.route('/order-history')
+@admin_required
+def order_history():
+    orders = Order.query.order_by(
+        Order.created_at.desc()
+    ).all()
+
+    return render_template(
+        'admin/order_history.html',
+        orders=orders
+    )
