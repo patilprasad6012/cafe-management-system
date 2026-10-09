@@ -150,6 +150,33 @@ document.getElementById("scanTableQR").addEventListener("click", function () {
             <i class='bx bx-shopping-bag' style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
             <h3 style="font-size: 1.1rem; color: var(--text-main);">My Cart</h3>
         </a>
+        ```html
+<!-- Track Order Card -->
+<a href="{{ url_for('customer.track_orders') }}"
+   class="hover-card animate-fade-up delay-400"
+   style="background: var(--surface-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
+
+    <i class='bx bx-package'
+       style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+
+    <h3 style="font-size: 1.1rem; color: var(--text-main);">
+        Track Order
+    </h3>
+</a>
+
+<!-- Order History Card -->
+<a href="{{ url_for('customer.order_history') }}"
+   class="hover-card animate-fade-up delay-500"
+   style="background: var(--surface-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
+
+    <i class='bx bx-history'
+       style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+
+    <h3 style="font-size: 1.1rem; color: var(--text-main);">
+        Order History
+    </h3>
+</a>
+
         <a href="{{ url_for('customer.ai_assistant') }}" class="hover-card animate-fade-up delay-400" style="background: var(--surface-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
             <i class='bx bx-bot' style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
             <h3 style="font-size: 1.1rem; color: var(--text-main);">Ask AI</h3>
