@@ -1,85 +1,387 @@
 {% extends 'base.html' %}
 
-{% block title %}Track Orders - King Cafe{% endblock %}
+{% block title %}Track Order - King Cafe{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tracking-page {
+        max-width: 850px;
+        margin: 35px auto;
+        padding: 0 18px 40px;
+    }
+
+    .tracking-heading {
+        background: #332d2a;
+        color: white;
+        padding: 18px 22px;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .tracking-card {
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 28px;
+        overflow: hidden;
+        box-shadow: 0 5px 22px rgba(0, 0, 0, 0.09);
+        border: 1px solid #eee;
+    }
+
+    .tracking-details {
+        padding: 22px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .tracking-details p {
+        margin: 8px 0;
+        color: #605750;
+    }
+
+    .tracking-timeline {
+        padding: 25px 25px 15px;
+    }
+
+    .tracking-step {
+        display: flex;
+        gap: 18px;
+        min-height: 87px;
+    }
+
+    .step-icon-column {
+        width: 42px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .step-marker {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 19px;
+        font-weight: 700;
+        background: #e5e7eb;
+        color: #999;
+        z-index: 1;
+    }
+
+    .step-marker.done {
+        background: #20b446;
+        color: white;
+    }
+
+    .step-marker.current {
+        background: #20b446;
+        color: white;
+        box-shadow: 0 0 0 5px rgba(32, 180, 70, 0.13);
+    }
+
+    .step-connector {
+        width: 5px;
+        flex: 1;
+        min-height: 42px;
+        background: #dedede;
+        border-radius: 5px;
+    }
+
+    .step-connector.done {
+        background: #20b446;
+    }
+
+    .step-info {
+        padding: 4px 0 20px;
+        flex: 1;
+    }
+
+    .step-info h3 {
+        font-size: 1.05rem;
+        color: #999;
+        margin: 3px 0 7px;
+    }
+
+    .step-info p {
+        color: #999;
+        font-size: 0.88rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .step-info.done h3,
+    .step-info.current h3 {
+        color: #20b446;
+    }
+
+    .step-info.done p,
+    .step-info.current p {
+        color: #666;
+    }
+
+    .order-status-badge {
+        display: inline-block;
+        padding: 7px 12px;
+        background: #e8f8ed;
+        color: #168b36;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+
+    .tracking-items {
+        padding: 20px 25px;
+        background: #faf9f7;
+    }
+
+    .tracking-items h3 {
+        margin-bottom: 14px;
+    }
+
+    .tracking-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px 0;
+        color: #5b514b;
+    }
+
+    .tracking-total {
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid #e6e1dd;
+        padding-top: 15px;
+        margin-top: 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .empty-tracking {
+        padding: 40px 20px;
+        text-align: center;
+        background: white;
+        border-radius: 12px;
+    }
+
+    .empty-tracking i {
+        font-size: 3rem;
+        color: #20b446;
+    }
+
+    @media (max-width: 500px) {
+        .tracking-page {
+            margin-top: 20px;
+            padding: 0 10px 30px;
+        }
+
+        .tracking-timeline {
+            padding: 22px 15px 10px;
+        }
+
+        .tracking-step {
+            gap: 12px;
+            min-height: 82px;
+        }
+
+        .step-info h3 {
+            font-size: 0.98rem;
+        }
+
+        .tracking-details,
+        .tracking-items {
+            padding: 18px 15px;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-<div class="container mt-4" style="padding: 25px;">
+<div class="tracking-page">
 
     <a href="{{ url_for('customer.dashboard') }}"
-       class="btn btn-outline"
-       style="display: inline-block; margin-bottom: 20px;">
-        ← Back to Dashboard
+       style="display:inline-block; margin-bottom:18px; color:#72503e; text-decoration:none;">
+        <i class='bx bx-arrow-back'></i> Back to Dashboard
     </a>
 
-    <h2 style="margin-bottom: 10px;">Track My Orders</h2>
-    <p style="color: var(--text-muted); margin-bottom: 25px;">
-        Check the latest status of your orders.
+    <h2 style="margin-bottom:8px;">Track Your Order</h2>
+    <p style="color:#777; margin-bottom:24px;">
+        Follow your order from confirmation to serving.
     </p>
 
     {% if orders %}
+
         {% for order in orders %}
-        <div style="
-            background: var(--surface-color);
-            padding: 22px;
-            margin-bottom: 20px;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-        ">
 
-            <h3>Order #{{ order.id }}</h3>
+        {% set stages = [
+            {
+                'label': 'Order Placed',
+                'description': 'Your order has been received.',
+                'statuses': ['PENDING_ADMIN_REVIEW']
+            },
+            {
+                'label': 'Order Confirmed',
+                'description': 'The admin has approved your order.',
+                'statuses': ['ACCEPTED', 'SENT_TO_CHEF']
+            },
+            {
+                'label': 'Being Prepared',
+                'description': 'The chef is preparing your food.',
+                'statuses': ['PREPARING']
+            },
+            {
+                'label': 'Ready to Serve',
+                'description': 'Your food is ready!',
+                'statuses': ['READY']
+            },
+            {
+                'label': 'Order Served',
+                'description': 'Your order has been served.',
+                'statuses': ['SERVED', 'COMPLETED']
+            }
+        ] %}
 
-            <p>
-                <strong>Table:</strong>
-                {{ order.table.table_number if order.table else 'N/A' }}
-            </p>
+        {% set progress = namespace(current=0) %}
 
-            <p>
-                <strong>Date:</strong>
-                {{ order.created_at.strftime('%d-%m-%Y %I:%M %p') }}
-            </p>
+        {% for stage in stages %}
+            {% if order.status in stage.statuses %}
+                {% set progress.current = loop.index0 %}
+            {% endif %}
+        {% endfor %}
 
-            <p>
-                <strong>Total:</strong>
-                ₹{{ order.grand_total }}
-            </p>
+        <div class="tracking-card">
 
-            <p>
-                <strong>Order Status:</strong>
-                <span style="color: var(--primary-color); font-weight: bold;">
+            <div class="tracking-heading">
+                <div style="font-size:1.15rem; font-weight:700;">
+                    <i class='bx bx-receipt'></i>
+                    ORDER #{{ order.id }}
+                </div>
+                <div style="font-size:0.85rem; opacity:0.8; margin-top:5px;">
+                    KING CAFE · LIVE ORDER STATUS
+                </div>
+            </div>
+
+            <div class="tracking-details">
+                <p>
+                    <strong>Table:</strong>
+                    {{ order.table.table_number if order.table else 'N/A' }}
+                </p>
+
+                <p>
+                    <strong>Order Date:</strong>
+                    {% if order.created_at %}
+                        {{ order.created_at.strftime('%d-%m-%Y %I:%M %p') }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Order Total:</strong>
+                    ₹{{ "%.2f"|format(order.grand_total) }}
+                </p>
+
+                <span class="order-status-badge">
                     {{ order.status.replace('_', ' ') }}
                 </span>
-            </p>
+            </div>
 
-            <hr style="margin: 15px 0;">
+            <div class="tracking-timeline">
 
-            <h4>Ordered Items</h4>
+                {% for stage in stages %}
 
-            {% for item in order.items %}
-            <p>
-                {{ item.menu_item.name if item.menu_item else 'Food item' }}
-                × {{ item.quantity }}
-                — ₹{{ item.price_at_time * item.quantity }}
-            </p>
-            {% endfor %}
+                {% set is_done = loop.index0 < progress.current %}
+                {% set is_current = loop.index0 == progress.current %}
+
+                <div class="tracking-step">
+
+                    <div class="step-icon-column">
+
+                        <div class="step-marker
+                            {% if is_done %}done{% elif is_current %}current{% endif %}">
+
+                            {% if is_done %}
+                                <i class='bx bx-check'></i>
+                            {% elif is_current %}
+                                <i class='bx bx-map-pin'></i>
+                            {% else %}
+                                {{ loop.index }}
+                            {% endif %}
+
+                        </div>
+
+                        {% if not loop.last %}
+                        <div class="step-connector
+                            {% if loop.index0 < progress.current %}done{% endif %}">
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="step-info
+                        {% if is_done %}done{% elif is_current %}current{% endif %}">
+
+                        <h3>{{ stage.label }}</h3>
+                        <p>{{ stage.description }}</p>
+
+                        {% if is_current %}
+                            <span style="font-size:0.78rem; color:#20b446;
+                                         font-weight:700;">
+                                CURRENT STATUS
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="tracking-items">
+                <h3><i class='bx bx-food-menu'></i> Items Ordered</h3>
+
+                {% for item in order.items %}
+                <div class="tracking-item">
+                    <span>
+                        {{ item.menu_item.name if item.menu_item else 'Food item' }}
+                        × {{ item.quantity }}
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(item.price_at_time * item.quantity) }}
+                    </strong>
+                </div>
+                {% endfor %}
+
+                <div class="tracking-total">
+                    <span>Total Amount</span>
+                    <span>₹{{ "%.2f"|format(order.grand_total) }}</span>
+                </div>
+            </div>
 
         </div>
+
         {% endfor %}
+
     {% else %}
-        <div style="
-            background: var(--surface-color);
-            padding: 30px;
-            border-radius: var(--radius-md);
-            text-align: center;
-        ">
-            <h3>No Active Orders</h3>
-            <p>You haven't placed any active orders yet.</p>
+
+        <div class="empty-tracking">
+            <i class='bx bx-package'></i>
+            <h3 style="margin:15px 0 8px;">No Active Orders</h3>
+
+            <p style="color:#777; margin-bottom:20px;">
+                When you place an order, its progress will appear here.
+            </p>
 
             <a href="{{ url_for('customer.menu') }}"
                class="btn btn-primary"
-               style="display: inline-block; margin-top: 15px;">
+               style="display:inline-block; width:auto;">
                 Browse Menu
             </a>
         </div>
+
     {% endif %}
 
 </div>
