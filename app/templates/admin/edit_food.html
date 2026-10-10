@@ -1,0 +1,83 @@
+
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 30px auto;">
+    <h2><i class="bx bx-edit"></i> Edit Food Item</h2>
+    <p style="color: #777;">Update the food details below.</p>
+
+    <form method="POST"
+          enctype="multipart/form-data"
+          style="background: white; padding: 25px; border-radius: 14px;
+                 box-shadow: 0 4px 15px rgba(0,0,0,.08);">
+
+        <label>Food Name</label>
+        <input type="text" name="name" value="{{ item.name }}"
+               required class="form-control">
+
+        <label style="display:block; margin-top:15px;">Category</label>
+        <select name="category_id" class="form-control">
+            <option value="">No Category</option>
+            {% for category in categories %}
+            <option value="{{ category.id }}"
+                {% if item.category_id == category.id %}selected{% endif %}>
+                {{ category.name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label style="display:block; margin-top:15px;">Price (₹)</label>
+        <input type="number" name="price" step="0.01" min="0.01"
+               value="{{ item.price }}" required class="form-control">
+
+        <label style="display:block; margin-top:15px;">Description</label>
+        <textarea name="description" rows="3"
+                  class="form-control">{{ item.description or '' }}</textarea>
+
+        <label style="display:block; margin-top:15px;">Preparation Time (minutes)</label>
+        <input type="number" name="preparation_time" min="1"
+               value="{{ item.preparation_time or '' }}" class="form-control">
+
+        <label style="display:block; margin-top:15px;">Food Type</label>
+        <select name="veg_type" class="form-control">
+            <option value="veg" {% if item.veg_type == 'veg' %}selected{% endif %}>
+                Vegetarian
+            </option>
+            <option value="non-veg" {% if item.veg_type == 'non-veg' %}selected{% endif %}>
+                Non-Vegetarian
+            </option>
+        </select>
+
+        <label style="display:block; margin-top:18px;">
+            <input type="checkbox" name="is_available"
+                   {% if item.is_available %}checked{% endif %}>
+            Available for customers
+        </label>
+
+        <label style="display:block; margin-top:15px;">Change Food Image</label>
+
+        {% if item.image_path %}
+        <div style="margin:10px 0;">
+            <img src="{{ url_for('static', filename=item.image_path) }}"
+                 alt="{{ item.name }}"
+                 style="width:130px;height:100px;object-fit:cover;border-radius:8px;"
+                 onerror="this.style.display='none'">
+        </div>
+        {% endif %}
+
+        <input type="file" name="image"
+               accept=".png,.jpg,.jpeg,.webp" class="form-control">
+
+        <div style="display:flex; gap:12px; margin-top:25px;">
+            <button type="submit" class="btn btn-primary">
+                <i class="bx bx-save"></i> Save Changes
+            </button>
+
+            <a href="{{ url_for('menu.manage_menu') }}"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
