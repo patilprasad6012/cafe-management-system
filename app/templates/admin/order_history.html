@@ -67,6 +67,18 @@
                         {{ order.status.replace('_', ' ') }}
                     </span>
                 </td>
+                
+                <td style="padding: 10px;">
+                    <a href="{{ url_for('admin.bill', order_id=order.id) }}"
+                       target="_blank"
+                       class="btn btn-primary"
+                       style="display: inline-flex; align-items: center; gap: 6px;
+                              padding: 8px 14px; border-radius: 20px;
+                              text-decoration: none; white-space: nowrap;">
+                        <i class="bx bx-printer"></i> Print Bill
+                    </a>
+                </td>
+
 
             </tr>
             {% else %}
