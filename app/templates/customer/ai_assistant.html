@@ -188,19 +188,26 @@ function addMenuMessage(data) {
         image.alt = item.name;
         image.loading = 'lazy';
 
-        const path = String(item.image_path || '').replace(/\\/g, '/');
+        
+const path = String(item.image_path || '')
+    .trim()
+    .replace(/\\/g, '/')
+    .replace(/^\/+/, '')
+    .replace(/^static\//, '');
 
-        if (path && !path.startsWith('/') && !path.includes('..')) {
-            image.src = staticBase + path.replace(/^static\//, '');
-        } else {
-            image.src = staticBase + 'images/food-placeholder.png';
-        }
+if (path && !path.split('/').includes('..')) {
+    image.src = staticBase + path;
+} else {
+    image.style.display = 'none';
+    card.classList.add('no-image');
+}
 
-        image.onerror = () => {
-            image.onerror = null;
-            image.style.display = 'none';
-            card.classList.add('no-image');
-        };
+image.onerror = () => {
+    image.onerror = null;
+    image.style.display = 'none';
+    card.classList.add('no-image');
+};
+
 
         const details = document.createElement('div');
         details.className = 'menu-item-details';
