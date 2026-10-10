@@ -304,13 +304,11 @@ function addMenuMessage(data) {
                     `The request failed (${response.status}). Please try again.`,
                     false
                 );
-            } else if (data.type === 'menu') {
-    addMenuMessage(data);
-} else if (data.response) {
-    addMessage(data.response, false);
-} else {
-    addMessage('Sorry, I could not generate a reply.', false);
-}else {
+            } else if (data.type === 'menu' && Array.isArray(data.items)) {
+                addMenuMessage(data);
+            } else if (data.response) {
+                addMessage(data.response, false);
+            } else {
                 addMessage('Sorry, I could not generate a reply. Please try again.', false);
             }
         } catch (error) {
