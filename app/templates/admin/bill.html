@@ -1,20 +1,28 @@
+
 {% extends 'admin/base_admin.html' %}
 
 {% block page_title %}Order Bill #{{ order.id }}{% endblock %}
 
 {% block content %}
-<div style="display: flex; gap: 30px; align-items: flex-start;">
-    
+<div class="bill-page" style="display: flex; gap: 30px; align-items: flex-start;">
+
     <!-- Printable Bill Area -->
-    <div style="flex: 2; background: white; padding: 40px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); color: black;" id="printableBill">
-        
-        <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px dashed #ccc; padding-bottom: 20px;">
-            <h1 style="font-family: 'Outfit', sans-serif; margin-bottom: 5px;">KING CAFE</h1>
+    <div id="printableBill"
+         style="flex: 2; background: white; padding: 40px;
+                border-radius: var(--radius-md); box-shadow: var(--shadow-md);
+                color: black;">
+
+        <div style="text-align: center; margin-bottom: 30px;
+                    border-bottom: 2px dashed #ccc; padding-bottom: 20px;">
+            <h1 style="font-family: 'Outfit', sans-serif; margin-bottom: 5px;">
+                KING CAFE
+            </h1>
             <p style="color: #666; font-size: 0.9rem;">123 Cafe Street, Food City</p>
             <p style="color: #666; font-size: 0.9rem;">Phone: +91 9876543210</p>
         </div>
-        
-        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 0.95rem;">
+
+        <div style="display: flex; justify-content: space-between;
+                    margin-bottom: 20px; font-size: 0.95rem;">
             <div>
                 <p><strong>Order ID:</strong> #{{ order.id }}</p>
                 <p><strong>Table:</strong> {{ order.table.table_number }}</p>
@@ -25,8 +33,9 @@
                 <p><strong>Time:</strong> {{ order.created_at.strftime('%I:%M %p') }}</p>
             </div>
         </div>
-        
-        <table style="width: 100%; text-align: left; margin-bottom: 30px; border-collapse: collapse;">
+
+        <table style="width: 100%; text-align: left; margin-bottom: 30px;
+                      border-collapse: collapse;">
             <thead>
                 <tr style="border-bottom: 2px solid #ccc;">
                     <th style="padding: 10px 0;">Item</th>
@@ -40,91 +49,157 @@
                 <tr style="border-bottom: 1px solid #eee;">
                     <td style="padding: 10px 0;">{{ item.menu_item.name }}</td>
                     <td style="padding: 10px 0; text-align: center;">{{ item.quantity }}</td>
-                    <td style="padding: 10px 0; text-align: right;">₹{{ item.price_at_time }}</td>
-                    <td style="padding: 10px 0; text-align: right;">₹{{ item.price_at_time * item.quantity }}</td>
+                    <td style="padding: 10px 0; text-align: right;">
+                        ₹{{ "%.2f"|format(item.price_at_time|float) }}
+                    </td>
+                    <td style="padding: 10px 0; text-align: right;">
+                        ₹{{ "%.2f"|format((item.price_at_time * item.quantity)|float) }}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        
+
         <div style="width: 50%; margin-left: auto;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                 <span>Subtotal:</span>
-                <span>₹{{ order.subtotal }}</span>
+                <span>₹{{ "%.2f"|format(order.subtotal|float) }}</span>
             </div>
+
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                 <span>Tax (5%):</span>
-                <span>₹{{ order.tax }}</span>
+                <span>₹{{ "%.2f"|format(order.tax|float) }}</span>
             </div>
-            {% if order.discount > 0 %}
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: green;">
+
+            {% if order.discount and order.discount > 0 %}
+            <div style="display: flex; justify-content: space-between;
+                        margin-bottom: 8px; color: green;">
                 <span>Discount:</span>
-                <span>-₹{{ order.discount }}</span>
+                <span>-₹{{ "%.2f"|format(order.discount|float) }}</span>
             </div>
             {% endif %}
-            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; border-top: 2px solid #ccc; padding-top: 10px; margin-top: 10px;">
+
+            <div style="display: flex; justify-content: space-between;
+                        font-weight: bold; font-size: 1.2rem;
+                        border-top: 2px solid #ccc; padding-top: 10px;
+                        margin-top: 10px;">
                 <span>GRAND TOTAL:</span>
-                <span>₹{{ order.grand_total }}</span>
+                <span>₹{{ "%.2f"|format(order.grand_total|float) }}</span>
             </div>
         </div>
-        
-        <div style="text-align: center; margin-top: 40px; border-top: 2px dashed #ccc; padding-top: 20px;">
+
+        <div style="text-align: center; margin-top: 40px;
+                    border-top: 2px dashed #ccc; padding-top: 20px;">
             <p style="font-weight: bold;">Thank You for visiting King Cafe!</p>
-            <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">Please visit again.</p>
+            <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">
+                Please visit again.
+            </p>
         </div>
-        
     </div>
-    
-    <!-- Management Actions -->
-    <div style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
-        
-        <div style="background: var(--surface-color); padding: 25px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+
+    <!-- Management Actions: hidden when printing -->
+    <div class="no-print"
+         style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
+
+        <div style="background: var(--surface-color); padding: 25px;
+                    border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
             <h3 style="margin-bottom: 15px;">Print Actions</h3>
-            <button class="btn btn-outline" style="width: 100%; margin-bottom: 10px;" onclick="window.print()">
-                <i class='bx bx-printer'></i> Print Bill
+
+            <button type="button" class="btn btn-outline no-print"
+                    style="width: 100%; margin-bottom: 10px;"
+                    onclick="window.print()">
+                <i class="bx bx-printer"></i> Print Bill
             </button>
-            <button class="btn btn-outline" style="width: 100%;">
-                <i class='bx bxs-file-pdf'></i> Download PDF
+
+            <button type="button" class="btn btn-outline no-print"
+                    style="width: 100%;"
+                    onclick="window.print()">
+                <i class="bx bxs-file-pdf"></i> Save as PDF
             </button>
         </div>
-        
-        <div style="background: var(--surface-color); padding: 25px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+
+        <div style="background: var(--surface-color); padding: 25px;
+                    border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
             <h3 style="margin-bottom: 15px;">Payment Status</h3>
-            
+
             <div style="margin-bottom: 20px;">
-                Currently: 
-                <span style="font-weight: bold; padding: 4px 8px; border-radius: 4px; 
-                    {% if order.payment_status == 'PAID' %}background: #dcfce7; color: #166534;
-                    {% elif order.payment_status == 'PENDING' %}background: #fef08a; color: #854d0e;
-                    {% else %}background: #fee2e2; color: #991b1b;{% endif %}">
-                    {{ order.payment_status }}
-                </span>
+                Currently:
+                <strong>{{ order.payment_status }}</strong>
             </div>
-            
-            <form method="POST" action="{{ url_for('admin.update_payment', order_id=order.id) }}">
+
+            <form class="no-print" method="POST"
+                  action="{{ url_for('admin.update_payment', order_id=order.id) }}">
                 <div class="form-group">
                     <label class="form-label">Update Status</label>
-                    <select name="payment_status" class="form-control" style="margin-bottom: 15px;">
+                    <select name="payment_status" class="form-control"
+                            style="margin-bottom: 15px;">
                         <option value="PENDING" {% if order.payment_status == 'PENDING' %}selected{% endif %}>Pending</option>
                         <option value="PAID" {% if order.payment_status == 'PAID' %}selected{% endif %}>Paid (Cash/Card)</option>
                         <option value="FAILED" {% if order.payment_status == 'FAILED' %}selected{% endif %}>Failed</option>
                         <option value="REFUNDED" {% if order.payment_status == 'REFUNDED' %}selected{% endif %}>Refunded</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Update Payment</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Update Payment
+                </button>
             </form>
-            
         </div>
-        
     </div>
 </div>
 
 <style>
-    @media print {
-        body * { visibility: hidden; }
-        .admin-sidebar, .admin-header, .alerts { display: none; }
-        #printableBill, #printableBill * { visibility: visible; }
-        #printableBill { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; padding: 0; margin: 0; }
+@media print {
+    @page {
+        size: A4;
+        margin: 12mm;
     }
+
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    #printableBill,
+    #printableBill * {
+        visibility: visible !important;
+    }
+
+    #printableBill {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        box-sizing: border-box !important;
+        color: black !important;
+        background: white !important;
+    }
+
+    .no-print,
+    .admin-sidebar,
+    .admin-header,
+    .alerts,
+    nav,
+    aside,
+    footer {
+        display: none !important;
+    }
+
+    #printableBill table {
+        page-break-inside: auto;
+    }
+
+    #printableBill tr {
+        page-break-inside: avoid;
+    }
+}
 </style>
 {% endblock %}
