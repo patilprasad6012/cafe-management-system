@@ -16,7 +16,7 @@ class CafeAIAssistant:
         )
 
     def _get_menu_context(self):
-        """Get available food items from the cafe database."""
+       
 
         items = MenuItem.query.filter_by(
             is_available=True,
@@ -43,6 +43,7 @@ class CafeAIAssistant:
 
         return "\n".join(menu_items)
 
+   
     def get_menu_cards(self):
         """Return real menu items for the visual menu-card UI."""
 
