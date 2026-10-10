@@ -43,6 +43,32 @@ class CafeAIAssistant:
 
         return "\n".join(menu_items)
 
+    def get_menu_cards(self):
+        """Return real menu items for the visual menu-card UI."""
+
+        items = MenuItem.query.filter_by(
+            is_available=True,
+            is_active=True
+        ).all()
+
+        menu = []
+
+        for item in items:
+            menu.append({
+                "id": item.id,
+                "name": item.name,
+                "category": (
+                    item.category.name
+                    if item.category else "Other"
+                ),
+                "price": float(item.price),
+                "description": item.description or "",
+                "veg_type": item.veg_type,
+                "image_path": item.image_path or ""
+            })
+
+        return menu
+
     def get_response(self, user_message):
         """Generate a response using the Gemini API."""
 
