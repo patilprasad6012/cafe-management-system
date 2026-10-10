@@ -134,30 +134,111 @@
         return output.join('');
     }
 
-    function addMessage(text, isUser) {
-        const wrapper = document.createElement('div');
-        wrapper.className = isUser ? 'chat-message user-message' : 'chat-message bot-message';
+    
+function addMessage(text, isUser) {
+    const wrapper = document.createElement('div');
+    wrapper.className = isUser
+        ? 'chat-message user-message'
+        : 'chat-message bot-message';
 
-        if (isUser) {
-            const bubble = document.createElement('div');
-            bubble.className = 'chat-bubble user-bubble';
-            bubble.textContent = text;
-            wrapper.appendChild(bubble);
+    if (isUser) {
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble user-bubble';
+        bubble.textContent = text;
+        wrapper.appendChild(bubble);
+    } else {
+        const avatar = document.createElement('div');
+        avatar.className = 'chat-avatar';
+        avatar.innerHTML = "<i class='bx bx-bot'></i>";
+
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble bot-bubble';
+        bubble.innerHTML = formatMarkdown(text);
+
+        wrapper.append(avatar, bubble);
+    }
+
+    chatBox.appendChild(wrapper);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function addMenuMessage(data) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'menu-response';
+
+    const heading = document.createElement('div');
+    heading.className = 'menu-intro';
+    heading.textContent = data.response || 'Welcome to King Cafe!';
+
+    const list = document.createElement('div');
+    list.className = 'menu-card-list';
+
+    const staticBase = {{ url_for('static', filename='') | tojson }};
+
+    if (!data.items || data.items.length === 0) {
+        list.textContent = 'No available items match your request.';
+    }
+
+    (data.items || []).forEach(item => {
+        const card = document.createElement('article');
+        card.className = 'menu-item-card';
+
+        const image = document.createElement('img');
+        image.className = 'menu-item-image';
+        image.alt = item.name;
+        image.loading = 'lazy';
+
+        const path = String(item.image_path || '').replace(/\\/g, '/');
+
+        if (path && !path.startsWith('/') && !path.includes('..')) {
+            image.src = staticBase + path.replace(/^static\//, '');
         } else {
-            const avatar = document.createElement('div');
-            avatar.className = 'chat-avatar';
-            avatar.innerHTML = "<i class='bx bx-bot'></i>";
-
-            const bubble = document.createElement('div');
-            bubble.className = 'chat-bubble bot-bubble';
-            bubble.innerHTML = formatMarkdown(text);
-
-            wrapper.append(avatar, bubble);
+            image.src = staticBase + 'images/food-placeholder.png';
         }
 
-        chatBox.appendChild(wrapper);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
+        image.onerror = () => {
+            image.onerror = null;
+            image.style.display = 'none';
+        };
+
+        const details = document.createElement('div');
+        details.className = 'menu-item-details';
+
+        const title = document.createElement('h4');
+        title.textContent = item.name;
+
+        const description = document.createElement('p');
+        description.className = 'menu-item-description';
+        description.textContent = item.description || item.category;
+
+        const badge = document.createElement('span');
+        badge.className = 'veg-badge';
+        badge.textContent = item.veg_type === 'veg'
+            ? '🌿 Vegetarian'
+            : 'Non-Vegetarian';
+
+        const price = document.createElement('strong');
+        price.className = 'menu-item-price';
+        price.textContent = '₹' + Number(item.price).toLocaleString(
+            'en-IN',
+            { minimumFractionDigits: 0, maximumFractionDigits: 2 }
+        );
+
+        details.append(title, description, badge);
+        card.append(image, details, price);
+        list.appendChild(card);
+    });
+
+    const footer = document.createElement('div');
+    footer.className = 'menu-footer';
+    footer.innerHTML =
+        '<strong>🌿 Fresh choices at King Cafe</strong>' +
+        '<p>What would you like to try today?</p>';
+
+    wrapper.append(heading, list, footer);
+    chatBox.appendChild(wrapper);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 
     function addTypingIndicator() {
         removeTypingIndicator();
@@ -223,9 +304,13 @@
                     `The request failed (${response.status}). Please try again.`,
                     false
                 );
-            } else if (data.response) {
-                addMessage(data.response, false);
-            } else {
+            } else if (data.type === 'menu') {
+    addMenuMessage(data);
+} else if (data.response) {
+    addMessage(data.response, false);
+} else {
+    addMessage('Sorry, I could not generate a reply.', false);
+}else {
                 addMessage('Sorry, I could not generate a reply. Please try again.', false);
             }
         } catch (error) {
@@ -411,5 +496,112 @@
             animation: none;
         }
     }
+    
+.menu-response {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 18px;
+    background: #fffcf7;
+    border: 1px solid #eee2d6;
+    border-radius: 18px;
+    color: #292522;
+    animation: chatEnter .25s ease-out;
+}
+
+.menu-intro {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+.menu-card-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item-card {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: start;
+    padding: 18px 0;
+    border-top: 1px solid #e9dace;
+}
+
+.menu-item-image {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 9px;
+    background: #f1e8de;
+}
+
+.menu-item-details {
+    min-width: 0;
+}
+
+.menu-item-details h4 {
+    margin: 0 0 8px;
+    font-size: .96rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.menu-item-description {
+    margin: 0 0 8px;
+    color: #796b60;
+    font-size: .84rem;
+    line-height: 1.5;
+}
+
+.menu-item-price {
+    color: #634635;
+    white-space: nowrap;
+    font-size: .94rem;
+}
+
+.veg-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: #dcf5e3;
+    color: #16803d;
+    font-size: .72rem;
+    font-weight: 600;
+}
+
+.menu-footer {
+    padding: 14px;
+    border-radius: 10px;
+    background: #f1e8de;
+    font-size: .9rem;
+}
+
+.menu-footer p {
+    margin: 7px 0 0;
+    color: #6d5b4e;
+}
+
+@media (max-width: 480px) {
+    .menu-response {
+        padding: 12px;
+    }
+
+    .menu-item-card {
+        grid-template-columns: 68px minmax(0, 1fr);
+        gap: 10px;
+    }
+
+    .menu-item-image {
+        width: 68px;
+        height: 68px;
+    }
+
+    .menu-item-price {
+        grid-column: 2;
+        grid-row: 2;
+    }
+}
+
 </style>
 {% endblock %}
