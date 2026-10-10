@@ -1,93 +1,113 @@
 {% extends 'base.html' %}
-
 {% block title %}Digital Menu - King Cafe{% endblock %}
-
 {% block body %}
-<!-- Header / Navbar -->
-<header style="background: var(--surface-color); padding: 15px 20px; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
-    <a href="{{ url_for('customer.dashboard') }}" class="brand-logo" style="font-size: 1.5rem;">
-        <i class='bx bx-coffee'></i> King Cafe
-    </a>
-    <div style="display: flex; gap: 15px; align-items: center;">
-        <a href="{{ url_for('customer.cart') }}" style="position: relative; color: var(--secondary-color);">
-            <i class='bx bx-shopping-bag' style="font-size: 1.8rem;"></i>
-            {% if session.get('cart') %}
-                <span style="position: absolute; top: -5px; right: -5px; background: var(--accent-color); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold;">
-                    {{ session['cart']|length }}
-                </span>
-            {% endif %}
-        </a>
-    </div>
+<header style="background:var(--surface-color);padding:15px 20px;box-shadow:var(--shadow-sm);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;">
+  <a href="{{ url_for('customer.dashboard') }}" class="brand-logo" style="font-size:1.5rem;"><i class='bx bx-coffee'></i> King Cafe</a>
+  <a href="{{ url_for('customer.cart') }}" style="position:relative;color:var(--secondary-color);"><i class='bx bx-shopping-bag' style="font-size:1.8rem;"></i>
+  {% if session.get('cart') %}<span style="position:absolute;top:-5px;right:-5px;background:var(--accent-color);color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:bold;">{{ session['cart']|length }}</span>{% endif %}</a>
 </header>
+<div class="container mt-4" style="padding-bottom:80px;">
+  {% if session.get('table_number') %}
+  <div style="text-align:center;margin-bottom:20px;color:var(--text-muted);font-size:.9rem;">Ordering for <strong>Table {{ session.get('table_number') }}</strong></div>
+  {% else %}
+  <div class="alert alert-warning" style="text-align:center;">You haven't scanned a table QR code. You can browse the menu, but cannot place an order yet.</div>
+  {% endif %}
+  <div class="alerts">{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="alert alert-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}</div>
 
-<div class="container mt-4" style="padding-bottom: 80px;">
-    {% if session.get('table_number') %}
-        <div style="text-align: center; margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem;">
-            Ordering for <strong>Table {{ session.get('table_number') }}</strong>
-        </div>
-    {% else %}
-        <div class="alert alert-warning" style="text-align: center;">
-            You haven't scanned a table QR code. You can browse the menu, but cannot place an order yet.
-        </div>
-    {% endif %}
+  <div id="categoryFilters" class="category-filters" role="group" aria-label="Filter menu by category">
+    <button type="button" class="category-filter active" data-category="all" aria-pressed="true">All</button>
+    {% for cat in categories %}<button type="button" class="category-filter" data-category="{{ cat.id }}" aria-pressed="false">{{ cat.name }}</button>{% endfor %}
+  </div>
 
-    <div class="alerts">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-    </div>
-
-    <!-- Category Filter -->
-    <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none;">
-        <div style="background: var(--primary-color); color: white; padding: 8px 16px; border-radius: var(--radius-pill); white-space: nowrap; font-weight: 500;">All</div>
-        {% for cat in categories %}
-            <div style="background: var(--surface-color); color: var(--text-main); padding: 8px 16px; border-radius: var(--radius-pill); white-space: nowrap; border: 1px solid var(--border-color); font-weight: 500;">{{ cat.name }}</div>
-        {% endfor %}
-    </div>
-
-    <!-- Food Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
-        {% for item in items %}
-        <div class="hover-card animate-fade-up delay-{{ loop.index0 % 4 * 100 + 100 }}" style="background: var(--surface-color); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
-            {% if item.image_path %}
-                <img src="{{ url_for('static', filename=item.image_path) }}" alt="{{ item.name }}" style="width: 100%; height: 200px; object-fit: cover;">
-            {% else %}
-                <div style="width: 100%; height: 200px; background: #EFE5D9; display: flex; align-items: center; justify-content: center;">
-                    <i class='bx bx-food-menu' style="font-size: 4rem; color: var(--text-muted); opacity: 0.5;"></i>
-                </div>
-            {% endif %}
-            
-            <div style="padding: 20px; flex: 1; display: flex; flex-direction: column;">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                    <h3 style="font-size: 1.2rem;">{{ item.name }}</h3>
-                    <div style="width: 15px; height: 15px; border: 1px solid {% if item.veg_type == 'veg' %}green{% else %}red{% endif %}; display: flex; align-items: center; justify-content: center; padding: 2px;">
-                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {% if item.veg_type == 'veg' %}green{% else %}red{% endif %};"></div>
-                    </div>
-                </div>
-                
-                <p style="color: var(--text-muted); font-size: 0.9rem; flex: 1; margin-bottom: 15px; line-height: 1.4;">{{ item.description }}</p>
-                
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 1.2rem; font-weight: 700; color: var(--secondary-color);">₹{{ item.price }}</span>
-                    
-                    <form method="POST" action="{{ url_for('customer.cart') }}" style="margin: 0;">
-                        <input type="hidden" name="item_id" value="{{ item.id }}">
-                        <input type="hidden" name="action" value="add">
-                        <button type="submit" class="btn btn-primary" style="padding: 8px 16px; width: auto; font-size: 0.9rem;">Add +</button>
-                    </form>
-                </div>
-            </div>
+  <div id="foodGrid" class="food-grid">
+    {% for item in items %}
+    <article class="food-card hover-card" data-category-id="{{ item.category_id if item.category_id is not none else '' }}">
+      {% if item.image_path %}
+      <img src="{{ url_for('static', filename=item.image_path) }}" alt="{{ item.name }}" class="food-card-image" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="food-card-placeholder" style="display:none;"><i class='bx bx-food-menu'></i><span>Image unavailable</span></div>
+      {% else %}
+      <div class="food-card-placeholder"><i class='bx bx-food-menu'></i><span>No image available</span></div>
+      {% endif %}
+      <div class="food-card-content">
+        <div class="food-card-heading"><h3>{{ item.name }}</h3><span class="food-type-indicator {{ 'veg' if item.veg_type == 'veg' else 'nonveg' }}" title="{{ 'Vegetarian' if item.veg_type == 'veg' else 'Non-vegetarian' }}"><span></span></span></div>
+        <p class="food-card-description">{{ item.description or 'Freshly prepared at King Cafe.' }}</p>
+        <div class="food-card-footer"><span class="food-card-price">₹{{ "%.2f"|format(item.price|float) }}</span>
+          <form method="POST" action="{{ url_for('customer.cart') }}" class="add-to-cart-form"><input type="hidden" name="item_id" value="{{ item.id }}"><input type="hidden" name="action" value="add"><button type="submit" class="btn btn-primary add-to-cart-button">Add +</button></form>
         </div>
-        {% else %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: var(--text-muted);">
-            <i class='bx bx-sad' style="font-size: 3rem; margin-bottom: 10px;"></i>
-            <p>No food items are currently available.</p>
-        </div>
-        {% endfor %}
-    </div>
+      </div>
+    </article>
+    {% else %}<div class="menu-empty" id="serverEmptyState"><i class='bx bx-sad'></i><p>No food items are currently available.</p></div>{% endfor %}
+  </div>
+  <div id="filterEmptyState" class="menu-empty" hidden><i class='bx bx-search-alt'></i><p>No available items in this category yet.</p><button type="button" id="resetFilters" class="btn btn-primary">Show all items</button></div>
 </div>
+
+<style>
+.category-filters{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 14px;margin-bottom:12px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.category-filter{flex:0 0 auto;border:1px solid var(--border-color);background:var(--surface-color);color:var(--text-main);border-radius:var(--radius-pill);padding:9px 16px;white-space:nowrap;font:inherit;font-size:.9rem;cursor:pointer;transition:all .2s ease}
+.category-filter:hover{transform:translateY(-1px);border-color:var(--primary-color)}
+.category-filter.active{background:var(--primary-color);border-color:var(--primary-color);color:#fff}
+.food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:20px}
+.food-card{min-width:0;background:var(--surface-color);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;transition:transform .2s ease,box-shadow .2s ease}
+.food-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.food-card[hidden]{display:none!important}
+.food-card-image,.food-card-placeholder{width:100%;height:190px;object-fit:cover;background:#efe5d9}
+.food-card-placeholder{box-sizing:border-box;color:var(--text-muted);display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center}
+.food-card-placeholder i{font-size:3rem;opacity:.6}.food-card-placeholder span{font-size:.8rem}
+.food-card-content{padding:18px;flex:1;display:flex;flex-direction:column}
+.food-card-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.food-card-heading h3{margin:0;font-size:1.05rem;overflow-wrap:anywhere}
+.food-type-indicator{width:14px;height:14px;border:1px solid currentColor;display:inline-flex;flex:0 0 14px;align-items:center;justify-content:center;margin-top:3px}
+.food-type-indicator span{width:7px;height:7px;border-radius:50%;background:currentColor}
+.food-type-indicator.veg{color:#16803d}.food-type-indicator.nonveg{color:#dc2626}
+.food-card-description{color:var(--text-muted);font-size:.88rem;line-height:1.5;margin:0 0 16px;flex:1}
+.food-card-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:auto}
+.food-card-price{font-size:1.1rem;font-weight:700;color:var(--secondary-color)}
+.add-to-cart-form{margin:0}.add-to-cart-button{width:auto;padding:8px 15px;font-size:.88rem;white-space:nowrap}
+.menu-empty{grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--text-muted)}.menu-empty[hidden]{display:none!important}
+.menu-empty>i{display:block;font-size:3rem;margin-bottom:10px}
+@media(max-width:560px){.food-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.food-card-image,.food-card-placeholder{height:135px}.food-card-content{padding:12px}.food-card-heading h3{font-size:.94rem}.food-card-description{font-size:.8rem}.food-card-price{font-size:1rem}.add-to-cart-button{padding:7px 10px;font-size:.8rem}}
+@media(max-width:360px){.food-grid{grid-template-columns:1fr}.food-card-image,.food-card-placeholder{height:180px}}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const filters = document.getElementById('categoryFilters');
+  const grid = document.getElementById('foodGrid');
+  const emptyState = document.getElementById('filterEmptyState');
+  const resetButton = document.getElementById('resetFilters');
+  if (!filters || !grid || !emptyState) return;
+
+  const buttons = Array.from(filters.querySelectorAll('.category-filter'));
+  const cards = Array.from(grid.querySelectorAll('.food-card'));
+
+  function applyFilter(category) {
+    let visibleCount = 0;
+    cards.forEach(card => {
+      const itemCategory = card.dataset.categoryId || '';
+      const show = category === 'all' || itemCategory === category;
+      card.hidden = !show;
+      if (show) visibleCount++;
+    });
+
+    buttons.forEach(button => {
+      const active = button.dataset.category === category;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+
+    emptyState.hidden = visibleCount > 0;
+    const serverEmpty = document.getElementById('serverEmptyState');
+    if (serverEmpty) serverEmpty.hidden = cards.length > 0;
+  }
+
+  filters.addEventListener('click', event => {
+    const button = event.target.closest('.category-filter');
+    if (!button || !filters.contains(button)) return;
+    applyFilter(button.dataset.category);
+  });
+
+  if (resetButton) resetButton.addEventListener('click', () => applyFilter('all'));
+  applyFilter('all');
+});
+</script>
 {% endblock %}
