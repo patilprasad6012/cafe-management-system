@@ -65,25 +65,45 @@
                     <span style="color: var(--text-muted);">Archived</span>
                     {% endif %}
                 </td>
-                <td style="padding: 15px 10px; display: flex; gap: 10px;">
-                    
-                    <a href="{{ url_for('menu.edit_food', item_id=item.id) }}"
-                       class="btn"
-                       style="display:inline-block; padding:7px 14px; margin-right:8px;
-                              border:1px solid #2563eb; color:#2563eb;
-                              border-radius:20px; text-decoration:none;">
-                        <i class="bx bx-edit"></i> Edit
-                    </a>
-
-                    {% if item.is_active %}
-                    <a href="{{ url_for('menu.archive_food', item_id=item.id) }}" class="btn btn-outline"
-                        style="padding: 6px 12px; font-size: 0.8rem; width: auto; color: #dc2626; border-color: #dc2626;"
-                        onclick="return confirm('Are you sure you want to archive this item?');">Archive</a>
-                    {% else %}
-                    <a href="{{ url_for('menu.restore_food', item_id=item.id) }}" class="btn btn-outline"
-                        style="padding: 6px 12px; font-size: 0.8rem; width: auto; color: var(--accent-color); border-color: var(--accent-color);">Restore</a>
-                    {% endif %}
+                
+                <td style="padding: 15px 10px; white-space: nowrap;">
+                    <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px;">
+                
+                        <a href="{{ url_for('menu.edit_food', item_id=item.id) }}"
+                           style="display: inline-flex; align-items: center; gap: 6px;
+                                  padding: 8px 14px; border: 1px solid #1683ff;
+                                  color: #1683ff; background: transparent;
+                                  border-radius: 22px; text-decoration: none;
+                                  font-size: 13px; font-weight: 500; white-space: nowrap;">
+                            <i class="bx bx-edit"></i> Edit
+                        </a>
+                
+                        {% if item.is_active %}
+                        <a href="{{ url_for('menu.archive_food', item_id=item.id) }}"
+                           style="display: inline-flex; align-items: center;
+                                  justify-content: center; padding: 8px 14px;
+                                  border: 1px solid #e5e7eb; color: #9ca3af;
+                                  background: transparent; border-radius: 22px;
+                                  text-decoration: none; font-size: 13px;
+                                  white-space: nowrap;"
+                           onclick="return confirm('Are you sure you want to archive this item?');">
+                            Archive
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('menu.restore_food', item_id=item.id) }}"
+                           style="display: inline-flex; align-items: center;
+                                  justify-content: center; padding: 8px 14px;
+                                  border: 1px solid #1683ff; color: #1683ff;
+                                  background: transparent; border-radius: 22px;
+                                  text-decoration: none; font-size: 13px;
+                                  white-space: nowrap;">
+                            Restore
+                        </a>
+                        {% endif %}
+                
+                    </div>
                 </td>
+
             </tr>
             {% else %}
             <tr>
