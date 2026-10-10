@@ -240,14 +240,58 @@ def order_history():
 def ai_assistant():
     if request.method == 'POST':
         data = request.get_json(silent=True) or {}
-        user_message = data.get('message')
+        user_message = (data.get('message') or '').strip()
 
         if not user_message:
             return jsonify({'error': 'Message is required'}), 400
 
+        # Show real database menu cards for menu requests.
+        menu_request = any(
+            phrase in user_message.lower()
+            for phrase in [
+                'show menu',
+                'show me the menu',
+                'display menu',
+                'view menu',
+                'menu please',
+                'show manu'
+            ]
+        )
+
+        if menu_request:
+            items = MenuItem.query.filter_by(
+                is_active=True,
+                is_available=True
+            ).all()
+
+            menu = []
+            for item in items:
+                menu.append({
+                    'id': item.id,
+                    'name': item.name,
+                    'category': (
+                        item.category.name
+                        if item.category else 'Other'
+                    ),
+                    'price': float(item.price),
+                    'description': item.description or '',
+                    'veg_type': item.veg_type or 'veg',
+                    'image_path': item.image_path or ''
+                })
+
+            return jsonify({
+                'type': 'menu',
+                'response': 'Welcome to King Cafe! Here is our current menu.',
+                'items': menu
+            })
+
+        # Use Gemini for other questions.
         ai = CafeAIAssistant()
         response = ai.get_response(user_message)
 
-        return jsonify({'response': response})
+        return jsonify({
+            'type': 'text',
+            'response': response
+        })
 
     return render_template('customer/ai_assistant.html')
