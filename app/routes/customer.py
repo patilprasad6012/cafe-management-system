@@ -234,64 +234,71 @@ def order_history():
     )
 
 
-# AI Assistant
+
 @customer_bp.route('/ai-assistant', methods=['GET', 'POST'])
 @login_required
 def ai_assistant():
     if request.method == 'POST':
         data = request.get_json(silent=True) or {}
-        user_message = (data.get('message') or '').strip()
+        message = (data.get('message') or '').strip()
 
-        if not user_message:
+        if not message:
             return jsonify({'error': 'Message is required'}), 400
 
-        # Show real database menu cards for menu requests.
-        menu_request = any(
-            phrase in user_message.lower()
-            for phrase in [
-                'show menu',
-                'show me the menu',
-                'display menu',
-                'view menu',
-                'menu please',
-                'show manu'
-            ]
+        text = message.lower()
+        budget_match = __import__('re').search(
+            r'(?:under|below|less than|within|budget of)\s*₹?\s*(\d+)',
+            text
         )
 
-        if menu_request:
-            items = MenuItem.query.filter_by(
+        asks_menu = any(word in text for word in [
+            'menu', 'show manu', 'show food', 'food items',
+            'pizzas', 'coffee', 'vegetarian', 'veg food',
+            'recommend food', 'suggest food'
+        ])
+
+        if asks_menu or budget_match:
+            query = MenuItem.query.filter_by(
                 is_active=True,
                 is_available=True
-            ).all()
+            )
 
-            menu = []
-            for item in items:
-                menu.append({
-                    'id': item.id,
-                    'name': item.name,
-                    'category': (
-                        item.category.name
-                        if item.category else 'Other'
-                    ),
-                    'price': float(item.price),
-                    'description': item.description or '',
-                    'veg_type': item.veg_type or 'veg',
-                    'image_path': item.image_path or ''
-                })
+            if any(word in text for word in [
+                'vegetarian', 'vegetarian food', 'veg food',
+                'veg items', 'pure veg'
+            ]):
+                query = query.filter(MenuItem.veg_type == 'veg')
+
+            if budget_match:
+                budget = float(budget_match.group(1))
+                query = query.filter(MenuItem.price <= budget)
+
+            items = query.order_by(MenuItem.name.asc()).all()
+
+            menu = [{
+                'id': item.id,
+                'name': item.name,
+                'category': item.category.name if item.category else 'Other',
+                'price': float(item.price),
+                'description': item.description or '',
+                'veg_type': item.veg_type or 'veg',
+                'image_path': item.image_path or ''
+            } for item in items]
 
             return jsonify({
                 'type': 'menu',
-                'response': 'Welcome to King Cafe! Here is our current menu.',
+                'response': (
+                    f"Here are our available items under ₹{budget_match.group(1)}."
+                    if budget_match else
+                    "Welcome to King Cafe! Here is our current menu."
+                ),
                 'items': menu
             })
 
-        # Use Gemini for other questions.
         ai = CafeAIAssistant()
-        response = ai.get_response(user_message)
-
         return jsonify({
             'type': 'text',
-            'response': response
+            'response': ai.get_response(message)
         })
 
     return render_template('customer/ai_assistant.html')
