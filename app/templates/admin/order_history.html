@@ -69,13 +69,26 @@
                 </td>
                 
                 <td style="padding: 10px;">
+                  
                     <a href="{{ url_for('admin.generate_bill', order_id=order.id) }}"
-                       target="_blank"
-                       class="btn btn-primary"
-                       style="display: inline-flex; align-items: center; gap: 6px;
-                              padding: 8px 14px; border-radius: 20px;
-                              text-decoration: none; white-space: nowrap;">
-                        <i class="bx bx-printer"></i> Print Bill
+                       class="no-print"
+                       style="display: inline-flex;
+                              align-items: center;
+                              justify-content: center;
+                              gap: 7px;
+                              width: auto;
+                              padding: 8px 16px;
+                              margin: 4px 0;
+                              background: #5c4033;
+                              color: white;
+                              border: none;
+                              border-radius: 8px;
+                              font-size: 13px;
+                              font-weight: 600;
+                              text-decoration: none;
+                              white-space: nowrap;">
+                        <i class="bx bx-printer"></i>
+                        Print Bill
                     </a>
                 </td>
 
