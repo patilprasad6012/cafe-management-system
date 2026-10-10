@@ -199,6 +199,7 @@ function addMenuMessage(data) {
         image.onerror = () => {
             image.onerror = null;
             image.style.display = 'none';
+            card.classList.add('no-image');
         };
 
         const details = document.createElement('div');
@@ -497,40 +498,48 @@ function addMenuMessage(data) {
     
 .menu-response {
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
-    padding: 18px;
+    padding: 14px 16px;
     background: #fffcf7;
     border: 1px solid #eee2d6;
-    border-radius: 18px;
+    border-radius: 16px;
     color: #292522;
     animation: chatEnter .25s ease-out;
 }
 
 .menu-intro {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 18px;
+    font-size: .95rem;
+    line-height: 1.5;
+    margin-bottom: 8px;
 }
 
 .menu-card-list {
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .menu-item-card {
     display: grid;
-    grid-template-columns: 90px minmax(0, 1fr) auto;
-    gap: 10px;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: 11px;
     align-items: start;
-    padding: 18px 0;
+    padding: 13px 0;
     border-top: 1px solid #e9dace;
+    min-width: 0;
+}
+
+.menu-item-card.no-image {
+    grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .menu-item-image {
-    width: 90px;
-    height: 90px;
+    display: block;
+    width: 72px;
+    height: 72px;
     object-fit: cover;
-    border-radius: 9px;
+    border-radius: 8px;
     background: #f1e8de;
 }
 
@@ -539,44 +548,49 @@ function addMenuMessage(data) {
 }
 
 .menu-item-details h4 {
-    margin: 0 0 8px;
-    font-size: .96rem;
-    line-height: 1.4;
+    margin: 1px 0 5px;
+    font-size: .92rem;
+    line-height: 1.35;
     overflow-wrap: anywhere;
 }
 
 .menu-item-description {
-    margin: 0 0 8px;
+    margin: 0 0 6px;
     color: #796b60;
-    font-size: .84rem;
-    line-height: 1.5;
+    font-size: .81rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
 }
 
 .menu-item-price {
     color: #634635;
     white-space: nowrap;
-    font-size: .94rem;
+    font-size: .9rem;
+    font-weight: 700;
+    padding-top: 2px;
 }
 
 .veg-badge {
     display: inline-block;
-    padding: 4px 8px;
+    padding: 3px 7px;
     border-radius: 20px;
     background: #dcf5e3;
     color: #16803d;
-    font-size: .72rem;
+    font-size: .68rem;
+    line-height: 1.35;
     font-weight: 600;
 }
 
 .menu-footer {
-    padding: 14px;
-    border-radius: 10px;
+    margin-top: 8px;
+    padding: 11px 12px;
+    border-radius: 9px;
     background: #f1e8de;
-    font-size: .9rem;
+    font-size: .86rem;
 }
 
 .menu-footer p {
-    margin: 7px 0 0;
+    margin: 5px 0 0;
     color: #6d5b4e;
 }
 
@@ -586,18 +600,30 @@ function addMenuMessage(data) {
     }
 
     .menu-item-card {
-        grid-template-columns: 68px minmax(0, 1fr);
-        gap: 10px;
+        grid-template-columns: 64px minmax(0, 1fr) auto;
+        gap: 9px;
+        padding: 12px 0;
+    }
+
+    .menu-item-card.no-image {
+        grid-template-columns: minmax(0, 1fr) auto;
     }
 
     .menu-item-image {
-        width: 68px;
-        height: 68px;
+        width: 64px;
+        height: 64px;
+    }
+
+    .menu-item-details h4 {
+        font-size: .88rem;
+    }
+
+    .menu-item-description {
+        font-size: .78rem;
     }
 
     .menu-item-price {
-        grid-column: 2;
-        grid-row: 2;
+        font-size: .85rem;
     }
 }
 
