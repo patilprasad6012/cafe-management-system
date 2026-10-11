@@ -233,6 +233,48 @@ def order_history():
         orders=orders
     )
 
+# Cancel Customer Order
+@customer_bp.route('/cancel-order/<int:order_id>', methods=['POST'])
+@login_required
+def cancel_order(order_id):
+    order = Order.query.filter_by(
+        id=order_id,
+        customer_id=session['user_id']
+    ).first_or_404()
+
+    # Customers can cancel only before admin approval
+    if order.status != 'PENDING_ADMIN_REVIEW':
+        flash(
+            'This order can no longer be cancelled online. '
+            'Please contact cafe staff for assistance.',
+            'error'
+        )
+        return redirect(url_for('customer.track_orders'))
+
+    # Do not silently cancel paid orders without handling a refund
+    if order.payment_status == 'PAID':
+        flash(
+            'This order has already been paid. Please contact cafe staff '
+            'to cancel it and arrange any applicable refund.',
+            'error'
+        )
+        return redirect(url_for('customer.track_orders'))
+
+    order.status = 'CANCELLED'
+
+    history = OrderStatusHistory(
+        order_id=order.id,
+        status='CANCELLED'
+    )
+    db.session.add(history)
+    db.session.commit()
+
+    flash(
+        f'Order #{order.id} has been cancelled successfully.',
+        'success'
+    )
+    return redirect(url_for('customer.track_orders'))
+
 
 
 @customer_bp.route('/ai-assistant', methods=['GET', 'POST'])
