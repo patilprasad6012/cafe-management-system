@@ -193,11 +193,38 @@
             transform: translateY(0) scale(0.98);
             box-shadow: 0 2px 10px rgba(214, 48, 49, 0.4) !important;
         }
+        
+/* Keep admin sidebar fixed while page scrolls */
+.admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 310px; /* Match your existing sidebar width */
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+/* Allow only the main content to scroll */
+.admin-main,
+.admin-content,
+.main-content {
+    margin-left: 310px; /* Match sidebar width */
+    min-width: 0;
+}
+
+/* Optional: hide the sidebar scrollbar */
+.admin-sidebar::-webkit-scrollbar {
+    width: 0;
+}
+
     </style>
 </head>
 
 <body>
-    ```html
+   
 <div class="admin-layout">
     <aside class="admin-sidebar">
         <div class="admin-brand">
