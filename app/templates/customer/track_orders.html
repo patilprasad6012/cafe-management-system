@@ -537,6 +537,35 @@
                 </div>
             </div>
 
+            {% if order.status == 'PENDING_ADMIN_REVIEW'
+                  and order.payment_status != 'PAID' %}
+
+            <form method="POST"
+                  action="{{ url_for('customer.cancel_order', order_id=order.id) }}"
+                  onsubmit="return confirm('Are you sure you want to cancel Order #{{ order.id }}?');"
+                  style="margin: 0 25px 22px;">
+
+                <button type="submit"
+                        style="background: #fff;
+                               color: #dc2626;
+                               border: 1px solid #dc2626;
+                               border-radius: 8px;
+                               padding: 9px 16px;
+                               font-weight: 600;
+                               cursor: pointer;">
+                    <i class="bx bx-x-circle"></i>
+                    Cancel Order
+                </button>
+            </form>
+
+            {% elif order.status == 'CANCELLED' %}
+
+            <p style="color: #dc2626; font-weight: 600; margin: 0 25px 22px;">
+                <i class="bx bx-x-circle"></i> Order Cancelled
+            </p>
+
+            {% endif %}
+
         </div>
 
         {% endfor %}
