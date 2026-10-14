@@ -23,7 +23,7 @@
     {% for item in items %}
     <article class="food-card hover-card" data-category-id="{{ item.category_id if item.category_id is not none else '' }}">
       {% if item.image_path %}
-      <img src="{{ url_for('static', filename=item.image_path) }}" alt="{{ item.name }}" class="food-card-image" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <img src="{{ url_for('menu.uploaded_food_image', filename=item.image_path.replace('\\', '/').split('/')[-1]) }}" alt="{{ item.name }}" class="food-card-image" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div class="food-card-placeholder" style="display:none;"><i class='bx bx-food-menu'></i><span>Image unavailable</span></div>
       {% else %}
       <div class="food-card-placeholder"><i class='bx bx-food-menu'></i><span>No image available</span></div>
