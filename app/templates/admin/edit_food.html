@@ -1,5 +1,6 @@
-
 {% extends 'admin/base_admin.html' %}
+
+{% block page_title %}Edit Food Item{% endblock %}
 
 {% block content %}
 <div class="container" style="max-width: 800px; margin: 30px auto;">
@@ -54,25 +55,29 @@
             Available for customers
         </label>
 
-        <label style="display:block; margin-top:15px;">Change Food Image</label>
-
+        <label style="display:block; margin-top:15px;">Current Food Image</label>
         {% if item.image_path %}
         <div style="margin:10px 0;">
-            <img src="{{ url_for('static', filename=item.image_path) }}"
-                 alt="{{ item.name }}"
-                 style="width:130px;height:100px;object-fit:cover;border-radius:8px;"
-                 onerror="this.style.display='none'">
+            <img
+                src="{{ url_for('menu.uploaded_food_image', filename=item.image_path.replace('\\', '/').split('/')[-1]) }}"
+                alt="{{ item.name }}"
+                style="width:130px;height:100px;object-fit:cover;border-radius:8px;"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <p style="display:none;color:#b91c1c;font-size:.9rem;">Image file not found. Please upload the image again.</p>
         </div>
+        {% else %}
+        <p style="color:#777;font-size:.9rem;">No image has been uploaded for this item.</p>
         {% endif %}
 
+        <label style="display:block; margin-top:15px;">Change Food Image (optional)</label>
         <input type="file" name="image"
-               accept=".png,.jpg,.jpeg,.webp" class="form-control">
+               accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
+               class="form-control">
 
         <div style="display:flex; gap:12px; margin-top:25px;">
             <button type="submit" class="btn btn-primary">
                 <i class="bx bx-save"></i> Save Changes
             </button>
-
             <a href="{{ url_for('menu.manage_menu') }}"
                class="btn btn-secondary">
                 Cancel
