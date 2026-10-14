@@ -7,14 +7,11 @@
     <div style="display: flex; gap: 10px;">
         <button class="btn btn-primary" onclick="document.getElementById('addFoodModal').style.display='block'"
             style="width: auto;">+ Add New Food</button>
-        <a href="{{ url_for('menu.manage_categories') }}" class="btn btn-outline" style="width: auto;">Manage
-            Categories</a>
+        <a href="{{ url_for('menu.manage_categories') }}" class="btn btn-outline" style="width: auto;">Manage Categories</a>
     </div>
 </div>
 
-<!-- Menu Table -->
-<div
-    style="background: var(--surface-color); padding: 25px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow-x: auto;">
+<div style="background: var(--surface-color); padding: 25px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow-x: auto;">
     <table style="width: 100%; text-align: left; border-collapse: collapse;">
         <thead>
             <tr style="border-bottom: 2px solid var(--border-color);">
@@ -28,21 +25,28 @@
         </thead>
         <tbody>
             {% for item in items %}
-            <tr
-                style="border-bottom: 1px solid var(--border-color); {% if not item.is_active %}opacity: 0.6;{% endif %}">
-                <td style="padding: 15px 10px; display: flex; align-items: center; gap: 15px;">
-                    {% if item.image_path %}
-                    <img src="{{ url_for('static', filename=item.image_path) }}" alt="{{ item.name }}"
-                        style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
-                    {% else %}
-                    <div
-                        style="width: 40px; height: 40px; border-radius: 8px; background: var(--background-light); display: flex; align-items: center; justify-content: center;">
-                        <i class='bx bx-food-menu' style="color: var(--text-muted);"></i></div>
-                    {% endif %}
-                    <div>
-                        <div style="font-weight: 600;">{{ item.name }}</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">{{ 'Veg' if item.veg_type == 'veg'
-                            else 'Non-Veg' }}</div>
+            <tr style="border-bottom: 1px solid var(--border-color); {% if not item.is_active %}opacity: 0.6;{% endif %}">
+                <td style="padding: 15px 10px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        {% if item.image_path %}
+                        <img
+                            src="{{ url_for('menu.uploaded_food_image', filename=item.image_path.replace('\\', '/').split('/')[-1]) }}"
+                            alt="{{ item.name }}"
+                            loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                            style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                        <div style="display:none;width:40px;height:40px;border-radius:8px;background:var(--background-light);align-items:center;justify-content:center;">
+                            <i class='bx bx-food-menu' style="color:var(--text-muted);"></i>
+                        </div>
+                        {% else %}
+                        <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--background-light); display: flex; align-items: center; justify-content: center;">
+                            <i class='bx bx-food-menu' style="color: var(--text-muted);"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <div style="font-weight: 600;">{{ item.name }}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ 'Veg' if item.veg_type == 'veg' else 'Non-Veg' }}</div>
+                        </div>
                     </div>
                 </td>
                 <td style="padding: 15px 10px;">{{ item.category.name if item.category else 'None' }}</td>
@@ -50,11 +54,9 @@
                 <td style="padding: 15px 10px;">
                     <a href="{{ url_for('menu.toggle_availability', item_id=item.id) }}" style="text-decoration: none;">
                         {% if item.is_available %}
-                        <span
-                            style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Available</span>
+                        <span style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Available</span>
                         {% else %}
-                        <span
-                            style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Unavailable</span>
+                        <span style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Unavailable</span>
                         {% endif %}
                     </a>
                 </td>
@@ -65,61 +67,33 @@
                     <span style="color: var(--text-muted);">Archived</span>
                     {% endif %}
                 </td>
-                
                 <td style="padding: 15px 10px; white-space: nowrap;">
                     <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px;">
-                
                         <a href="{{ url_for('menu.edit_food', item_id=item.id) }}"
-                           style="display: inline-flex; align-items: center; gap: 6px;
-                                  padding: 8px 14px; border: 1px solid #1683ff;
-                                  color: #1683ff; background: transparent;
-                                  border-radius: 22px; text-decoration: none;
-                                  font-size: 13px; font-weight: 500; white-space: nowrap;">
+                           style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid #1683ff; color: #1683ff; background: transparent; border-radius: 22px; text-decoration: none; font-size: 13px; font-weight: 500; white-space: nowrap;">
                             <i class="bx bx-edit"></i> Edit
                         </a>
-                
                         {% if item.is_active %}
                         <a href="{{ url_for('menu.archive_food', item_id=item.id) }}"
-                           style="display: inline-flex; align-items: center;
-                                  justify-content: center; padding: 8px 14px;
-                                  border: 1px solid #e5e7eb; color: #9ca3af;
-                                  background: transparent; border-radius: 22px;
-                                  text-decoration: none; font-size: 13px;
-                                  white-space: nowrap;"
-                           onclick="return confirm('Are you sure you want to archive this item?');">
-                            Archive
-                        </a>
+                           style="display: inline-flex; align-items: center; justify-content: center; padding: 8px 14px; border: 1px solid #e5e7eb; color: #9ca3af; background: transparent; border-radius: 22px; text-decoration: none; font-size: 13px; white-space: nowrap;"
+                           onclick="return confirm('Are you sure you want to archive this item?');">Archive</a>
                         {% else %}
                         <a href="{{ url_for('menu.restore_food', item_id=item.id) }}"
-                           style="display: inline-flex; align-items: center;
-                                  justify-content: center; padding: 8px 14px;
-                                  border: 1px solid #1683ff; color: #1683ff;
-                                  background: transparent; border-radius: 22px;
-                                  text-decoration: none; font-size: 13px;
-                                  white-space: nowrap;">
-                            Restore
-                        </a>
+                           style="display: inline-flex; align-items: center; justify-content: center; padding: 8px 14px; border: 1px solid #1683ff; color: #1683ff; background: transparent; border-radius: 22px; text-decoration: none; font-size: 13px; white-space: nowrap;">Restore</a>
                         {% endif %}
-                
                     </div>
                 </td>
-
             </tr>
             {% else %}
-            <tr>
-                <td colspan="6" style="padding: 20px; text-align: center; color: var(--text-muted);">No food items
-                    found.</td>
-            </tr>
+            <tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--text-muted);">No food items found.</td></tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
-<!-- Add Food Modal (Simplified styling inline for now) -->
 <div id="addFoodModal"
     style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
-    <div
-        style="background: var(--surface-color); padding: 30px; border-radius: var(--radius-md); width: 100%; max-width: 600px; margin: auto; position: relative; top: 50px;">
+    <div style="background: var(--surface-color); padding: 30px; border-radius: var(--radius-md); width: 100%; max-width: 600px; margin: auto; position: relative; top: 50px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3>Add New Food Item</h3>
             <button onclick="document.getElementById('addFoodModal').style.display='none'"
@@ -136,9 +110,7 @@
                     <label class="form-label">Category</label>
                     <select name="category_id" class="form-control" required>
                         <option value="">Select Category</option>
-                        {% for cat in categories %}
-                        <option value="{{ cat.id }}">{{ cat.name }}</option>
-                        {% endfor %}
+                        {% for cat in categories %}<option value="{{ cat.id }}">{{ cat.name }}</option>{% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
@@ -162,15 +134,13 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Image Upload</label>
-                    <input type="file" name="image" class="form-control" accept="image/*">
+                    <input type="file" name="image" class="form-control" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp">
                 </div>
                 <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" name="is_available" id="is_available" checked
-                        style="width: 20px; height: 20px;">
+                    <input type="checkbox" name="is_available" id="is_available" checked style="width: 20px; height: 20px;">
                     <label for="is_available" style="margin: 0;">Currently Available?</label>
                 </div>
             </div>
-
             <button type="submit" class="btn btn-primary mt-3">Save Food Item</button>
         </form>
     </div>
