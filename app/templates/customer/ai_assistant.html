@@ -16,14 +16,8 @@
 </header>
 
 <div class="container mt-4" style="max-width: 650px; margin: 0 auto; height: calc(100vh - 140px); display: flex; flex-direction: column;">
-    
-    <!-- Unified Chat Box Card Container -->
     <div style="flex: 1; background: var(--surface-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; margin-bottom: 20px;">
-        
-        <!-- Chat Window / Messages Scroll Area -->
         <div id="chatBox" style="flex: 1; padding: 25px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;">
-            
-            <!-- Welcome Message -->
             <div style="display: flex; gap: 12px; align-items: flex-start;">
                 <div style="width: 34px; height: 34px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; margin-top: 2px; box-shadow: 0 2px 6px rgba(92,64,51,0.2);">
                     <i class='bx bx-bot' style="font-size: 1.2rem;"></i>
@@ -32,10 +26,8 @@
                     Hi there! I'm the King Cafe AI Assistant. I can help you find something delicious from our menu today. What are you craving?
                 </div>
             </div>
-            
         </div>
-        
-        <!-- Input Area inside the Box -->
+
         <div style="padding: 16px 20px; background: #ffffff; border-top: 1px solid var(--border-color);">
             <form id="chatForm" style="display: flex; gap: 12px; align-items: center; margin: 0;">
                 <input type="text" id="userInput" class="form-control" placeholder="Ask about our menu..." style="border-radius: var(--radius-pill); padding: 14px 22px; border: 1.5px solid var(--border-color); font-size: 0.95rem; background: #faf8f5;" autocomplete="off" required>
@@ -44,102 +36,83 @@
                 </button>
             </form>
         </div>
-
     </div>
 </div>
 
-
 <script>
-    const chatForm = document.getElementById('chatForm');
-    const userInput = document.getElementById('userInput');
-    const chatBox = document.getElementById('chatBox');
+const chatForm = document.getElementById('chatForm');
+const userInput = document.getElementById('userInput');
+const chatBox = document.getElementById('chatBox');
 
-    // Escape HTML so user messages and AI text cannot inject HTML.
-    function escapeHTML(text) {
-        return String(text).replace(/[&<>"']/g, char => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
-        })[char]);
+// Build image URLs through the Flask route that serves files from Railway's volume.
+const foodImageUrlTemplate = {{ url_for('menu.uploaded_food_image', filename='__FOOD_IMAGE_FILENAME__') | tojson }};
+
+function escapeHTML(text) {
+    return String(text).replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[char]);
+}
+
+function formatMarkdown(text) {
+    const lines = escapeHTML(text).split(/\r?\n/);
+    const output = [];
+    let listType = null;
+
+    function closeList() {
+        if (listType) {
+            output.push(listType === 'ul' ? '</ul>' : '</ol>');
+            listType = null;
+        }
     }
 
-    // Format common Markdown without an external library.
-    function formatMarkdown(text) {
-        const lines = escapeHTML(text).split(/\r?\n/);
-        const output = [];
-        let listType = null;
+    function inlineFormat(line) {
+        return line
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/__(.+?)__/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>');
+    }
 
-        function closeList() {
-            if (listType) {
-                output.push(listType === 'ul' ? '</ul>' : '</ol>');
-                listType = null;
-            }
-        }
-
-        function inlineFormat(line) {
-            return line
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/__(.+?)__/g, '<strong>$1</strong>')
-                .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                .replace(/`([^`]+)`/g, '<code>$1</code>');
-        }
-
-        for (const original of lines) {
-            const line = original.trim();
-
-            if (!line) {
-                closeList();
-                continue;
-            }
-
-            if (/^[-*_]{3,}$/.test(line)) {
-                closeList();
-                output.push('<hr>');
-                continue;
-            }
-
-            const heading = line.match(/^(#{1,3})\s+(.+)$/);
-            if (heading) {
-                closeList();
-                const level = heading[1].length + 1;
-                output.push(
-                    `<h${level} class="ai-heading">${inlineFormat(heading[2])}</h${level}>`
-                );
-                continue;
-            }
-
-            const bullet = line.match(/^[-*•]\s+(.+)$/);
-            const numbered = line.match(/^\d+[.)]\s+(.+)$/);
-
-            if (bullet || numbered) {
-                const type = bullet ? 'ul' : 'ol';
-
-                if (listType !== type) {
-                    closeList();
-                    listType = type;
-                    output.push(type === 'ul' ? '<ul>' : '<ol>');
-                }
-
-                output.push(`<li>${inlineFormat((bullet || numbered)[1])}</li>`);
-                continue;
-            }
-
+    for (const original of lines) {
+        const line = original.trim();
+        if (!line) {
             closeList();
-            output.push(`<p>${inlineFormat(line)}</p>`);
+            continue;
         }
-
+        if (/^[-*_]{3,}$/.test(line)) {
+            closeList();
+            output.push('<hr>');
+            continue;
+        }
+        const heading = line.match(/^(#{1,3})\s+(.+)$/);
+        if (heading) {
+            closeList();
+            const level = heading[1].length + 1;
+            output.push(`<h${level} class="ai-heading">${inlineFormat(heading[2])}</h${level}>`);
+            continue;
+        }
+        const bullet = line.match(/^[-*•]\s+(.+)$/);
+        const numbered = line.match(/^\d+[.)]\s+(.+)$/);
+        if (bullet || numbered) {
+            const type = bullet ? 'ul' : 'ol';
+            if (listType !== type) {
+                closeList();
+                listType = type;
+                output.push(type === 'ul' ? '<ul>' : '<ol>');
+            }
+            output.push(`<li>${inlineFormat((bullet || numbered)[1])}</li>`);
+            continue;
+        }
         closeList();
-        return output.join('');
+        output.push(`<p>${inlineFormat(line)}</p>`);
     }
+    closeList();
+    return output.join('');
+}
 
-    
 function addMessage(text, isUser) {
     const wrapper = document.createElement('div');
-    wrapper.className = isUser
-        ? 'chat-message user-message'
-        : 'chat-message bot-message';
+    wrapper.className = isUser ? 'chat-message user-message' : 'chat-message bot-message';
 
     if (isUser) {
         const bubble = document.createElement('div');
@@ -154,10 +127,8 @@ function addMessage(text, isUser) {
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble bot-bubble';
         bubble.innerHTML = formatMarkdown(text);
-
         wrapper.append(avatar, bubble);
     }
-
     chatBox.appendChild(wrapper);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
@@ -173,8 +144,6 @@ function addMenuMessage(data) {
     const list = document.createElement('div');
     list.className = 'menu-card-list';
 
-    const staticBase = {{ url_for('static', filename='') | tojson }};
-
     if (!data.items || data.items.length === 0) {
         list.textContent = 'No available items match your request.';
     }
@@ -183,456 +152,166 @@ function addMenuMessage(data) {
         const card = document.createElement('article');
         card.className = 'menu-item-card';
 
-        const image = document.createElement('img');
-        image.className = 'menu-item-image';
-        image.alt = item.name;
-        image.loading = 'lazy';
+        const filename = String(item.image_path || '')
+            .trim()
+            .replace(/\\/g, '/')
+            .split('/')
+            .pop();
 
-        
-const path = String(item.image_path || '')
-    .trim()
-    .replace(/\\/g, '/')
-    .replace(/^\/+/, '')
-    .replace(/^static\//, '');
-
-if (path && !path.split('/').includes('..')) {
-    image.src = staticBase + path;
-} else {
-    image.style.display = 'none';
-    card.classList.add('no-image');
-}
-
-image.onerror = () => {
-    image.onerror = null;
-    image.style.display = 'none';
-    card.classList.add('no-image');
-};
-
+        let image = null;
+        if (filename && filename !== '.' && filename !== '..') {
+            image = document.createElement('img');
+            image.className = 'menu-item-image';
+            image.alt = item.name || 'Food item';
+            image.loading = 'lazy';
+            image.src = foodImageUrlTemplate.replace(
+                '__FOOD_IMAGE_FILENAME__',
+                encodeURIComponent(filename)
+            );
+            image.onerror = () => {
+                image.onerror = null;
+                image.style.display = 'none';
+                card.classList.add('no-image');
+            };
+        } else {
+            card.classList.add('no-image');
+        }
 
         const details = document.createElement('div');
         details.className = 'menu-item-details';
 
         const title = document.createElement('h4');
-        title.textContent = item.name;
+        title.textContent = item.name || 'Menu item';
 
         const description = document.createElement('p');
         description.className = 'menu-item-description';
-        description.textContent = item.description || item.category;
+        description.textContent = item.description || item.category || '';
 
         const badge = document.createElement('span');
         badge.className = 'veg-badge';
-        badge.textContent = item.veg_type === 'veg'
-            ? '🌿 Vegetarian'
-            : 'Non-Vegetarian';
+        badge.textContent = item.veg_type === 'veg' ? '🌿 Vegetarian' : 'Non-Vegetarian';
 
         const price = document.createElement('strong');
         price.className = 'menu-item-price';
-        price.textContent = '₹' + Number(item.price).toLocaleString(
-            'en-IN',
-            { minimumFractionDigits: 0, maximumFractionDigits: 2 }
-        );
+        const numericPrice = Number(item.price);
+        price.textContent = '₹' + (Number.isFinite(numericPrice)
+            ? numericPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+            : '—');
 
         details.append(title, description, badge);
-        card.append(image, details, price);
+        if (image) card.appendChild(image);
+        card.append(details, price);
         list.appendChild(card);
     });
 
     const footer = document.createElement('div');
     footer.className = 'menu-footer';
-    footer.innerHTML =
-        '<strong>🌿 Fresh choices at King Cafe</strong>' +
-        '<p>What would you like to try today?</p>';
+    footer.innerHTML = '<strong>🌿 Fresh choices at King Cafe</strong><p>What would you like to try today?</p>';
 
     wrapper.append(heading, list, footer);
     chatBox.appendChild(wrapper);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-    function addTypingIndicator() {
+function addTypingIndicator() {
+    removeTypingIndicator();
+    const wrapper = document.createElement('div');
+    wrapper.id = 'typingIndicator';
+    wrapper.className = 'chat-message bot-message';
+    wrapper.innerHTML = `
+        <div class="chat-avatar"><i class="bx bx-bot"></i></div>
+        <div class="chat-bubble bot-bubble typing-bubble">
+            <span>Thinking</span>
+            <span class="typing-dots"><i></i><i></i><i></i></span>
+        </div>`;
+    chatBox.appendChild(wrapper);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    document.getElementById('typingIndicator')?.remove();
+}
+
+chatForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    addMessage(message, true);
+    userInput.value = '';
+    userInput.disabled = true;
+    const sendButton = chatForm.querySelector('button[type="submit"]');
+    sendButton.disabled = true;
+    addTypingIndicator();
+
+    try {
+        const response = await fetch("{{ url_for('customer.ai_assistant') }}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ message }),
+            signal: AbortSignal.timeout(45000)
+        });
+        const data = await response.json();
         removeTypingIndicator();
 
-        const wrapper = document.createElement('div');
-        wrapper.id = 'typingIndicator';
-        wrapper.className = 'chat-message bot-message';
-
-        wrapper.innerHTML = `
-            <div class="chat-avatar">
-                <i class="bx bx-bot"></i>
-            </div>
-            <div class="chat-bubble bot-bubble typing-bubble">
-                <span>Thinking</span>
-                <span class="typing-dots"><i></i><i></i><i></i></span>
-            </div>
-        `;
-
-        chatBox.appendChild(wrapper);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function removeTypingIndicator() {
-        document.getElementById('typingIndicator')?.remove();
-    }
-
-    chatForm.addEventListener('submit', async function (event) {
-        event.preventDefault();
-
-        const message = userInput.value.trim();
-        if (!message) return;
-
-        addMessage(message, true);
-        userInput.value = '';
-        userInput.disabled = true;
-
-        const sendButton = chatForm.querySelector('button[type="submit"]');
-        sendButton.disabled = true;
-
-        addTypingIndicator();
-
-        try {
-            const response = await fetch(
-                "{{ url_for('customer.ai_assistant') }}",
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ message }),
-                    signal: AbortSignal.timeout(45000)
-                }
-            );
-
-            const data = await response.json();
-
-            removeTypingIndicator();
-
-            if (!response.ok) {
-                addMessage(
-                    data.response || data.error ||
-                    `The request failed (${response.status}). Please try again.`,
-                    false
-                );
-            } else if (data.type === 'menu' && Array.isArray(data.items)) {
-                addMenuMessage(data);
-            } else if (data.response) {
-                addMessage(data.response, false);
-            } else {
-                addMessage('Sorry, I could not generate a reply. Please try again.', false);
-            }
-        } catch (error) {
-            removeTypingIndicator();
-
-            if (error.name === 'TimeoutError') {
-                addMessage(
-                    'The AI took too long to respond. Please try again.',
-                    false
-                );
-            } else {
-                addMessage(
-                    'Unable to connect to the AI service. Please try again.',
-                    false
-                );
-            }
-
-            console.error('Cafe AI request failed:', error);
-        } finally {
-            userInput.disabled = false;
-            sendButton.disabled = false;
-            userInput.focus();
+        if (!response.ok) {
+            addMessage(data.response || data.error || `The request failed (${response.status}). Please try again.`, false);
+        } else if (data.type === 'menu' && Array.isArray(data.items)) {
+            addMenuMessage(data);
+        } else if (data.response) {
+            addMessage(data.response, false);
+        } else {
+            addMessage('Sorry, I could not generate a reply. Please try again.', false);
         }
-    });
+    } catch (error) {
+        removeTypingIndicator();
+        addMessage(
+            error.name === 'TimeoutError'
+                ? 'The AI took too long to respond. Please try again.'
+                : 'Unable to connect to the AI service. Please try again.',
+            false
+        );
+        console.error('Cafe AI request failed:', error);
+    } finally {
+        userInput.disabled = false;
+        sendButton.disabled = false;
+        userInput.focus();
+    }
+});
 </script>
 
 <style>
-    .chat-message {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        width: 100%;
-        animation: chatEnter .25s ease-out;
-    }
-
-    .user-message {
-        justify-content: flex-end;
-    }
-
-    .bot-message {
-        justify-content: flex-start;
-    }
-
-    .chat-avatar {
-        width: 34px;
-        height: 34px;
-        flex: 0 0 34px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--primary-color);
-        color: white;
-        border-radius: 50%;
-        font-size: 19px;
-        box-shadow: 0 3px 8px rgba(92, 64, 51, .15);
-    }
-
-    .chat-bubble {
-        max-width: min(85%, 520px);
-        padding: 15px 18px;
-        border-radius: 18px;
-        font-size: .96rem;
-        line-height: 1.7;
-        overflow-wrap: anywhere;
-    }
-
-    .user-bubble {
-        background: var(--primary-color);
-        color: white;
-        border-top-right-radius: 5px;
-        white-space: pre-wrap;
-    }
-
-    .bot-bubble {
-        background: #fcf8f3;
-        color: #40332c;
-        border: 1px solid #eee4da;
-        border-top-left-radius: 5px;
-        box-shadow: 0 3px 10px rgba(70, 45, 30, .04);
-    }
-
-    .bot-bubble p {
-        margin: 0 0 10px;
-    }
-
-    .bot-bubble p:last-child {
-        margin-bottom: 0;
-    }
-
-    .bot-bubble .ai-heading {
-        font-size: 1.08rem;
-        font-weight: 700;
-        color: #634635;
-        margin: 14px 0 8px;
-    }
-
-    .bot-bubble ul,
-    .bot-bubble ol {
-        padding-left: 23px;
-        margin: 8px 0 14px;
-    }
-
-    .bot-bubble li {
-        margin-bottom: 8px;
-        padding-left: 3px;
-    }
-
-    .bot-bubble strong {
-        color: #563b2d;
-        font-weight: 700;
-    }
-
-    .bot-bubble hr {
-        border: 0;
-        border-top: 1px solid #e6d8cb;
-        margin: 14px 0;
-    }
-
-    .bot-bubble code {
-        background: #eee4da;
-        border-radius: 5px;
-        padding: 2px 5px;
-    }
-
-    .typing-bubble {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: #78675c;
-    }
-
-    .typing-dots {
-        display: inline-flex;
-        gap: 4px;
-    }
-
-    .typing-dots i {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #8c6b57;
-        animation: typingBounce 1s infinite ease-in-out;
-    }
-
-    .typing-dots i:nth-child(2) {
-        animation-delay: .15s;
-    }
-
-    .typing-dots i:nth-child(3) {
-        animation-delay: .3s;
-    }
-
-    @keyframes typingBounce {
-        0%, 60%, 100% { transform: translateY(0); opacity: .45; }
-        30% { transform: translateY(-5px); opacity: 1; }
-    }
-
-    @keyframes chatEnter {
-        from { opacity: 0; transform: translateY(7px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    #chatForm button:disabled {
-        opacity: .6;
-        cursor: wait;
-    }
-
-    @media (max-width: 600px) {
-        .chat-bubble {
-            max-width: 90%;
-            padding: 12px 14px;
-            font-size: .92rem;
-        }
-
-        #chatBox {
-            padding: 16px 12px !important;
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .chat-message,
-        .typing-dots i {
-            animation: none;
-        }
-    }
-    
-.menu-response {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    padding: 14px 16px;
-    background: #fffcf7;
-    border: 1px solid #eee2d6;
-    border-radius: 16px;
-    color: #292522;
-    animation: chatEnter .25s ease-out;
-}
-
-.menu-intro {
-    font-size: .95rem;
-    line-height: 1.5;
-    margin-bottom: 8px;
-}
-
-.menu-card-list {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.menu-item-card {
-    display: grid;
-    grid-template-columns: 72px minmax(0, 1fr) auto;
-    gap: 11px;
-    align-items: start;
-    padding: 13px 0;
-    border-top: 1px solid #e9dace;
-    min-width: 0;
-}
-
-.menu-item-card.no-image {
-    grid-template-columns: minmax(0, 1fr) auto;
-}
-
-.menu-item-image {
-    display: block;
-    width: 72px;
-    height: 72px;
-    object-fit: cover;
-    border-radius: 8px;
-    background: #f1e8de;
-}
-
-.menu-item-details {
-    min-width: 0;
-}
-
-.menu-item-details h4 {
-    margin: 1px 0 5px;
-    font-size: .92rem;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-}
-
-.menu-item-description {
-    margin: 0 0 6px;
-    color: #796b60;
-    font-size: .81rem;
-    line-height: 1.4;
-    overflow-wrap: anywhere;
-}
-
-.menu-item-price {
-    color: #634635;
-    white-space: nowrap;
-    font-size: .9rem;
-    font-weight: 700;
-    padding-top: 2px;
-}
-
-.veg-badge {
-    display: inline-block;
-    padding: 3px 7px;
-    border-radius: 20px;
-    background: #dcf5e3;
-    color: #16803d;
-    font-size: .68rem;
-    line-height: 1.35;
-    font-weight: 600;
-}
-
-.menu-footer {
-    margin-top: 8px;
-    padding: 11px 12px;
-    border-radius: 9px;
-    background: #f1e8de;
-    font-size: .86rem;
-}
-
-.menu-footer p {
-    margin: 5px 0 0;
-    color: #6d5b4e;
-}
-
-@media (max-width: 480px) {
-    .menu-response {
-        padding: 12px;
-    }
-
-    .menu-item-card {
-        grid-template-columns: 64px minmax(0, 1fr) auto;
-        gap: 9px;
-        padding: 12px 0;
-    }
-
-    .menu-item-card.no-image {
-        grid-template-columns: minmax(0, 1fr) auto;
-    }
-
-    .menu-item-image {
-        width: 64px;
-        height: 64px;
-    }
-
-    .menu-item-details h4 {
-        font-size: .88rem;
-    }
-
-    .menu-item-description {
-        font-size: .78rem;
-    }
-
-    .menu-item-price {
-        font-size: .85rem;
-    }
-}
-
+.chat-message{display:flex;gap:10px;align-items:flex-start;width:100%;animation:chatEnter .25s ease-out}
+.user-message{justify-content:flex-end}.bot-message{justify-content:flex-start}
+.chat-avatar{width:34px;height:34px;flex:0 0 34px;display:flex;align-items:center;justify-content:center;background:var(--primary-color);color:white;border-radius:50%;font-size:19px;box-shadow:0 3px 8px rgba(92,64,51,.15)}
+.chat-bubble{max-width:min(85%,520px);padding:15px 18px;border-radius:18px;font-size:.96rem;line-height:1.7;overflow-wrap:anywhere}
+.user-bubble{background:var(--primary-color);color:white;border-top-right-radius:5px;white-space:pre-wrap}
+.bot-bubble{background:#fcf8f3;color:#40332c;border:1px solid #eee4da;border-top-left-radius:5px;box-shadow:0 3px 10px rgba(70,45,30,.04)}
+.bot-bubble p{margin:0 0 10px}.bot-bubble p:last-child{margin-bottom:0}
+.bot-bubble .ai-heading{font-size:1.08rem;font-weight:700;color:#634635;margin:14px 0 8px}
+.bot-bubble ul,.bot-bubble ol{padding-left:23px;margin:8px 0 14px}.bot-bubble li{margin-bottom:8px;padding-left:3px}
+.bot-bubble strong{color:#563b2d;font-weight:700}.bot-bubble hr{border:0;border-top:1px solid #e6d8cb;margin:14px 0}
+.bot-bubble code{background:#eee4da;border-radius:5px;padding:2px 5px}
+.typing-bubble{display:flex;align-items:center;gap:8px;color:#78675c}.typing-dots{display:inline-flex;gap:4px}
+.typing-dots i{width:6px;height:6px;border-radius:50%;background:#8c6b57;animation:typingBounce 1s infinite ease-in-out}
+.typing-dots i:nth-child(2){animation-delay:.15s}.typing-dots i:nth-child(3){animation-delay:.3s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-5px);opacity:1}}
+@keyframes chatEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+#chatForm button:disabled{opacity:.6;cursor:wait}
+@media(max-width:600px){.chat-bubble{max-width:90%;padding:12px 14px;font-size:.92rem}#chatBox{padding:16px 12px!important}}
+@media(prefers-reduced-motion:reduce){.chat-message,.typing-dots i{animation:none}}
+.menu-response{width:100%;max-width:100%;box-sizing:border-box;padding:14px 16px;background:#fffcf7;border:1px solid #eee2d6;border-radius:16px;color:#292522;animation:chatEnter .25s ease-out}
+.menu-intro{font-size:.95rem;line-height:1.5;margin-bottom:8px}
+.menu-card-list{display:flex;flex-direction:column;min-width:0}
+.menu-item-card{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:11px;align-items:start;padding:13px 0;border-top:1px solid #e9dace;min-width:0}
+.menu-item-card.no-image{grid-template-columns:minmax(0,1fr) auto}
+.menu-item-image{display:block;width:72px;height:72px;object-fit:cover;border-radius:8px;background:#f1e8de}
+.menu-item-details{min-width:0}.menu-item-details h4{margin:1px 0 5px;font-size:.92rem;line-height:1.35;overflow-wrap:anywhere}
+.menu-item-description{margin:0 0 6px;color:#796b60;font-size:.81rem;line-height:1.4;overflow-wrap:anywhere}
+.menu-item-price{color:#634635;white-space:nowrap;font-size:.9rem;font-weight:700;padding-top:2px}
+.veg-badge{display:inline-block;padding:3px 7px;border-radius:20px;background:#dcf5e3;color:#16803d;font-size:.68rem;line-height:1.35;font-weight:600}
+.menu-footer{margin-top:8px;padding:11px 12px;border-radius:9px;background:#f1e8de;font-size:.86rem}
+.menu-footer p{margin:5px 0 0;color:#6d5b4e}
+@media(max-width:480px){.menu-response{padding:12px}.menu-item-card{grid-template-columns:64px minmax(0,1fr) auto;gap:9px;padding:12px 0}.menu-item-card.no-image{grid-template-columns:minmax(0,1fr) auto}.menu-item-image{width:64px;height:64px}.menu-item-details h4{font-size:.88rem}.menu-item-description{font-size:.78rem}.menu-item-price{font-size:.85rem}}
 </style>
 {% endblock %}
