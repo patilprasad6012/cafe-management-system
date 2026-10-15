@@ -4,28 +4,148 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}King Cafe{% endblock %}</title>
-    
-    <!-- Boxicons for modern icons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    
-    <!-- Custom CSS -->
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
+
+    <style>
+        /* Shared customer bottom navigation */
+        .kc-global-bottom-nav {
+            position: fixed;
+            z-index: 5000;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 5px;
+            padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+            border-top: 1px solid #e5e7eb;
+            background: rgba(255,255,255,.97);
+            box-shadow: 0 -4px 18px rgba(20,25,35,.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .kc-global-bottom-nav .kc-nav-item {
+            min-width: 0;
+            min-height: 54px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            padding: 7px 2px;
+            border: 0;
+            border-radius: 16px;
+            background: transparent;
+            color: #626571;
+            text-decoration: none;
+            cursor: pointer;
+            font: inherit;
+            font-size: .72rem;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+        .kc-global-bottom-nav .kc-nav-item i {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        .kc-global-bottom-nav .kc-nav-item.active {
+            background: #f1f2f5;
+            color: #3e4654;
+        }
+        .kc-global-bottom-nav .kc-nav-item:focus-visible {
+            outline: 3px solid #ffb79f;
+            outline-offset: 2px;
+        }
+        body.kc-has-bottom-nav {
+            padding-bottom: calc(82px + env(safe-area-inset-bottom)) !important;
+        }
+        .kc-global-qr-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(0,0,0,.78);
+        }
+        .kc-global-qr-panel {
+            width: min(450px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            border-radius: 20px;
+            background: #fff;
+            color: #30241e;
+            text-align: center;
+        }
+        .kc-global-qr-panel h2 { margin-top: 0; }
+        .kc-global-qr-close {
+            margin-top: 15px;
+            padding: 11px 20px;
+            border: 0;
+            border-radius: 10px;
+            background: #50362a;
+            color: #fff;
+            cursor: pointer;
+        }
+        @media (min-width: 720px) {
+            .kc-global-bottom-nav {
+                left: 50%;
+                right: auto;
+                bottom: 14px;
+                width: min(620px, calc(100% - 32px));
+                transform: translateX(-50%);
+                border: 1px solid #e5e7eb;
+                border-radius: 22px;
+                padding: 8px 12px;
+                box-shadow: 0 10px 35px rgba(24,30,45,.12);
+            }
+            body.kc-has-bottom-nav { padding-bottom: 105px !important; }
+        }
+        @media (max-width: 380px) {
+            .kc-global-bottom-nav .kc-nav-item { font-size: .66rem; }
+            .kc-global-bottom-nav .kc-nav-item i { font-size: 1.35rem; }
+        }
+    </style>
+
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    
-    {% block body %}
-    {% endblock %}
-    
-    <!-- Footer Section -->
+    {% block body %}{% endblock %}
+
+    {% if request.endpoint and request.endpoint.startswith('customer.') %}
+    <nav class="kc-global-bottom-nav" aria-label="Main navigation">
+        <a href="{{ url_for('customer.dashboard') }}"
+           class="kc-nav-item {% if request.endpoint == 'customer.dashboard' %}active{% endif %}"
+           {% if request.endpoint == 'customer.dashboard' %}aria-current="page"{% endif %}>
+            <i class="bx bx-home-alt-2" aria-hidden="true"></i>
+            <span>Home</span>
+        </a>
+        <button type="button" class="kc-nav-item" id="kcGlobalScanQR">
+            <i class="bx bx-qr-scan" aria-hidden="true"></i>
+            <span>Scan Table-QR</span>
+        </button>
+        <a href="{{ url_for('customer.ai_assistant') }}"
+           class="kc-nav-item {% if request.endpoint == 'customer.ai_assistant' %}active{% endif %}"
+           {% if request.endpoint == 'customer.ai_assistant' %}aria-current="page"{% endif %}>
+            <i class="bx bx-bot" aria-hidden="true"></i>
+            <span>Ask AI</span>
+        </a>
+        <a href="{{ url_for('customer.dashboard', open_profile=1) }}"
+           class="kc-nav-item {% if request.args.get('open_profile') == '1' %}active{% endif %}">
+            <i class="bx bx-user" aria-hidden="true"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+    {% endif %}
+
     <footer class="site-footer">
         <div class="footer-container">
-            <!-- Brand & Links -->
             <div class="footer-col">
-                <a href="/" class="footer-logo">
-                    <i class='bx bx-coffee'></i> KING CAFE
-                </a>
+                <a href="/" class="footer-logo"><i class="bx bx-coffee"></i> KING CAFE</a>
                 <ul class="footer-links">
                     <li><a href="#">Privacy Policy</a></li>
                     <li><a href="#">Return Policy</a></li>
@@ -34,37 +154,31 @@
                     <li><a href="#">Join Our Team</a></li>
                 </ul>
                 <div class="social-icons">
-                    <a href="#"><i class='bx bxl-facebook'></i></a>
-                    <a href="#"><i class='bx bxl-instagram'></i></a>
+                    <a href="#" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
                 </div>
             </div>
-
-            <!-- Shop Online -->
             <div class="footer-col">
                 <h3>SHOP ONLINE</h3>
                 <ul class="footer-links">
                     <li><a href="#">Products</a></li>
                     <li><a href="#">Subscription</a></li>
                     <li><a href="#">Starter Kits</a></li>
-                    <li><a href="#">Equipment & Merchandise</a></li>
+                    <li><a href="#">Equipment &amp; Merchandise</a></li>
                 </ul>
             </div>
-
-            <!-- Address -->
             <div class="footer-col">
                 <h3>ADDRESS</h3>
                 <div class="footer-address">
-                    Flagship Café & Roastery,<br>
+                    Flagship Café &amp; Roastery,<br>
                     Sampigekatte,<br>
                     Madikeri - Mysore Road,<br>
                     Madikeri - 571201, India.
                 </div>
                 <div class="footer-contact">
-                    <i class='bx bxl-whatsapp' style="font-size: 1.2rem; color: #25D366;"></i> +91 94481 06100
+                    <i class="bx bxl-whatsapp" style="font-size:1.2rem;color:#25D366;"></i> +91 94481 06100
                 </div>
             </div>
-
-            <!-- Subscribe -->
             <div class="footer-col">
                 <h3>SUBSCRIBE TO NEWSLETTER</h3>
                 <form class="subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
@@ -72,25 +186,106 @@
                 </form>
             </div>
         </div>
-
-        <div class="footer-bottom">
-            Copyright © 2026, King Cafe. All rights reserved.
-        </div>
+        <div class="footer-bottom">Copyright © 2026, King Cafe. All rights reserved.</div>
     </footer>
-    
-    <!-- Scripts -->
+
     <script>
-        // Auto-dismiss alerts after 4 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                const alerts = document.querySelectorAll('.alert');
-                alerts.forEach(alert => {
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                document.querySelectorAll('.alert').forEach(function (alert) {
                     alert.style.opacity = '0';
                     alert.style.transition = 'opacity 0.5s ease';
-                    setTimeout(() => alert.remove(), 500);
+                    setTimeout(function () { alert.remove(); }, 500);
                 });
             }, 4000);
+
+            const hasCustomerNav = Boolean(document.querySelector('.kc-global-bottom-nav'));
+            if (hasCustomerNav) {
+                document.body.classList.add('kc-has-bottom-nav');
+            }
+
+            const scanButton = document.getElementById('kcGlobalScanQR');
+            if (scanButton) scanButton.addEventListener('click', openGlobalQRScanner);
         });
+
+        let kcGlobalScanner = null;
+        let kcGlobalScannerOverlay = null;
+        let kcGlobalScannerBusy = false;
+
+        async function closeGlobalQRScanner() {
+            if (kcGlobalScanner && kcGlobalScanner.isScanning) {
+                try { await kcGlobalScanner.stop(); } catch (e) {}
+            }
+            if (kcGlobalScanner) {
+                try { await kcGlobalScanner.clear(); } catch (e) {}
+            }
+            kcGlobalScanner = null;
+            kcGlobalScannerBusy = false;
+            if (kcGlobalScannerOverlay) kcGlobalScannerOverlay.remove();
+            kcGlobalScannerOverlay = null;
+        }
+
+        async function openGlobalQRScanner() {
+            if (kcGlobalScannerBusy) return;
+            kcGlobalScannerBusy = true;
+
+            if (typeof Html5Qrcode === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/html5-qrcode';
+                script.onload = () => { kcGlobalScannerBusy = false; openGlobalQRScanner(); };
+                script.onerror = () => {
+                    kcGlobalScannerBusy = false;
+                    alert('Could not load the QR scanner. Please check your internet connection.');
+                };
+                document.head.appendChild(script);
+                return;
+            }
+
+            kcGlobalScannerOverlay = document.createElement('div');
+            kcGlobalScannerOverlay.className = 'kc-global-qr-overlay';
+            kcGlobalScannerOverlay.innerHTML = `
+                <div class="kc-global-qr-panel" role="dialog" aria-modal="true" aria-label="Scan Table QR">
+                    <h2>Scan Table QR</h2>
+                    <p>Allow camera access and point it at your King Cafe table QR code.</p>
+                    <div id="kcGlobalQRReader" style="width:100%;"></div>
+                    <p id="kcGlobalQRError" role="status" style="color:#a33;"></p>
+                    <button type="button" class="kc-global-qr-close" id="kcGlobalQRClose">Close Scanner</button>
+                </div>`;
+            document.body.appendChild(kcGlobalScannerOverlay);
+            document.getElementById('kcGlobalQRClose').addEventListener('click', closeGlobalQRScanner);
+
+            kcGlobalScanner = new Html5Qrcode('kcGlobalQRReader');
+            try {
+                await kcGlobalScanner.start(
+                    { facingMode: 'environment' },
+                    { fps: 10, qrbox: { width: 230, height: 230 } },
+                    async function (decodedText) {
+                        await closeGlobalQRScanner();
+                        try {
+                            const target = new URL(decodedText, window.location.origin);
+                            if (target.origin !== window.location.origin) {
+                                alert('This QR code is not a King Cafe link.');
+                                return;
+                            }
+                            window.location.href = target.href;
+                        } catch (e) {
+                            alert('This QR code does not contain a valid link.');
+                        }
+                    },
+                    function () {}
+                );
+            } catch (error) {
+                const message = document.getElementById('kcGlobalQRError');
+                if (message) message.textContent = 'Unable to access camera. Allow camera permission and use HTTPS.';
+                console.error('QR scanner error:', error);
+                if (kcGlobalScanner) {
+                    try { await kcGlobalScanner.clear(); } catch (e) {}
+                    kcGlobalScanner = null;
+                }
+            } finally {
+                kcGlobalScannerBusy = false;
+            }
+        }
     </script>
     {% block extra_js %}{% endblock %}
 </body>
