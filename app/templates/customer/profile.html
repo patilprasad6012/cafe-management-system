@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}My Profile - King Cafe{% endblock %}
+{% block extra_css %}
+<style>
+.kcp-wrap{width:min(100% - 30px,720px);margin:28px auto 20px;color:#28221f}
+.kcp-title{font-size:1.8rem;margin:0 0 5px;font-weight:800}.kcp-sub{color:#777;margin:0 0 22px}
+.kcp-card{background:#fff;border:1px solid #ececef;border-radius:22px;padding:24px;box-shadow:0 5px 20px #252b3508}
+.kcp-hero{display:flex;align-items:center;gap:17px;padding-bottom:22px;border-bottom:1px solid #eee}
+.kcp-avatar{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:#fff0e9;color:#e96b48;font-size:3.2rem;flex-shrink:0}
+.kcp-name{font-size:1.3rem;font-weight:800;margin:0 0 5px;overflow-wrap:anywhere}.kcp-email{color:#777;overflow-wrap:anywhere}
+.kcp-edit{display:inline-flex;align-items:center;gap:8px;margin-left:auto;padding:10px 14px;border-radius:12px;background:#fff0e9;color:#b84f32;text-decoration:none;font-weight:700;white-space:nowrap}
+.kcp-details{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+.kcp-field-label{color:#888;font-size:.83rem;margin-bottom:6px}.kcp-field-value{font-weight:700;overflow-wrap:anywhere}
+.kcp-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.kcp-btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;text-decoration:none;border-radius:12px;padding:12px 16px;background:#50362a;color:white;font-weight:700}.kcp-btn.secondary{background:#f3f3f5;color:#393943}
+@media(max-width:520px){.kcp-card{padding:18px}.kcp-hero{align-items:flex-start;flex-wrap:wrap}.kcp-avatar{width:68px;height:68px;font-size:2.7rem}.kcp-edit{margin-left:0}.kcp-details{grid-template-columns:1fr;gap:16px}}
+</style>
+{% endblock %}
+{% block body %}
+<main class="kcp-wrap">
+  <h1 class="kcp-title">My Profile</h1>
+  <p class="kcp-sub">Manage your personal information</p>
+  <section class="kcp-card">
+    <div class="kcp-hero">
+      <div class="kcp-avatar"><i class="bx bx-user"></i></div>
+      <div style="min-width:0;flex:1">
+        <h2 class="kcp-name">{{ profile_user.name }}</h2>
+        <div class="kcp-email">{{ profile_user.email }}</div>
+      </div>
+      <a class="kcp-edit" href="{{ url_for('customer.edit_profile') }}"><i class="bx bx-edit"></i> Edit Profile</a>
+    </div>
+    <div class="kcp-details">
+      <div><div class="kcp-field-label">Full Name</div><div class="kcp-field-value">{{ profile_user.name }}</div></div>
+      <div><div class="kcp-field-label">Mobile Number</div><div class="kcp-field-value">{{ profile_user.mobile }}</div></div>
+      <div><div class="kcp-field-label">Email Address</div><div class="kcp-field-value">{{ profile_user.email }}</div></div>
+      <div><div class="kcp-field-label">Date of Birth</div><div class="kcp-field-value">{{ profile_user.date_of_birth.strftime('%d %B %Y') if profile_user.date_of_birth else 'Not added yet' }}</div></div>
+    </div>
+    <div class="kcp-actions">
+      <a class="kcp-btn" href="{{ url_for('customer.edit_profile') }}"><i class="bx bx-user-pen"></i> Edit Personal Details</a>
+      <a class="kcp-btn secondary" href="{{ url_for('customer.dashboard') }}"><i class="bx bx-home"></i> Back to Home</a>
+    </div>
+  </section>
+</main>
+{% endblock %}
