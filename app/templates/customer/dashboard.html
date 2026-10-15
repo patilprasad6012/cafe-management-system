@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block title %}Dashboard - King Cafe{% endblock %}
@@ -22,64 +23,10 @@
         background-image: none !important;
     }
 
-    header {
-        background: rgba(255,255,255,.96) !important;
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-    }
-
-    .kc-topbar {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-        padding: 13px 20px;
-        background: rgba(255,255,255,.96);
-        border-bottom: 1px solid #e8e9ed;
-    }
-
-    .kc-brand {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        color: var(--kc-ink);
-        font-size: 1.28rem;
-        font-weight: 800;
-        letter-spacing: -.5px;
-    }
-
-    .kc-brand-icon {
-        width: 38px;
-        height: 38px;
-        display: grid;
-        place-items: center;
-        border-radius: 13px;
-        background: #fff0eb;
-        color: var(--kc-orange);
-        font-size: 1.55rem;
-    }
-
-    .kc-logout {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 9px 12px;
-        border: 1px solid #e6e7eb;
-        border-radius: 12px;
-        color: #5e626c;
-        background: #fff;
-        text-decoration: none;
-        font-size: .9rem;
-        font-weight: 600;
-    }
-
-    .kc-page {
+    .kc-dashboard {
         width: min(100% - 32px, 920px);
         margin: 0 auto;
-        padding: 25px 0 112px;
+        padding: 30px 0 35px;
     }
 
     .kc-welcome {
@@ -102,7 +49,7 @@
     }
 
     .kc-welcome h1 {
-        margin: 0 0 4px;
+        margin: 0 0 5px;
         font-size: clamp(1.5rem, 4vw, 1.9rem);
         line-height: 1.2;
         font-weight: 800;
@@ -115,57 +62,45 @@
         font-size: 1rem;
     }
 
+    /* Greeting card: intentionally non-clickable */
     .kc-profile-card {
         width: 100%;
+        box-sizing: border-box;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 18px;
-        padding: 25px 24px;
-        margin: 0 0 22px;
+        padding: 30px 28px;
+        margin: 0 0 28px;
         border: 0;
-        border-radius: 24px;
+        border-radius: 28px;
         color: #fff;
         text-align: left;
-        cursor: pointer;
         background: linear-gradient(125deg, #5c4034, #382720);
-        box-shadow: 0 10px 24px rgba(56,39,32,.14);
-        transition: transform .2s ease, box-shadow .2s ease;
-        font: inherit;
+        box-shadow: 0 10px 24px rgba(56,39,32,.12);
+        cursor: default;
+        user-select: text;
     }
 
-    .kc-profile-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 14px 28px rgba(56,39,32,.2);
+    .kc-profile-copy {
+        min-width: 0;
     }
 
-    .kc-profile-card:focus-visible,
-    .kc-action:focus-visible,
-    .kc-bottom-item:focus-visible {
-        outline: 3px solid #ffb79f;
-        outline-offset: 3px;
-    }
-
-    .kc-profile-copy { min-width: 0; }
     .kc-profile-card h2 {
-        margin: 0 0 10px;
+        margin: 0 0 12px;
         color: #fff9f5;
-        font-size: clamp(1.25rem, 3.5vw, 1.65rem);
+        font-size: clamp(1.35rem, 4vw, 1.8rem);
         font-weight: 800;
         letter-spacing: -.4px;
     }
+
     .kc-profile-card p {
-        margin: 0 0 10px;
+        margin: 0;
         color: #f3e7e1;
         line-height: 1.5;
         font-size: 1rem;
     }
-    .kc-profile-prompt {
-        display: inline-block;
-        color: #ffd4b8;
-        font-size: .86rem;
-        line-height: 1.4;
-    }
+
     .kc-profile-icon {
         flex: 0 0 auto;
         display: grid;
@@ -176,7 +111,7 @@
     }
 
     .kc-section-heading {
-        margin: 26px 0 13px;
+        margin: 28px 0 14px;
         font-size: 1.15rem;
         font-weight: 800;
     }
@@ -188,9 +123,11 @@
     }
 
     .kc-action {
+        box-sizing: border-box;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+        min-width: 0;
         min-height: 174px;
         padding: 19px;
         border: 1px solid rgba(31,41,55,.035);
@@ -201,9 +138,15 @@
         color: var(--kc-ink);
         transition: transform .18s ease, box-shadow .18s ease;
     }
+
     .kc-action:hover {
         transform: translateY(-3px);
         box-shadow: 0 9px 22px rgba(24,30,45,.08);
+    }
+
+    .kc-action:focus-visible {
+        outline: 3px solid #ffb79f;
+        outline-offset: 3px;
     }
 
     .kc-action-icon {
@@ -216,22 +159,40 @@
         color: white;
         font-size: 1.9rem;
     }
-    .kc-action-icon.orange { background: linear-gradient(135deg, #ff704d, #ff9369); }
-    .kc-action-icon.purple { background: linear-gradient(135deg, #7167f8, #8d8bff); }
-    .kc-action-icon.green { background: linear-gradient(135deg, #10b981, #34d399); }
-    .kc-action-icon.blue { background: linear-gradient(135deg, #2864ed, #4b9bff); }
-    .kc-action-icon.brown { background: linear-gradient(135deg, #73513f, #a4775d); }
+
+    .kc-action-icon.orange {
+        background: linear-gradient(135deg, #ff704d, #ff9369);
+    }
+
+    .kc-action-icon.purple {
+        background: linear-gradient(135deg, #7167f8, #8d8bff);
+    }
+
+    .kc-action-icon.green {
+        background: linear-gradient(135deg, #10b981, #34d399);
+    }
+
+    .kc-action-icon.blue {
+        background: linear-gradient(135deg, #2864ed, #4b9bff);
+    }
+
+    .kc-action-icon.brown {
+        background: linear-gradient(135deg, #73513f, #a4775d);
+    }
+
     .kc-action h3 {
         margin: 0 0 6px;
         font-size: 1.02rem;
         font-weight: 800;
     }
+
     .kc-action p {
         margin: 0;
         color: var(--kc-muted);
         font-size: .9rem;
         line-height: 1.45;
     }
+
     .kc-action-footer {
         display: flex;
         justify-content: space-between;
@@ -244,429 +205,199 @@
         font-weight: 700;
     }
 
-    /* Fixed bottom navigation inspired by the supplied mobile reference */
-    .kc-bottom-nav {
-        position: fixed;
-        z-index: 1200;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 5px;
-        padding: 9px max(12px, env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom));
-        border-top: 1px solid #e5e7eb;
-        background: rgba(255,255,255,.96);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-    }
-    .kc-bottom-item {
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 4px;
-        padding: 8px 2px;
-        border: 0;
-        border-radius: 17px;
-        background: transparent;
-        color: #626571;
-        text-decoration: none;
-        cursor: pointer;
-        font: inherit;
-        font-size: .75rem;
-        font-weight: 700;
-        line-height: 1.15;
-    }
-    .kc-bottom-item i {
-        font-size: 1.55rem;
-        line-height: 1;
-    }
-    .kc-bottom-item.active {
-        background: #f1f2f5;
-        color: #3f4654;
-    }
-    .kc-bottom-item .kc-bottom-label {
-        white-space: nowrap;
-    }
-
-    /* Personal information dialog: front-end only */
-    .kc-profile-dialog {
-        width: min(440px, calc(100% - 30px));
-        max-height: 85vh;
-        overflow-y: auto;
-        box-sizing: border-box;
-        padding: 24px;
-        border: 0;
-        border-radius: 22px;
-        color: #30241e;
-        background: #fffaf6;
-        box-shadow: 0 22px 70px rgba(0,0,0,.28);
-    }
-    .kc-profile-dialog::backdrop {
-        background: rgba(23,16,12,.62);
-        backdrop-filter: blur(4px);
-    }
-    .kc-dialog-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 18px;
-    }
-    .kc-dialog-header h2 {
-        margin: 0 0 7px;
-        font-size: 1.35rem;
-    }
-    .kc-dialog-header p {
-        margin: 0;
-        color: #78675c;
-        font-size: .9rem;
-        line-height: 1.45;
-    }
-    .kc-dialog-close {
-        flex: 0 0 auto;
-        border: 0;
-        background: transparent;
-        color: #50382c;
-        font-size: 1.9rem;
-        line-height: 1;
-        cursor: pointer;
-    }
-    .kc-profile-dialog label {
-        display: block;
-        margin: 13px 0 6px;
-        font-size: .9rem;
-        font-weight: 700;
-    }
-    .kc-profile-dialog input {
+    .kc-scan-action {
         width: 100%;
-        box-sizing: border-box;
-        padding: 12px 13px;
-        border: 1px solid #e0d2c8;
-        border-radius: 11px;
-        background: #fff;
-        color: #30241e;
+        text-align: left;
         font: inherit;
-    }
-    .kc-profile-dialog input:focus {
-        outline: 2px solid #9a6d55;
-        outline-offset: 1px;
-    }
-    .kc-profile-note {
-        margin: 13px 0;
-        color: #78675c;
-        font-size: .8rem;
-        line-height: 1.5;
-    }
-    .kc-save-profile {
-        width: 100%;
-        padding: 13px;
-        border: 0;
-        border-radius: 12px;
-        background: #50362a;
-        color: white;
-        font: inherit;
-        font-weight: 800;
         cursor: pointer;
     }
 
-    /* QR scanner modal */
-    .kc-qr-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 2000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        background: rgba(0,0,0,.78);
-    }
-    .kc-qr-panel {
-        width: min(450px, 100%);
-        max-height: 90vh;
-        overflow-y: auto;
-        padding: 20px;
-        border-radius: 20px;
-        background: white;
-        color: #30241e;
-        text-align: center;
-    }
-    .kc-qr-panel h2 { margin-top: 0; }
-    .kc-qr-close {
-        margin-top: 15px;
-        padding: 11px 20px;
-        border: 0;
-        border-radius: 10px;
-        background: #50362a;
-        color: white;
-        cursor: pointer;
+    .kc-scan-action:focus-visible {
+        outline: 3px solid #ffb79f;
+        outline-offset: 3px;
     }
 
     @media (min-width: 720px) {
-        .kc-page { padding-top: 34px; }
-        .kc-action-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .kc-bottom-nav {
-            left: 50%;
-            right: auto;
-            width: min(620px, calc(100% - 32px));
-            bottom: 14px;
-            transform: translateX(-50%);
-            border: 1px solid #e5e7eb;
-            border-radius: 23px;
-            box-shadow: 0 10px 35px rgba(24,30,45,.12);
-            padding: 8px 12px;
+        .kc-dashboard {
+            padding-top: 36px;
+            padding-bottom: 40px;
         }
-        .kc-page { padding-bottom: 130px; }
+
+        .kc-action-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
     }
 
     @media (max-width: 420px) {
-        .kc-page { width: calc(100% - 22px); padding-top: 20px; }
-        .kc-topbar { padding: 11px; }
-        .kc-brand { font-size: 1.12rem; }
-        .kc-profile-card { padding: 22px 18px; }
-        .kc-profile-icon { font-size: 3.3rem; }
-        .kc-action { padding: 15px; min-height: 166px; }
-        .kc-action-icon { width: 48px; height: 48px; font-size: 1.7rem; }
-        .kc-bottom-item .kc-bottom-label { font-size: .68rem; }
+        .kc-dashboard {
+            width: calc(100% - 22px);
+            padding-top: 22px;
+        }
+
+        .kc-profile-card {
+            padding: 24px 19px;
+            border-radius: 23px;
+        }
+
+        .kc-profile-icon {
+            font-size: 3.3rem;
+        }
+
+        .kc-action {
+            padding: 15px;
+            min-height: 166px;
+        }
+
+        .kc-action-icon {
+            width: 48px;
+            height: 48px;
+            font-size: 1.7rem;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .kc-action {
+            transition: none;
+        }
+
+        .kc-action:hover {
+            transform: none;
+        }
     }
 </style>
 {% endblock %}
 
 {% block body %}
-<header class="kc-topbar">
-    <div class="kc-brand">
-        <span class="kc-brand-icon"><i class='bx bx-coffee'></i></span>
-        <span>King Cafe</span>
-    </div>
-    <a href="{{ url_for('auth.logout') }}" class="kc-logout">
-        <i class='bx bx-log-out'></i><span>Logout</span>
-    </a>
-</header>
+<main class="kc-dashboard">
 
-<main class="kc-page">
     <div class="alerts">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
     </div>
 
+    <!-- Dashboard heading -->
     <section class="kc-welcome">
-        <div class="kc-welcome-icon"><i class='bx bx-grid-alt'></i></div>
+        <div class="kc-welcome-icon" aria-hidden="true">
+            <i class="bx bx-grid-alt"></i>
+        </div>
+
         <div>
             <h1>My Dashboard</h1>
             <p>Welcome back, {{ session.get('name', 'Guest') }}! 👋</p>
         </div>
     </section>
 
-    <button type="button" id="openProfileDialog" class="kc-profile-card"
-            aria-haspopup="dialog" aria-controls="profileDialog">
+    <!-- Greeting card: not a button and has no click handler -->
+    <section class="kc-profile-card" aria-label="Welcome to King Cafe">
         <div class="kc-profile-copy">
             <h2>Hello, {{ session.get('name', 'Guest') }}!</h2>
             <p>Ready to order something delicious?</p>
-            <span class="kc-profile-prompt">Fill in your personal details for more offers</span>
         </div>
-        <i class='bx bx-user-circle kc-profile-icon' aria-hidden="true"></i>
-    </button>
 
+        <i class="bx bx-user-circle kc-profile-icon"
+           aria-hidden="true"></i>
+    </section>
+
+    <!-- Main customer actions -->
     <h2 class="kc-section-heading">Explore King Cafe</h2>
-    <section class="kc-action-grid">
+
+    <section class="kc-action-grid" aria-label="Cafe services">
+
         <a href="{{ url_for('customer.menu') }}" class="kc-action">
-            <span class="kc-action-icon orange"><i class='bx bx-food-menu'></i></span>
+            <span class="kc-action-icon orange" aria-hidden="true">
+                <i class="bx bx-food-menu"></i>
+            </span>
             <h3>Digital Menu</h3>
             <p>Discover your favourite food and drinks.</p>
-            <span class="kc-action-footer">View Menu <i class='bx bx-chevron-right'></i></span>
+            <span class="kc-action-footer">
+                View Menu <i class="bx bx-chevron-right"></i>
+            </span>
         </a>
 
-        <button type="button" id="scanTableQR" class="kc-action" style="text-align:left;font:inherit;cursor:pointer;">
-            <span class="kc-action-icon purple"><i class='bx bx-qr-scan'></i></span>
+        <!-- Uses the shared QR scanner in base.html -->
+        <button type="button" class="kc-action kc-scan-action"
+                id="kcDashboardScanQR">
+            <span class="kc-action-icon purple" aria-hidden="true">
+                <i class="bx bx-qr-scan"></i>
+            </span>
             <h3>Scan Table-QR</h3>
             <p>Scan your table code to get started.</p>
-            <span class="kc-action-footer">Open Scanner <i class='bx bx-chevron-right'></i></span>
+            <span class="kc-action-footer">
+                Open Scanner <i class="bx bx-chevron-right"></i>
+            </span>
         </button>
 
         <a href="{{ url_for('customer.cart') }}" class="kc-action">
-            <span class="kc-action-icon green"><i class='bx bx-shopping-bag'></i></span>
+            <span class="kc-action-icon green" aria-hidden="true">
+                <i class="bx bx-shopping-bag"></i>
+            </span>
             <h3>My Cart</h3>
             <p>Review your selected items before ordering.</p>
-            <span class="kc-action-footer">View Cart <i class='bx bx-chevron-right'></i></span>
+            <span class="kc-action-footer">
+                View Cart <i class="bx bx-chevron-right"></i>
+            </span>
         </a>
 
         <a href="{{ url_for('customer.track_orders') }}" class="kc-action">
-            <span class="kc-action-icon blue"><i class='bx bx-package'></i></span>
+            <span class="kc-action-icon blue" aria-hidden="true">
+                <i class="bx bx-package"></i>
+            </span>
             <h3>Track Order</h3>
             <p>Check the status of your current order.</p>
-            <span class="kc-action-footer">Track Order <i class='bx bx-chevron-right'></i></span>
+            <span class="kc-action-footer">
+                Track Order <i class="bx bx-chevron-right"></i>
+            </span>
         </a>
 
         <a href="{{ url_for('customer.order_history') }}" class="kc-action">
-            <span class="kc-action-icon brown"><i class='bx bx-history'></i></span>
+            <span class="kc-action-icon brown" aria-hidden="true">
+                <i class="bx bx-history"></i>
+            </span>
             <h3>Order History</h3>
             <p>See your previous cafe orders.</p>
-            <span class="kc-action-footer">View History <i class='bx bx-chevron-right'></i></span>
+            <span class="kc-action-footer">
+                View History <i class="bx bx-chevron-right"></i>
+            </span>
         </a>
 
         <a href="{{ url_for('customer.ai_assistant') }}" class="kc-action">
-            <span class="kc-action-icon orange"><i class='bx bx-bot'></i></span>
+            <span class="kc-action-icon orange" aria-hidden="true">
+                <i class="bx bx-bot"></i>
+            </span>
             <h3>Ask AI</h3>
             <p>Get help choosing your next favourite.</p>
-            <span class="kc-action-footer">Ask Now <i class='bx bx-chevron-right'></i></span>
+            <span class="kc-action-footer">
+                Ask Now <i class="bx bx-chevron-right"></i>
+            </span>
         </a>
+
     </section>
 </main>
 
-<!-- Mobile bottom navigation requested: Home, Scan Table-QR, Ask AI, Profile -->
-<nav class="kc-bottom-nav" aria-label="Main navigation">
-    <a href="{{ url_for('customer.dashboard') }}" class="kc-bottom-item active" aria-current="page">
-        <i class='bx bx-home-alt-2'></i><span class="kc-bottom-label">Home</span>
-    </a>
-    <button type="button" class="kc-bottom-item" id="bottomScanQR">
-        <i class='bx bx-qr-scan'></i><span class="kc-bottom-label">Scan Table-QR</span>
-    </button>
-    <a href="{{ url_for('customer.ai_assistant') }}" class="kc-bottom-item">
-        <i class='bx bx-bot'></i><span class="kc-bottom-label">Ask AI</span>
-    </a>
-    <button type="button" class="kc-bottom-item" id="bottomProfile">
-        <i class='bx bx-user'></i><span class="kc-bottom-label">Profile</span>
-    </button>
-</nav>
-
-<!-- Personal information dialog (front-end only for now) -->
-<dialog id="profileDialog" class="kc-profile-dialog">
-    <div class="kc-dialog-header">
-        <div>
-            <h2>Personal Information</h2>
-            <p>Complete your profile to help us offer relevant deals.</p>
-        </div>
-        <button type="button" id="closeProfileDialog" class="kc-dialog-close" aria-label="Close dialog">&times;</button>
-    </div>
-    <form id="profileForm">
-        <label for="profileName">Full Name</label>
-        <input id="profileName" name="full_name" type="text"
-               value="{{ session.get('name', '') }}" autocomplete="name" required>
-
-        <label for="profilePhone">Mobile Number</label>
-        <input id="profilePhone" name="phone" type="tel" inputmode="numeric"
-               pattern="[0-9]{10}" maxlength="10" autocomplete="tel"
-               placeholder="Enter 10-digit mobile number" required>
-
-        <label for="profileEmail">Email Address</label>
-        <input id="profileEmail" name="email" type="email" autocomplete="email"
-               placeholder="Optional">
-
-        <label for="profileBirthday">Birthday</label>
-        <input id="profileBirthday" name="birthday" type="date">
-
-        <p class="kc-profile-note">Your details are not saved yet. Profile saving will be connected to the Flask backend in a later step.</p>
-        <button type="submit" class="kc-save-profile">Validate Details</button>
-        <p id="profileMessage" role="status" aria-live="polite"></p>
-    </form>
-</dialog>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
 <script>
-(() => {
-    const profileDialog = document.getElementById('profileDialog');
-    const openProfile = () => {
-        if (!profileDialog.open) profileDialog.showModal();
-    };
+document.addEventListener('DOMContentLoaded', function () {
+    /*
+     * Reuse the shared QR scanner from base.html.
+     * This avoids creating a second camera/scanner instance.
+     */
+    const dashboardScanButton =
+        document.getElementById('kcDashboardScanQR');
 
-    document.getElementById('openProfileDialog').addEventListener('click', openProfile);
-    document.getElementById('bottomProfile').addEventListener('click', openProfile);
-    document.getElementById('closeProfileDialog').addEventListener('click', () => profileDialog.close());
+    const sharedScanButton =
+        document.getElementById('kcGlobalScanQR');
 
-    profileDialog.addEventListener('click', (event) => {
-        if (event.target === profileDialog) profileDialog.close();
-    });
-
-    document.getElementById('profileForm').addEventListener('submit', (event) => {
-        event.preventDefault();
-        const form = event.currentTarget;
-        if (!form.reportValidity()) return;
-        document.getElementById('profileMessage').textContent =
-            'Details look valid. Saving will be enabled when the backend is connected.';
-    });
-
-    let scanner = null;
-    let scannerBox = null;
-    let scannerStarting = false;
-
-    async function closeQRScanner() {
-        if (scanner && scanner.isScanning) {
-            try { await scanner.stop(); } catch (e) { /* scanner may already be stopped */ }
-        }
-        if (scanner) {
-            try { await scanner.clear(); } catch (e) { /* ignore cleanup errors */ }
-        }
-        scanner = null;
-        scannerStarting = false;
-        if (scannerBox) scannerBox.remove();
-        scannerBox = null;
+    if (dashboardScanButton && sharedScanButton) {
+        dashboardScanButton.addEventListener('click', function () {
+            sharedScanButton.click();
+        });
     }
-
-    async function openQRScanner() {
-        if (scannerStarting) return;
-        scannerStarting = true;
-
-        scannerBox = document.createElement('div');
-        scannerBox.className = 'kc-qr-overlay';
-        scannerBox.innerHTML = `
-            <div class="kc-qr-panel" role="dialog" aria-modal="true" aria-label="Scan Table QR">
-                <h2>Scan Table QR</h2>
-                <p>Allow camera access and point it at your table's QR code.</p>
-                <div id="kcQrReader" style="width:100%;"></div>
-                <button type="button" id="kcQrClose" class="kc-qr-close">Close Scanner</button>
-                <p id="kcQrError" role="status" style="color:#a33;"></p>
-            </div>`;
-        document.body.appendChild(scannerBox);
-        document.getElementById('kcQrClose').addEventListener('click', closeQRScanner);
-
-        if (typeof Html5Qrcode === 'undefined') {
-            document.getElementById('kcQrError').textContent = 'QR scanner library could not load. Please refresh and try again.';
-            scannerStarting = false;
-            return;
-        }
-
-        scanner = new Html5Qrcode('kcQrReader');
-        try {
-            await scanner.start(
-                { facingMode: 'environment' },
-                { fps: 10, qrbox: { width: 230, height: 230 } },
-                async (decodedText) => {
-                    await closeQRScanner();
-                    try {
-                        const target = new URL(decodedText, window.location.origin);
-                        if (target.origin !== window.location.origin) {
-                            alert('This QR code is not a King Cafe link.');
-                            return;
-                        }
-                        window.location.href = target.href;
-                    } catch (e) {
-                        alert('This QR code does not contain a valid link.');
-                    }
-                },
-                () => {}
-            );
-        } catch (error) {
-            const message = document.getElementById('kcQrError');
-            if (message) message.textContent = 'Unable to access the camera. Check camera permission and use HTTPS.';
-            console.error('QR camera error:', error);
-            if (scanner) {
-                try { await scanner.clear(); } catch (e) {}
-                scanner = null;
-            }
-        } finally {
-            scannerStarting = false;
-        }
-    }
-
-    document.getElementById('scanTableQR').addEventListener('click', openQRScanner);
-    document.getElementById('bottomScanQR').addEventListener('click', openQRScanner);
-})();
+});
 </script>
 {% endblock %}
