@@ -2,23 +2,22 @@
 {% block title %}Edit Profile - King Cafe{% endblock %}
 {% block extra_css %}
 <style>
-.kce-wrap{width:min(100% - 30px,650px);margin:28px auto 20px;color:#28221f}
-.kce-title{font-size:1.8rem;margin:0 0 5px;font-weight:800}.kce-sub{color:#777;margin:0 0 22px}
+.kce-wrap{width:min(100% - 30px,760px);margin:28px auto 35px;color:#28221f}
+.kce-heading{display:flex;align-items:center;gap:12px;margin-bottom:20px}.kce-back{width:42px;height:42px;display:grid;place-items:center;border:1px solid #ececef;border-radius:13px;background:#fff;color:#50362a;text-decoration:none;font-size:1.4rem}.kce-title{font-size:1.7rem;margin:0 0 4px;font-weight:800}.kce-sub{color:#777;margin:0}
 .kce-card{background:#fff;border:1px solid #ececef;border-radius:22px;padding:24px;box-shadow:0 5px 20px #252b3508}
-.kce-row{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.kce-group{margin-bottom:17px}.kce-group label{display:block;font-weight:700;font-size:.9rem;margin-bottom:7px}
-.kce-group input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid #e0e1e6;border-radius:12px;font:inherit;background:#fff;color:#29252a}
-.kce-group input:focus{outline:2px solid #f0a58c;outline-offset:1px}
+.kce-row{display:grid;grid-template-columns:1fr 1fr;gap:15px}.kce-group{margin-bottom:17px}.kce-group label{display:block;font-weight:700;font-size:.9rem;margin-bottom:7px}
+.kce-group input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid #e0e1e6;border-radius:12px;font:inherit;background:#fff;color:#29252a}.kce-group input:focus{outline:2px solid #f0a58c;outline-offset:1px}
 .kce-help{font-size:.8rem;color:#777;margin:6px 0 0}.kce-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-.kce-btn{border:0;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 17px;border-radius:12px;background:#50362a;color:white;font:inherit;font-weight:700}
-.kce-btn.secondary{background:#f0f1f4;color:#34343b}
-@media(max-width:520px){.kce-card{padding:18px}.kce-row{grid-template-columns:1fr}.kce-btn{width:100%;box-sizing:border-box}}
+.kce-btn{border:0;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 17px;border-radius:12px;background:#ff6847;color:white;font:inherit;font-weight:700}.kce-btn.secondary{background:#f0f1f4;color:#34343b}
+@media(max-width:520px){.kce-wrap{margin:20px auto 28px}.kce-card{padding:18px}.kce-row{grid-template-columns:1fr}.kce-btn{width:100%;box-sizing:border-box}}
 </style>
 {% endblock %}
 {% block body %}
 <main class="kce-wrap">
-  <h1 class="kce-title">Edit Profile</h1>
-  <p class="kce-sub">Keep your personal details up to date</p>
+  <header class="kce-heading">
+    <a class="kce-back" href="{{ url_for('customer.profile') }}" aria-label="Back to profile"><i class="bx bx-arrow-back"></i></a>
+    <div><h1 class="kce-title">Edit Profile</h1><p class="kce-sub">Keep your personal details up to date</p></div>
+  </header>
   <section class="kce-card">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}{% for category, message in messages %}
@@ -31,7 +30,6 @@
         <input id="name" name="name" type="text" maxlength="100" autocomplete="name" value="{{ request.form.get('name', profile_user.name) }}" required>
       </div>
       <div class="kce-row">
-        
         <div class="kce-group">
           <label for="mobile">WhatsApp / Mobile Number *</label>
           <input id="mobile" name="mobile" type="tel" maxlength="15" autocomplete="tel" value="{{ request.form.get('mobile', profile_user.mobile) }}" required>
