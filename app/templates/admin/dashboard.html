@@ -1,62 +1,78 @@
 {% extends 'admin/base_admin.html' %}
-
 {% block page_title %}Overview{% endblock %}
-
 {% block content %}
+<style>
+.ka-section{margin:24px 0}.ka-head{display:flex;justify-content:space-between;align-items:end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.ka-head h2{margin:0 0 5px;font-size:1.35rem}.ka-head p{margin:0;color:var(--text-muted,#777)}
+.ka-filter{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.ka-filter label{display:grid;gap:5px;font-size:.8rem;color:var(--text-muted,#777)}
+.ka-filter select,.ka-btn{padding:10px 12px;border:1px solid var(--border-color,#e5ded9);border-radius:10px;background:var(--surface-color,#fff);color:inherit}
+.ka-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700;font-size:.88rem;cursor:pointer}.ka-btn.primary{background:#50362a;color:#fff;border-color:#50362a}
+.ka-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.ka-metric,.ka-panel{background:var(--surface-color,#fff);border:1px solid var(--border-color,#eee7e1);border-radius:16px;padding:16px;box-shadow:var(--shadow-sm,0 4px 15px #00000006);min-width:0}
+.ka-metric span{display:block;color:var(--text-muted,#777);font-size:.85rem;margin-bottom:8px}.ka-metric strong{font-size:1.35rem;overflow-wrap:anywhere}
+.ka-downloads{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}.ka-charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}.ka-panel h3{margin:0 0 14px;font-size:1rem}.ka-chart{height:250px;position:relative}
+.ka-table-wrap{overflow-x:auto}.ka-table{width:100%;border-collapse:collapse;white-space:nowrap}.ka-table th,.ka-table td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--border-color,#eee7e1);font-size:.88rem}
+@media(max-width:900px){.ka-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ka-charts{grid-template-columns:1fr}}
+@media(max-width:540px){.ka-grid{gap:8px}.ka-metric,.ka-panel{padding:12px}.ka-metric strong{font-size:1.15rem}.ka-filter{width:100%}.ka-filter label{flex:1}.ka-filter select{width:100%;min-width:0}.ka-btn{font-size:.8rem;padding:9px}.ka-chart{height:220px}}
+</style>
+
 <div class="dashboard-cards">
-    <div class="stat-card hover-card animate-fade-up delay-100">
-        <div class="stat-title">Today's Orders</div>
-        <div class="stat-value">{{ stats.today_orders }}</div>
-    </div>
-    <div class="stat-card hover-card animate-fade-up delay-200">
-        <div class="stat-title">Today's Sales</div>
-        <div class="stat-value">₹{{ stats.today_sales }}</div>
-    </div>
-    <div class="stat-card hover-card animate-fade-up delay-300">
-        <div class="stat-title">Pending Orders</div>
-        <div class="stat-value">{{ stats.pending_orders }}</div>
-    </div>
-    <div class="stat-card hover-card animate-fade-up delay-400">
-        <div class="stat-title">Active Customers</div>
-        <div class="stat-value">{{ stats.active_customers }}</div>
-    </div>
+ <div class="stat-card hover-card animate-fade-up delay-100"><div class="stat-title">Today's Orders</div><div class="stat-value">{{ stats.today_orders }}</div></div>
+ <div class="stat-card hover-card animate-fade-up delay-200"><div class="stat-title">Today's Sales</div><div class="stat-value">₹{{ '%.2f'|format(stats.today_sales) }}</div></div>
+ <div class="stat-card hover-card animate-fade-up delay-300"><div class="stat-title">Pending Orders</div><div class="stat-value">{{ stats.pending_orders }}</div></div>
+ <div class="stat-card hover-card animate-fade-up delay-400"><div class="stat-title">Active Customers</div><div class="stat-value">{{ stats.active_customers }}</div></div>
 </div>
 
-<div class="animate-fade-up delay-400 glass-panel" style="background: var(--surface-color); padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); margin-top: 20px;">
-    <h3 style="margin-bottom: 15px;">Recent Orders</h3>
-    {% if recent_orders %}
-    <table style="width: 100%; text-align: left; border-collapse: collapse;">
-        <thead>
-            <tr style="border-bottom: 2px solid var(--border-color);">
-                <th style="padding: 10px;">Order ID</th>
-                <th style="padding: 10px;">Table</th>
-                <th style="padding: 10px;">Status</th>
-                <th style="padding: 10px;">Total</th>
-                <th style="padding: 10px;">Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in recent_orders %}
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 10px; font-weight: bold;">#{{ order.id }}</td>
-                <td style="padding: 10px;">{{ order.table.table_number }}</td>
-                <td style="padding: 10px;">
-                    <span style="font-size: 0.85rem; padding: 3px 8px; border-radius: 4px;
-                        {% if order.status == 'PENDING_ADMIN_REVIEW' %}background: #fef08a; color: #854d0e;
-                        {% elif order.status == 'COMPLETED' %}background: #dcfce7; color: #166534;
-                        {% elif order.status == 'REJECTED' or order.status == 'CANCELLED' %}background: #fee2e2; color: #991b1b;
-                        {% else %}background: #e0e7ff; color: #4338ca;{% endif %}">
-                        {{ order.status }}
-                    </span>
-                </td>
-                <td style="padding: 10px;">₹{{ order.grand_total }}</td>
-                <td style="padding: 10px; color: var(--text-muted); font-size: 0.9rem;">{{ order.created_at.strftime('%I:%M %p') }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p style="color: var(--text-muted); margin-top: 10px;">No recent orders to display.</p>
-    {% endif %}
+<section class="ka-section">
+ <div class="ka-head"><div><h2>Analytics &amp; Reports</h2><p>Daily performance and monthly business summary</p></div>
+  <form class="ka-filter" method="GET" action="{{ url_for('admin.dashboard') }}">
+   <label>Month<select name="month">{% for m in range(1,13) %}<option value="{{ m }}" {% if m==report_month %}selected{% endif %}>{{ ['January','February','March','April','May','June','July','August','September','October','November','December'][m-1] }}</option>{% endfor %}</select></label>
+   <label>Year<select name="year">{% for y in available_years %}<option value="{{ y }}" {% if y==report_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></label>
+   <button class="ka-btn primary" type="submit">View Report</button>
+  </form>
+ </div>
+ <div class="ka-grid">
+  <div class="ka-metric"><span>Orders this month</span><strong>{{ monthly_summary.total_orders }}</strong></div>
+  <div class="ka-metric"><span>Paid sales this month</span><strong>₹{{ '%.2f'|format(monthly_summary.paid_sales) }}</strong></div>
+  <div class="ka-metric"><span>Completed orders</span><strong>{{ monthly_summary.completed_orders }}</strong></div>
+  <div class="ka-metric"><span>Pending review</span><strong>{{ monthly_summary.pending_orders }}</strong></div>
+  <div class="ka-metric"><span>Cancelled / rejected</span><strong>{{ monthly_summary.cancelled_orders }}</strong></div>
+  <div class="ka-metric"><span>Average order value</span><strong>₹{{ '%.2f'|format(monthly_summary.average_order_value) }}</strong></div>
+ </div>
+ <div class="ka-downloads">
+  <a class="ka-btn" href="{{ url_for('admin.export_analytics',file_format='xlsx',year=report_year,month=report_month) }}">↓ Download Excel</a>
+  <a class="ka-btn" href="{{ url_for('admin.export_analytics',file_format='pdf',year=report_year,month=report_month) }}">↓ Download PDF</a>
+  <a class="ka-btn" href="{{ url_for('admin.export_analytics',file_format='csv',year=report_year,month=report_month) }}">↓ Download CSV</a>
+ </div>
+ <div class="ka-charts">
+  <div class="ka-panel"><h3>Orders per day</h3><div class="ka-chart"><canvas id="ordersChart"></canvas></div></div>
+  <div class="ka-panel"><h3>Paid sales per day (₹)</h3><div class="ka-chart"><canvas id="salesChart"></canvas></div></div>
+ </div>
+ <div class="ka-panel" style="margin-top:14px"><h3>Monthly daily breakdown</h3><div class="ka-table-wrap">
+  <table class="ka-table"><thead><tr><th>Date</th><th>Orders</th><th>Paid Sales</th><th>Pending Review</th></tr></thead><tbody>
+  {% for r in daily_rows %}<tr><td>{{ r.date }}</td><td>{{ r.orders }}</td><td>₹{{ '%.2f'|format(r.sales) }}</td><td>{{ r.pending }}</td></tr>{% endfor %}
+  </tbody></table></div></div>
+</section>
+
+<div class="animate-fade-up delay-400 glass-panel" style="background:var(--surface-color);padding:20px;border-radius:var(--radius-md);box-shadow:var(--shadow-md);margin-top:20px;overflow-x:auto;">
+ <h3 style="margin-bottom:15px;">Recent Orders</h3>
+ {% if recent_orders %}<table style="width:100%;text-align:left;border-collapse:collapse;min-width:600px;">
+ <thead><tr style="border-bottom:2px solid var(--border-color);"><th style="padding:10px;">Order ID</th><th style="padding:10px;">Table</th><th style="padding:10px;">Status</th><th style="padding:10px;">Total</th><th style="padding:10px;">Time</th></tr></thead>
+ <tbody>{% for order in recent_orders %}<tr style="border-bottom:1px solid var(--border-color);">
+ <td style="padding:10px;font-weight:bold;">#{{ order.id }}</td><td style="padding:10px;">{{ order.table.table_number if order.table else '—' }}</td>
+ <td style="padding:10px;"><span style="font-size:.85rem;padding:3px 8px;border-radius:4px;{% if order.status=='PENDING_ADMIN_REVIEW' %}background:#fef08a;color:#854d0e;{% elif order.status=='COMPLETED' %}background:#dcfce7;color:#166534;{% elif order.status in ['REJECTED','CANCELLED'] %}background:#fee2e2;color:#991b1b;{% else %}background:#e0e7ff;color:#4338ca;{% endif %}">{{ order.status }}</span></td>
+ <td style="padding:10px;">₹{{ order.grand_total }}</td><td style="padding:10px;color:var(--text-muted);font-size:.9rem;">{{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+ </tr>{% endfor %}</tbody></table>{% else %}<p style="color:var(--text-muted);">No recent orders to display.</p>{% endif %}
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(() => {
+ const labels={{ daily_rows|map(attribute='date')|list|tojson }};
+ const orderData={{ daily_rows|map(attribute='orders')|list|tojson }};
+ const salesData={{ daily_rows|map(attribute='sales')|list|tojson }};
+ if(typeof Chart==='undefined') return;
+ const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:10,maxRotation:0},grid:{display:false}},y:{beginAtZero:true}}};
+ new Chart(document.getElementById('ordersChart'),{type:'line',data:{labels,datasets:[{label:'Orders',data:orderData,borderColor:'#D97745',backgroundColor:'rgba(217,119,69,.12)',fill:true,tension:.3}]},options:opts});
+ new Chart(document.getElementById('salesChart'),{type:'bar',data:{labels,datasets:[{label:'Paid sales',data:salesData,backgroundColor:'rgba(80,54,42,.8)',borderRadius:4}]},options:opts});
+})();
+</script>
 {% endblock %}
