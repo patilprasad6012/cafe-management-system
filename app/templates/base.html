@@ -387,7 +387,7 @@ body.kc-sidebar-open {
             <i class="bx bx-bot" aria-hidden="true"></i>
             <span>Ask AI</span>
         </a>
-        <a href="{{ url_for('customer.dashboard', open_profile=1) }}"
+        <a href="{{ url_for('customer.profile') }}"
            class="kc-nav-item {% if request.args.get('open_profile') == '1' %}active{% endif %}">
             <i class="bx bx-user" aria-hidden="true"></i>
             <span>Profile</span>
