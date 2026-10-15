@@ -1,43 +1,440 @@
+```html
 {% extends 'base.html' %}
 {% block title %}My Profile - King Cafe{% endblock %}
+
 {% block extra_css %}
 <style>
-.kcp-wrap{width:min(100% - 30px,720px);margin:28px auto 20px;color:#28221f}
-.kcp-title{font-size:1.8rem;margin:0 0 5px;font-weight:800}.kcp-sub{color:#777;margin:0 0 22px}
-.kcp-card{background:#fff;border:1px solid #ececef;border-radius:22px;padding:24px;box-shadow:0 5px 20px #252b3508}
-.kcp-hero{display:flex;align-items:center;gap:17px;padding-bottom:22px;border-bottom:1px solid #eee}
-.kcp-avatar{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:#fff0e9;color:#e96b48;font-size:3.2rem;flex-shrink:0}
-.kcp-name{font-size:1.3rem;font-weight:800;margin:0 0 5px;overflow-wrap:anywhere}.kcp-email{color:#777;overflow-wrap:anywhere}
-.kcp-edit{display:inline-flex;align-items:center;gap:8px;margin-left:auto;padding:10px 14px;border-radius:12px;background:#fff0e9;color:#b84f32;text-decoration:none;font-weight:700;white-space:nowrap}
-.kcp-details{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
-.kcp-field-label{color:#888;font-size:.83rem;margin-bottom:6px}.kcp-field-value{font-weight:700;overflow-wrap:anywhere}
-.kcp-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.kcp-btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;text-decoration:none;border-radius:12px;padding:12px 16px;background:#50362a;color:white;font-weight:700}.kcp-btn.secondary{background:#f3f3f5;color:#393943}
-@media(max-width:520px){.kcp-card{padding:18px}.kcp-hero{align-items:flex-start;flex-wrap:wrap}.kcp-avatar{width:68px;height:68px;font-size:2.7rem}.kcp-edit{margin-left:0}.kcp-details{grid-template-columns:1fr;gap:16px}}
+/* ===== KING CAFE PROFILE ===== */
+.kp-page {
+    --kp-brown: #50362a;
+    --kp-orange: #ff6847;
+    --kp-bg: #f3f4f6;
+    --kp-text: #24252b;
+    --kp-muted: #737887;
+    --kp-border: #ececf0;
+
+    max-width: 1050px;
+    margin: 28px auto 110px;
+    padding: 0 20px;
+    color: var(--kp-text);
+}
+
+.kp-heading {
+    margin-bottom: 22px;
+}
+
+.kp-heading h1 {
+    margin: 0 0 7px;
+    font-size: clamp(1.6rem, 4vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -.5px;
+}
+
+.kp-heading p {
+    margin: 0;
+    color: var(--kp-muted);
+    font-size: .96rem;
+}
+
+.kp-card {
+    background: #fff;
+    border: 1px solid var(--kp-border);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 16px;
+    box-shadow: 0 5px 22px rgba(30, 30, 40, .035);
+}
+
+/* Profile overview */
+.kp-overview {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.kp-avatar {
+    width: 78px;
+    height: 78px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff0e9;
+    color: var(--kp-orange);
+    border: 3px solid #ffe1d7;
+    font-size: 1.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.kp-identity {
+    min-width: 0;
+    flex: 1;
+}
+
+.kp-name {
+    font-size: 1.25rem;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+    margin: 0 0 5px;
+}
+
+.kp-email {
+    color: var(--kp-muted);
+    overflow-wrap: anywhere;
+    margin-bottom: 10px;
+}
+
+.kp-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: #646b79;
+    font-size: .9rem;
+}
+
+.kp-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.kp-meta i {
+    font-size: 1.05rem;
+}
+
+.kp-button {
+    min-height: 43px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border: 0;
+    border-radius: 12px;
+    text-decoration: none;
+    font: inherit;
+    font-size: .92rem;
+    font-weight: 750;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+
+.kp-button:hover {
+    transform: translateY(-1px);
+}
+
+.kp-button-primary {
+    background: var(--kp-orange);
+    color: white;
+}
+
+.kp-button-primary:hover {
+    background: #ee5738;
+    color: white;
+}
+
+.kp-button-secondary {
+    background: #f2f3f5;
+    color: #343641;
+}
+
+.kp-button-secondary:hover {
+    background: #e8e9ed;
+}
+
+/* Section heading */
+.kp-section-title {
+    font-size: 1.08rem;
+    font-weight: 800;
+    margin: 0 0 6px;
+}
+
+.kp-section-description {
+    color: var(--kp-muted);
+    font-size: .9rem;
+    margin: 0;
+}
+
+.kp-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+/* Detail grid */
+.kp-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.kp-detail {
+    min-width: 0;
+    padding: 15px;
+    background: #fafafb;
+    border: 1px solid #f0f0f3;
+    border-radius: 13px;
+}
+
+.kp-detail-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--kp-muted);
+    font-size: .84rem;
+}
+
+.kp-detail-value {
+    display: block;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+}
+
+/* Settings navigation cards */
+.kp-setting {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    margin-top: 12px;
+    background: #fff;
+    border: 1px solid var(--kp-border);
+    border-radius: 15px;
+    text-decoration: none;
+    color: var(--kp-text);
+    transition: border-color .2s, background .2s;
+}
+
+.kp-setting:hover {
+    border-color: #ffc4b3;
+    background: #fffaf8;
+    color: var(--kp-text);
+}
+
+.kp-setting-icon {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background: #fff0e9;
+    color: var(--kp-orange);
+    font-size: 1.45rem;
+}
+
+.kp-setting-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.kp-setting-copy strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: .96rem;
+}
+
+.kp-setting-copy small {
+    color: var(--kp-muted);
+    font-size: .86rem;
+    line-height: 1.4;
+}
+
+.kp-setting-arrow {
+    color: #9ba0ad;
+    font-size: 1.3rem;
+}
+
+/* Actions */
+.kp-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .kp-page {
+        margin: 22px auto 100px;
+        padding: 0 14px;
+    }
+
+    .kp-card {
+        padding: 19px;
+        border-radius: 17px;
+    }
+
+    .kp-overview {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .kp-avatar {
+        width: 65px;
+        height: 65px;
+        font-size: 1.4rem;
+    }
+
+    .kp-identity {
+        flex-basis: calc(100% - 85px);
+    }
+
+    .kp-overview > .kp-button {
+        width: 100%;
+    }
+
+    .kp-details {
+        grid-template-columns: 1fr;
+        gap: 11px;
+    }
+
+    .kp-section-heading {
+        align-items: flex-start;
+    }
+
+    .kp-actions .kp-button {
+        width: 100%;
+    }
+
+    .kp-meta {
+        gap: 9px;
+    }
+}
 </style>
 {% endblock %}
+
 {% block body %}
-<main class="kcp-wrap">
-  <h1 class="kcp-title">My Profile</h1>
-  <p class="kcp-sub">Manage your personal information</p>
-  <section class="kcp-card">
-    <div class="kcp-hero">
-      <div class="kcp-avatar"><i class="bx bx-user"></i></div>
-      <div style="min-width:0;flex:1">
-        <h2 class="kcp-name">{{ profile_user.name }}</h2>
-        <div class="kcp-email">{{ profile_user.email }}</div>
-      </div>
-      <a class="kcp-edit" href="{{ url_for('customer.edit_profile') }}"><i class="bx bx-edit"></i> Edit Profile</a>
-    </div>
-    <div class="kcp-details">
-      <div><div class="kcp-field-label">Full Name</div><div class="kcp-field-value">{{ profile_user.name }}</div></div>
-      <div><div class="kcp-field-label">Mobile Number</div><div class="kcp-field-value">{{ profile_user.mobile }}</div></div>
-      <div><div class="kcp-field-label">Email Address</div><div class="kcp-field-value">{{ profile_user.email }}</div></div>
-      <div><div class="kcp-field-label">Date of Birth</div><div class="kcp-field-value">{{ profile_user.date_of_birth.strftime('%d %B %Y') if profile_user.date_of_birth else 'Not added yet' }}</div></div>
-    </div>
-    <div class="kcp-actions">
-      <a class="kcp-btn" href="{{ url_for('customer.edit_profile') }}"><i class="bx bx-user-pen"></i> Edit Personal Details</a>
-      <a class="kcp-btn secondary" href="{{ url_for('customer.dashboard') }}"><i class="bx bx-home"></i> Back to Home</a>
-    </div>
-  </section>
+<main class="kp-page">
+
+    <header class="kp-heading">
+        <h1>My Profile</h1>
+        <p>Manage your personal information and account settings.</p>
+    </header>
+
+    <!-- Profile overview -->
+    <section class="kp-card">
+        <div class="kp-overview">
+
+            <div class="kp-avatar" aria-label="Profile initials">
+                {% set name_parts = profile_user.name.split() %}
+                {{ (name_parts[0][0] ~ (name_parts[-1][0] if name_parts|length > 1 else ''))|upper }}
+            </div>
+
+            <div class="kp-identity">
+                <h2 class="kp-name">{{ profile_user.name }}</h2>
+                <div class="kp-email">{{ profile_user.email }}</div>
+
+                <div class="kp-meta">
+                    <span>
+                        <i class="bx bx-phone"></i>
+                        {{ profile_user.mobile }}
+                    </span>
+
+                    <span>
+                        <i class="bx bx-calendar"></i>
+                        Joined
+                        {{ profile_user.created_at.strftime('%B %Y') if profile_user.created_at else 'King Cafe member' }}
+                    </span>
+                </div>
+            </div>
+
+            <a class="kp-button kp-button-primary"
+               href="{{ url_for('customer.edit_profile') }}">
+                <i class="bx bx-edit"></i>
+                Edit Profile
+            </a>
+
+        </div>
+    </section>
+
+    <!-- Personal information -->
+    <section class="kp-card">
+        <div class="kp-section-heading">
+            <div>
+                <h2 class="kp-section-title">Personal Information</h2>
+                <p class="kp-section-description">
+                    Your account details in one place.
+                </p>
+            </div>
+        </div>
+
+        <div class="kp-details">
+
+            <div class="kp-detail">
+                <span class="kp-detail-label">Full Name</span>
+                <span class="kp-detail-value">{{ profile_user.name }}</span>
+            </div>
+
+            <div class="kp-detail">
+                <span class="kp-detail-label">WhatsApp / Mobile Number</span>
+                <span class="kp-detail-value">{{ profile_user.mobile }}</span>
+            </div>
+
+            <div class="kp-detail">
+                <span class="kp-detail-label">Email Address</span>
+                <span class="kp-detail-value">{{ profile_user.email }}</span>
+            </div>
+
+            <div class="kp-detail">
+                <span class="kp-detail-label">Date of Birth</span>
+                <span class="kp-detail-value">
+                    {{ profile_user.date_of_birth.strftime('%d %B %Y') if profile_user.date_of_birth else 'Not added yet' }}
+                </span>
+            </div>
+
+        </div>
+
+        <div class="kp-actions">
+            <a class="kp-button kp-button-primary"
+               href="{{ url_for('customer.edit_profile') }}">
+                <i class="bx bx-user-pen"></i>
+                Edit Personal Details
+            </a>
+
+            <a class="kp-button kp-button-secondary"
+               href="{{ url_for('customer.dashboard') }}">
+                <i class="bx bx-home"></i>
+                Back to Home
+            </a>
+        </div>
+    </section>
+
+    <!-- Profile settings -->
+    <section>
+        <h2 class="kp-section-title">Account Settings</h2>
+        <p class="kp-section-description">
+            Manage your personal details and return to your cafe dashboard.
+        </p>
+
+        <a class="kp-setting"
+           href="{{ url_for('customer.edit_profile') }}">
+            <span class="kp-setting-icon">
+                <i class="bx bx-user"></i>
+            </span>
+            <span class="kp-setting-copy">
+                <strong>Edit Profile</strong>
+                <small>Update your name, mobile number, email and date of birth.</small>
+            </span>
+            <i class="bx bx-chevron-right kp-setting-arrow"></i>
+        </a>
+
+        <a class="kp-setting"
+           href="{{ url_for('customer.dashboard') }}">
+            <span class="kp-setting-icon">
+                <i class="bx bx-home"></i>
+            </span>
+            <span class="kp-setting-copy">
+                <strong>My Dashboard</strong>
+                <small>Return to your King Cafe home page.</small>
+            </span>
+            <i class="bx bx-chevron-right kp-setting-arrow"></i>
+        </a>
+    </section>
+
 </main>
 {% endblock %}
+```
