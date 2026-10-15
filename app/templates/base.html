@@ -110,12 +110,17 @@
             .kc-global-bottom-nav .kc-nav-item i { font-size: 1.35rem; }
         }
         
-/* King Cafe customer sidebar */
+
+/* Responsive King Cafe customer sidebar */
+.kc-main-content {
+    min-width: 0;
+}
 .kc-sidebar-toggle {
+    display: none;
     position: fixed;
     top: 16px;
     left: 16px;
-    z-index: 6000;
+    z-index: 7001;
     width: 44px;
     height: 44px;
     border: 1px solid #eee;
@@ -126,7 +131,6 @@
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,.08);
 }
-
 .kc-sidebar-overlay {
     position: fixed;
     inset: 0;
@@ -134,151 +138,82 @@
     background: rgba(0,0,0,.42);
     opacity: 0;
     visibility: hidden;
-    transition: opacity .25s ease, visibility .25s ease;
+    pointer-events: none;
+    transition: opacity .28s ease, visibility .28s ease;
 }
-
 .kc-sidebar {
     position: fixed;
     inset: 0 auto 0 0;
     z-index: 6999;
-    width: min(360px, 88vw);
+    width: 276px;
     display: flex;
     flex-direction: column;
     background: #fff;
     color: #272727;
-    box-shadow: 12px 0 35px rgba(0,0,0,.12);
-    transform: translateX(-105%);
-    transition: transform .28s ease;
-}
-
-.kc-sidebar.open {
+    box-shadow: 5px 0 24px rgba(0,0,0,.07);
     transform: translateX(0);
+    transition: transform .28s ease;
+    overflow: hidden;
 }
-
+.kc-sidebar.open { transform: translateX(0); }
 .kc-sidebar-overlay.open {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
-
 .kc-sidebar-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 22px 20px;
     border-bottom: 1px solid #eee;
-}
-
-.kc-sidebar-brand {
-    font-size: 21px;
-    font-weight: 800;
-    color: #50362a;
-}
-
-.kc-sidebar-brand span {
-    color: #f16a45;
-}
-
-.kc-sidebar-close {
-    border: 0;
-    background: transparent;
-    font-size: 28px;
-    cursor: pointer;
-    color: #333;
-}
-
-.kc-sidebar-links {
-    flex: 1;
-    overflow-y: auto;
-    padding: 14px;
-}
-
-.kc-sidebar-links a {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    padding: 14px 12px;
-    margin: 3px 0;
-    border-radius: 12px;
-    text-decoration: none;
-    color: #353535;
-    font-size: 15px;
-    transition: background .2s ease;
-}
-
-.kc-sidebar-links a:hover,
-.kc-sidebar-links a.active {
-    background: #fff0eb;
-    color: #d95732;
-}
-
-.kc-sidebar-links i {
-    font-size: 22px;
-}
-
-.kc-sidebar-section {
-    margin: 18px 5px 8px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-    color: #9ca3af;
-    font-size: 12px;
-    font-weight: 800;
-    text-transform: uppercase;
-}
-
-.kc-sidebar-account {
-    padding: 18px;
-    border-top: 1px solid #eee;
-}
-
-.kc-sidebar-user {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-    overflow-wrap: anywhere;
-}
-
-.kc-sidebar-avatar {
-    width: 43px;
-    height: 43px;
     flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: #fff0eb;
-    color: #e96542;
-    font-weight: 800;
 }
-
-.kc-sidebar-user-name {
-    font-size: 14px;
-    font-weight: 700;
+.kc-sidebar-brand { font-size: 21px; font-weight: 800; color: #50362a; white-space: nowrap; }
+.kc-sidebar-brand span { color: #f16a45; }
+.kc-sidebar-close {
+    border: 0; background: transparent; font-size: 28px;
+    cursor: pointer; color: #333; line-height: 1;
 }
-
-.kc-sidebar-user-email {
-    margin-top: 4px;
-    color: #888;
-    font-size: 12px;
+.kc-sidebar-links { flex: 1; overflow-y: auto; padding: 14px; }
+.kc-sidebar-links a {
+    display: flex; align-items: center; gap: 13px; padding: 14px 12px;
+    margin: 3px 0; border-radius: 12px; text-decoration: none;
+    color: #353535; font-size: 15px; transition: background .2s ease;
 }
-
-.kc-sidebar-logout {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #e54848;
-    text-decoration: none;
-    padding: 8px 0;
+.kc-sidebar-links a:hover, .kc-sidebar-links a.active { background: #fff0eb; color: #d95732; }
+.kc-sidebar-links i { font-size: 22px; }
+.kc-sidebar-section {
+    margin: 18px 5px 8px; padding-top: 15px; border-top: 1px solid #eee;
+    color: #9ca3af; font-size: 12px; font-weight: 800; text-transform: uppercase;
 }
-
-body.kc-sidebar-open {
-    overflow: hidden;
+.kc-sidebar-account { padding: 18px; border-top: 1px solid #eee; flex-shrink: 0; }
+.kc-sidebar-user { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; overflow-wrap: anywhere; }
+.kc-sidebar-avatar {
+    width: 43px; height: 43px; flex-shrink: 0; display: grid; place-items: center;
+    border-radius: 50%; background: #fff0eb; color: #e96542; font-weight: 800;
 }
+.kc-sidebar-user-name { font-size: 14px; font-weight: 700; }
+.kc-sidebar-user-email { margin-top: 4px; color: #888; font-size: 12px; overflow-wrap: anywhere; }
+.kc-sidebar-logout { display: flex; align-items: center; gap: 10px; color: #e54848; text-decoration: none; padding: 8px 0; }
+body.kc-sidebar-open { overflow: hidden; }
 
-@media (min-width: 720px) {
-    .kc-sidebar-toggle {
-        top: 20px;
-        left: 20px;
-    }
+/* Desktop: persistent sidebar and content area to its right */
+@media (min-width: 992px) {
+    .kc-main-content { margin-left: 276px; }
+    .kc-sidebar-toggle, .kc-sidebar-close, .kc-sidebar-overlay { display: none !important; }
+    .kc-sidebar { transform: translateX(0) !important; }
+    .kc-global-bottom-nav { left: calc(276px + (100% - 276px)/2) !important; }
+}
+/* Mobile/tablet: sidebar starts hidden and slides in when opened */
+@media (max-width: 991px) {
+    .kc-sidebar-toggle { display: inline-flex; align-items: center; justify-content: center; }
+    .kc-sidebar { width: min(360px, 88vw); transform: translateX(-105%); }
+    .kc-sidebar.open { transform: translateX(0); }
+    .kc-sidebar-close { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .kc-sidebar, .kc-sidebar-overlay { transition: none !important; }
 }
 
     </style>
@@ -286,7 +221,9 @@ body.kc-sidebar-open {
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    {% block body %}{% endblock %}
+    <div class="{% if request.endpoint and request.endpoint.startswith('customer.') %}kc-main-content{% endif %}">
+        {% block body %}{% endblock %}
+    </div>
 
 {% if request.endpoint and request.endpoint.startswith('customer.') %}
 <button type="button"
@@ -315,33 +252,33 @@ body.kc-sidebar-open {
     </div>
 
     <nav class="kc-sidebar-links">
-        <a href="{{ url_for('customer.dashboard') }}">
+        <a href="{{ url_for('customer.dashboard') }}" {% if request.endpoint == 'customer.dashboard' %}class="active" aria-current="page"{% endif %}>
             <i class="bx bx-home-alt-2"></i> My Dashboard
         </a>
 
-        <a href="{{ url_for('customer.menu') }}">
+        <a href="{{ url_for('customer.menu') }}" {% if request.endpoint == 'customer.menu' %}class="active" aria-current="page"{% endif %}>
             <i class="bx bx-food-menu"></i> Digital Menu
         </a>
 
-        <a href="{{ url_for('customer.cart') }}">
+        <a href="{{ url_for('customer.cart') }}" {% if request.endpoint == 'customer.cart' %}class="active" aria-current="page"{% endif %}>
             <i class="bx bx-cart"></i> My Cart
         </a>
 
-        <a href="{{ url_for('customer.track_orders') }}">
+        <a href="{{ url_for('customer.track_orders') }}" {% if request.endpoint == 'customer.track_orders' %}class="active" aria-current="page"{% endif %}>
             <i class="bx bx-map"></i> Track Orders
         </a>
 
-        <a href="{{ url_for('customer.order_history') }}">
+        <a href="{{ url_for('customer.order_history') }}" {% if request.endpoint == 'customer.order_history' %}class="active" aria-current="page"{% endif %}>
             <i class="bx bx-history"></i> Order History
         </a>
 
         <div class="kc-sidebar-section">Account</div>
 
-        <a href="{{ url_for('customer.profile') }}">
+        <a href="{{ url_for('customer.profile') }}" {% if request.endpoint in ['customer.profile', 'customer.edit_profile'] %}class="active" aria-current="page"{% endif %}>
             <i class="bx bx-user"></i> My Profile
         </a>
 
-        <a href="{{ url_for('customer.ai_assistant') }}">
+        <a href="{{ url_for('customer.ai_assistant') }}" {% if request.endpoint == 'customer.ai_assistant' %}class="active" aria-current="page"{% endif %}>
             <i class="bx bx-bot"></i> Ask AI
         </a>
     </nav>
@@ -447,57 +384,75 @@ body.kc-sidebar-open {
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            setTimeout(function () {
+            // Fade flash messages after four seconds.
+            window.setTimeout(function () {
                 document.querySelectorAll('.alert').forEach(function (alert) {
                     alert.style.opacity = '0';
                     alert.style.transition = 'opacity 0.5s ease';
-                    setTimeout(function () { alert.remove(); }, 500);
-                
-const sidebar = document.getElementById('kcSidebar');
-const sidebarOverlay = document.getElementById('kcSidebarOverlay');
-const sidebarOpen = document.getElementById('kcSidebarOpen');
-const sidebarClose = document.getElementById('kcSidebarClose');
-
-function openCustomerSidebar() {
-    if (!sidebar || !sidebarOverlay) return;
-
-    sidebar.classList.add('open');
-    sidebarOverlay.classList.add('open');
-    document.body.classList.add('kc-sidebar-open');
-
-    sidebar.setAttribute('aria-hidden', 'false');
-    sidebarOpen?.setAttribute('aria-expanded', 'true');
-    sidebarClose?.focus();
-}
-
-function closeCustomerSidebar() {
-    if (!sidebar || !sidebarOverlay) return;
-
-    sidebar.classList.remove('open');
-    sidebarOverlay.classList.remove('open');
-    document.body.classList.remove('kc-sidebar-open');
-
-    sidebar.setAttribute('aria-hidden', 'true');
-    sidebarOpen?.setAttribute('aria-expanded', 'false');
-    sidebarOpen?.focus();
-}
-
-sidebarOpen?.addEventListener('click', openCustomerSidebar);
-sidebarClose?.addEventListener('click', closeCustomerSidebar);
-sidebarOverlay?.addEventListener('click', closeCustomerSidebar);
-
-document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape') closeCustomerSidebar();
-});
-
+                    window.setTimeout(function () { alert.remove(); }, 500);
                 });
             }, 4000);
 
-            const hasCustomerNav = Boolean(document.querySelector('.kc-global-bottom-nav'));
-            if (hasCustomerNav) {
-                document.body.classList.add('kc-has-bottom-nav');
+            const sidebar = document.getElementById('kcSidebar');
+            const overlay = document.getElementById('kcSidebarOverlay');
+            const openButton = document.getElementById('kcSidebarOpen');
+            const closeButton = document.getElementById('kcSidebarClose');
+            const mobileQuery = window.matchMedia('(max-width: 991px)');
+
+            function openCustomerSidebar() {
+                if (!sidebar || !overlay || !mobileQuery.matches) return;
+                sidebar.classList.add('open');
+                overlay.classList.add('open');
+                document.body.classList.add('kc-sidebar-open');
+                sidebar.setAttribute('aria-hidden', 'false');
+                openButton?.setAttribute('aria-expanded', 'true');
+                closeButton?.focus();
             }
 
+            function closeCustomerSidebar(returnFocus = false) {
+                if (!sidebar || !overlay) return;
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+                document.body.classList.remove('kc-sidebar-open');
+                sidebar.setAttribute('aria-hidden', mobileQuery.matches ? 'true' : 'false');
+                openButton?.setAttribute('aria-expanded', 'false');
+                if (returnFocus && mobileQuery.matches) openButton?.focus();
+            }
+
+            function syncSidebarForViewport() {
+                if (mobileQuery.matches) {
+                    sidebar?.classList.remove('open');
+                    overlay?.classList.remove('open');
+                    if (sidebar) sidebar.setAttribute('aria-hidden', 'true');
+                    openButton?.setAttribute('aria-expanded', 'false');
+                    document.body.classList.remove('kc-sidebar-open');
+                } else {
+                    sidebar?.classList.remove('open');
+                    overlay?.classList.remove('open');
+                    if (sidebar) sidebar.setAttribute('aria-hidden', 'false');
+                    openButton?.setAttribute('aria-expanded', 'false');
+                    document.body.classList.remove('kc-sidebar-open');
+                }
+            }
+
+            openButton?.addEventListener('click', openCustomerSidebar);
+            closeButton?.addEventListener('click', function () { closeCustomerSidebar(true); });
+            overlay?.addEventListener('click', function () { closeCustomerSidebar(true); });
+            sidebar?.querySelectorAll('a').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    if (mobileQuery.matches) closeCustomerSidebar(false);
+                });
+            });
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') closeCustomerSidebar(true);
+            });
+            if (mobileQuery.addEventListener) mobileQuery.addEventListener('change', syncSidebarForViewport);
+            else mobileQuery.addListener(syncSidebarForViewport);
+            syncSidebarForViewport();
+
+            if (document.querySelector('.kc-global-bottom-nav')) {
+                document.body.classList.add('kc-has-bottom-nav');
+            }
             const scanButton = document.getElementById('kcGlobalScanQR');
             if (scanButton) scanButton.addEventListener('click', openGlobalQRScanner);
         });
