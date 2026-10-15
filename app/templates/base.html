@@ -288,6 +288,87 @@ body.kc-sidebar-open {
 <body>
     {% block body %}{% endblock %}
 
+{% if request.endpoint and request.endpoint.startswith('customer.') %}
+<button type="button"
+        class="kc-sidebar-toggle"
+        id="kcSidebarOpen"
+        aria-label="Open customer menu"
+        aria-controls="kcSidebar"
+        aria-expanded="false">
+    <i class="bx bx-menu"></i>
+</button>
+
+<div class="kc-sidebar-overlay" id="kcSidebarOverlay"></div>
+
+<aside class="kc-sidebar" id="kcSidebar"
+       aria-label="Customer navigation"
+       aria-hidden="true">
+
+    <div class="kc-sidebar-header">
+        <div class="kc-sidebar-brand">
+            <i class="bx bx-coffee"></i> KING <span>CAFE</span>
+        </div>
+        <button type="button" class="kc-sidebar-close"
+                id="kcSidebarClose" aria-label="Close menu">
+            &times;
+        </button>
+    </div>
+
+    <nav class="kc-sidebar-links">
+        <a href="{{ url_for('customer.dashboard') }}">
+            <i class="bx bx-home-alt-2"></i> My Dashboard
+        </a>
+
+        <a href="{{ url_for('customer.menu') }}">
+            <i class="bx bx-food-menu"></i> Digital Menu
+        </a>
+
+        <a href="{{ url_for('customer.cart') }}">
+            <i class="bx bx-cart"></i> My Cart
+        </a>
+
+        <a href="{{ url_for('customer.track_orders') }}">
+            <i class="bx bx-map"></i> Track Orders
+        </a>
+
+        <a href="{{ url_for('customer.order_history') }}">
+            <i class="bx bx-history"></i> Order History
+        </a>
+
+        <div class="kc-sidebar-section">Account</div>
+
+        <a href="{{ url_for('customer.profile') }}">
+            <i class="bx bx-user"></i> My Profile
+        </a>
+
+        <a href="{{ url_for('customer.ai_assistant') }}">
+            <i class="bx bx-bot"></i> Ask AI
+        </a>
+    </nav>
+
+    <div class="kc-sidebar-account">
+        <div class="kc-sidebar-user">
+            <div class="kc-sidebar-avatar">
+                {{ (session.get('name') or 'K')[0]|upper }}
+            </div>
+            <div>
+                <div class="kc-sidebar-user-name">
+                    {{ session.get('name', 'Cafe Customer') }}
+                </div>
+                <div class="kc-sidebar-user-email">
+                    King Cafe Customer
+                </div>
+            </div>
+        </div>
+
+        <a class="kc-sidebar-logout"
+           href="{{ url_for('auth.logout') }}">
+            <i class="bx bx-log-out"></i> Logout
+        </a>
+    </div>
+</aside>
+{% endif %}
+
     {% if request.endpoint and request.endpoint.startswith('customer.') %}
     <nav class="kc-global-bottom-nav" aria-label="Main navigation">
         <a href="{{ url_for('customer.dashboard') }}"
@@ -368,6 +449,44 @@ body.kc-sidebar-open {
                     alert.style.opacity = '0';
                     alert.style.transition = 'opacity 0.5s ease';
                     setTimeout(function () { alert.remove(); }, 500);
+                
+const sidebar = document.getElementById('kcSidebar');
+const sidebarOverlay = document.getElementById('kcSidebarOverlay');
+const sidebarOpen = document.getElementById('kcSidebarOpen');
+const sidebarClose = document.getElementById('kcSidebarClose');
+
+function openCustomerSidebar() {
+    if (!sidebar || !sidebarOverlay) return;
+
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('open');
+    document.body.classList.add('kc-sidebar-open');
+
+    sidebar.setAttribute('aria-hidden', 'false');
+    sidebarOpen?.setAttribute('aria-expanded', 'true');
+    sidebarClose?.focus();
+}
+
+function closeCustomerSidebar() {
+    if (!sidebar || !sidebarOverlay) return;
+
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('open');
+    document.body.classList.remove('kc-sidebar-open');
+
+    sidebar.setAttribute('aria-hidden', 'true');
+    sidebarOpen?.setAttribute('aria-expanded', 'false');
+    sidebarOpen?.focus();
+}
+
+sidebarOpen?.addEventListener('click', openCustomerSidebar);
+sidebarClose?.addEventListener('click', closeCustomerSidebar);
+sidebarOverlay?.addEventListener('click', closeCustomerSidebar);
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') closeCustomerSidebar();
+});
+
                 });
             }, 4000);
 
