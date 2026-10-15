@@ -47,10 +47,7 @@
   <div class="ka-panel"><h3>Orders per day</h3><div class="ka-chart"><canvas id="ordersChart"></canvas></div></div>
   <div class="ka-panel"><h3>Paid sales per day (₹)</h3><div class="ka-chart"><canvas id="salesChart"></canvas></div></div>
  </div>
- <div class="ka-panel" style="margin-top:14px"><h3>Monthly daily breakdown</h3><div class="ka-table-wrap">
-  <table class="ka-table"><thead><tr><th>Date</th><th>Orders</th><th>Paid Sales</th><th>Pending Review</th></tr></thead><tbody>
-  {% for r in daily_rows %}<tr><td>{{ r.date }}</td><td>{{ r.orders }}</td><td>₹{{ '%.2f'|format(r.sales) }}</td><td>{{ r.pending }}</td></tr>{% endfor %}
-  </tbody></table></div></div>
+ 
 </section>
 
 <div class="animate-fade-up delay-400 glass-panel" style="background:var(--surface-color);padding:20px;border-radius:var(--radius-md);box-shadow:var(--shadow-md);margin-top:20px;overflow-x:auto;">
