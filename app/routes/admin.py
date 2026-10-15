@@ -97,11 +97,11 @@ def export_analytics(file_format):
     filename = f'king_cafe_report_{year}_{month:02d}'
 
     if file_format == 'csv':
+        # Build CSV in text memory first, then encode to bytes. This avoids
+        # TextIOWrapper closing the BytesIO stream before Flask sends it.
         import io
-        output = BytesIO()
-        output.write(b'\xef\xbb\xbf')
-        wrapper = io.TextIOWrapper(output, encoding='utf-8', newline='', write_through=True)
-        writer = csv.writer(wrapper)
+        text_output = io.StringIO(newline='')
+        writer = csv.writer(text_output)
         writer.writerow(['King Cafe Monthly Analytics', f'{year}-{month:02d}'])
         writer.writerow(['Metric', 'Value'])
         for k, v in summary.items():
@@ -115,9 +115,11 @@ def export_analytics(file_format):
         for r in details:
             writer.writerow([r['id'], r['date'], r['time'], r['table'], r['status'],
                              r['payment_status'], f"{r['total']:.2f}", f"{r['paid_sales']:.2f}"])
-        wrapper.flush()
+        csv_bytes = ('\ufeff' + text_output.getvalue()).encode('utf-8')
+        output = BytesIO(csv_bytes)
         output.seek(0)
-        return send_file(output, mimetype='text/csv', as_attachment=True, download_name=filename + '.csv')
+        return send_file(output, mimetype='text/csv; charset=utf-8', as_attachment=True,
+                         download_name=filename + '.csv')
 
     if file_format == 'xlsx':
         try:
