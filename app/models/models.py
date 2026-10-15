@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime
 
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -9,9 +10,11 @@ class User(db.Model):
     mobile = db.Column(db.String(15), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Enum('customer', 'admin', 'chef'), default='customer')
+    date_of_birth = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     orders = db.relationship('Order', backref='customer', lazy=True)
+
 
 class Table(db.Model):
     __tablename__ = 'tables'
@@ -20,8 +23,9 @@ class Table(db.Model):
     status = db.Column(db.Enum('AVAILABLE', 'OCCUPIED', 'RESERVED', 'DISABLED'), default='AVAILABLE')
     qr_code_url = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     orders = db.relationship('Order', backref='table', lazy=True)
+
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -29,8 +33,9 @@ class Category(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     menu_items = db.relationship('MenuItem', backref='category', lazy=True)
+
 
 class MenuItem(db.Model):
     __tablename__ = 'menu_items'
@@ -48,8 +53,9 @@ class MenuItem(db.Model):
     is_popular = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     order_items = db.relationship('OrderItem', backref='menu_item', lazy=True)
+
 
 class Order(db.Model):
     __tablename__ = 'orders'
@@ -64,9 +70,10 @@ class Order(db.Model):
     payment_status = db.Column(db.Enum('PENDING', 'PAID', 'FAILED', 'REFUNDED'), default='PENDING')
     notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     items = db.relationship('OrderItem', backref='order', lazy=True)
     status_history = db.relationship('OrderStatusHistory', backref='order', lazy=True)
+
 
 class OrderItem(db.Model):
     __tablename__ = 'order_items'
@@ -76,6 +83,7 @@ class OrderItem(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     price_at_time = db.Column(db.Numeric(10, 2), nullable=False)
 
+
 class OrderStatusHistory(db.Model):
     __tablename__ = 'order_status_history'
     id = db.Column(db.Integer, primary_key=True)
@@ -83,11 +91,12 @@ class OrderStatusHistory(db.Model):
     status = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+
 class Notification(db.Model):
     __tablename__ = 'notifications'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True) # Null means broadcast to all admins
-    role_target = db.Column(db.String(20), nullable=True) # e.g., 'admin', 'customer'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    role_target = db.Column(db.String(20), nullable=True)
     message = db.Column(db.String(255), nullable=False)
     is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
