@@ -387,11 +387,14 @@ body.kc-sidebar-open {
             <i class="bx bx-bot" aria-hidden="true"></i>
             <span>Ask AI</span>
         </a>
-        <a href="{{ url_for('customer.profile') }}"
-           class="kc-nav-item {% if request.args.get('open_profile') == '1' %}active{% endif %}">
-            <i class="bx bx-user" aria-hidden="true"></i>
-            <span>Profile</span>
-        </a>
+        
+<a href="{{ url_for('customer.profile') }}"
+   class="kc-nav-item {% if request.endpoint == 'customer.profile' or request.endpoint == 'customer.edit_profile' %}active{% endif %}"
+   {% if request.endpoint == 'customer.profile' or request.endpoint == 'customer.edit_profile' %}aria-current="page"{% endif %}>
+    <i class="bx bx-user" aria-hidden="true"></i>
+    <span>Profile</span>
+</a>
+
     </nav>
     {% endif %}
 
