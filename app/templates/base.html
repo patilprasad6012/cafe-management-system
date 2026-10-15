@@ -109,6 +109,178 @@
             .kc-global-bottom-nav .kc-nav-item { font-size: .66rem; }
             .kc-global-bottom-nav .kc-nav-item i { font-size: 1.35rem; }
         }
+        
+/* King Cafe customer sidebar */
+.kc-sidebar-toggle {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 6000;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    background: #fff;
+    color: #50362a;
+    font-size: 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
+
+.kc-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 6998;
+    background: rgba(0,0,0,.42);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s ease, visibility .25s ease;
+}
+
+.kc-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 6999;
+    width: min(360px, 88vw);
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    color: #272727;
+    box-shadow: 12px 0 35px rgba(0,0,0,.12);
+    transform: translateX(-105%);
+    transition: transform .28s ease;
+}
+
+.kc-sidebar.open {
+    transform: translateX(0);
+}
+
+.kc-sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.kc-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.kc-sidebar-brand {
+    font-size: 21px;
+    font-weight: 800;
+    color: #50362a;
+}
+
+.kc-sidebar-brand span {
+    color: #f16a45;
+}
+
+.kc-sidebar-close {
+    border: 0;
+    background: transparent;
+    font-size: 28px;
+    cursor: pointer;
+    color: #333;
+}
+
+.kc-sidebar-links {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+}
+
+.kc-sidebar-links a {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 14px 12px;
+    margin: 3px 0;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #353535;
+    font-size: 15px;
+    transition: background .2s ease;
+}
+
+.kc-sidebar-links a:hover,
+.kc-sidebar-links a.active {
+    background: #fff0eb;
+    color: #d95732;
+}
+
+.kc-sidebar-links i {
+    font-size: 22px;
+}
+
+.kc-sidebar-section {
+    margin: 18px 5px 8px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    color: #9ca3af;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.kc-sidebar-account {
+    padding: 18px;
+    border-top: 1px solid #eee;
+}
+
+.kc-sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    overflow-wrap: anywhere;
+}
+
+.kc-sidebar-avatar {
+    width: 43px;
+    height: 43px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff0eb;
+    color: #e96542;
+    font-weight: 800;
+}
+
+.kc-sidebar-user-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.kc-sidebar-user-email {
+    margin-top: 4px;
+    color: #888;
+    font-size: 12px;
+}
+
+.kc-sidebar-logout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #e54848;
+    text-decoration: none;
+    padding: 8px 0;
+}
+
+body.kc-sidebar-open {
+    overflow: hidden;
+}
+
+@media (min-width: 720px) {
+    .kc-sidebar-toggle {
+        top: 20px;
+        left: 20px;
+    }
+}
+
     </style>
 
     {% block extra_css %}{% endblock %}
