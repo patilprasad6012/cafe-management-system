@@ -1,59 +1,559 @@
+```html
 {% extends 'base.html' %}
-{% block title %}Profile - King Cafe{% endblock %}
+{% block title %}Profile Settings - King Cafe{% endblock %}
+
 {% block extra_css %}
 <style>
-.kcp-page{--orange:#ff6847;--ink:#25252d;--muted:#737887;--line:#ececf0;max-width:1000px;margin:28px auto 40px;padding:0 22px;color:var(--ink)}
-.kcp-heading{display:flex;align-items:center;gap:13px;margin:0 0 22px}
-.kcp-heading-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:#fff0e9;color:var(--orange);font-size:1.55rem}
-.kcp-heading h1{margin:0;font-size:1.65rem;font-weight:800}
-.kcp-heading p{margin:3px 0 0;color:var(--muted)}
-.kcp-summary{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px #252b3506}
-.kcp-avatar{width:64px;height:64px;flex:0 0 64px;display:grid;place-items:center;border-radius:50%;background:#fff0e9;border:2px solid #ffe1d7;color:var(--orange);font-size:1.35rem;font-weight:800;text-transform:uppercase}
-.kcp-info{min-width:0;flex:1}.kcp-name{margin:0 0 5px;font-size:1.12rem;font-weight:800;overflow-wrap:anywhere}.kcp-email{color:var(--muted);font-size:.9rem;overflow-wrap:anywhere}.kcp-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;color:#646b79;font-size:.88rem}.kcp-meta span{display:inline-flex;align-items:center;gap:5px}
-.kcp-list{display:grid;gap:10px}.kcp-item{display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:16px;color:var(--ink);text-decoration:none;transition:background .18s,border-color .18s}.kcp-item[href]:hover{background:#fffaf8;border-color:#ffc4b3;color:var(--ink)}
-.kcp-item-icon{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:13px;background:#fff0e9;color:var(--orange);font-size:1.45rem}
-.kcp-item-copy{flex:1;min-width:0}.kcp-item-copy strong{display:block;margin-bottom:4px;font-size:.96rem}.kcp-item-copy small{display:block;color:var(--muted);font-size:.86rem;line-height:1.4}.kcp-arrow{color:#9ba0ad;font-size:1.25rem}
-.kcp-badge{display:inline-block;margin-left:7px;padding:3px 7px;border-radius:999px;background:#f1f2f5;color:#777d89;font-size:.7rem;font-weight:700;vertical-align:middle}
-@media(min-width:992px){.kcp-page{max-width:1100px;margin-top:34px;padding:0 30px}}
-@media(max-width:520px){.kcp-page{margin:20px auto 28px;padding:0 12px}.kcp-heading h1{font-size:1.4rem}.kcp-summary{padding:17px;border-radius:16px;gap:12px}.kcp-avatar{width:56px;height:56px;flex-basis:56px}.kcp-item{padding:14px}.kcp-meta{gap:8px}}
+/* ===== PROFILE PAGE ===== */
+.kcp-page {
+    --orange: #ff6847;
+    --ink: #25252d;
+    --muted: #737887;
+    --line: #e8e9ee;
+    max-width: 1200px;
+    margin: 28px auto 40px;
+    padding: 0 24px;
+    color: var(--ink);
+}
+
+.kcp-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.kcp-heading-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    border-radius: 15px;
+    background: #fff0e9;
+    color: var(--orange);
+    font-size: 1.6rem;
+}
+
+.kcp-heading h1 {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 800;
+}
+
+.kcp-heading p {
+    margin: 5px 0 0;
+    color: var(--muted);
+}
+
+/* Desktop two-column layout */
+.kcp-desktop-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.7fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+.kcp-card {
+    min-width: 0;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 26px;
+    box-shadow: 0 5px 22px rgba(30, 35, 50, .025);
+}
+
+.kcp-profile-card {
+    text-align: center;
+}
+
+.kcp-avatar {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 15px;
+    display: grid;
+    place-items: center;
+    border: 2px solid #ffe0d6;
+    border-radius: 50%;
+    background: #fff0e9;
+    color: var(--orange);
+    font-size: 1.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.kcp-name {
+    margin: 0 0 7px;
+    font-size: 1.18rem;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.kcp-email {
+    color: var(--muted);
+    font-size: .91rem;
+    overflow-wrap: anywhere;
+}
+
+.kcp-divider {
+    height: 1px;
+    background: #eeeef2;
+    margin: 22px 0;
+}
+
+.kcp-details {
+    display: grid;
+    gap: 17px;
+    text-align: left;
+}
+
+.kcp-detail {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    color: #555f70;
+    font-size: .92rem;
+    overflow-wrap: anywhere;
+}
+
+.kcp-detail i {
+    color: #939bad;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.kcp-form-title {
+    margin: 0 0 23px;
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.kcp-field {
+    margin-bottom: 19px;
+}
+
+.kcp-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: .91rem;
+    font-weight: 650;
+}
+
+.kcp-field input {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 11px 13px;
+    border: 1px solid #dfe1e8;
+    border-radius: 9px;
+    background: #f8f8fa;
+    color: #292933;
+    font: inherit;
+    font-size: .93rem;
+}
+
+.kcp-field input:focus {
+    outline: 2px solid #ffb39e;
+    outline-offset: 1px;
+    background: #fff;
+}
+
+.kcp-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.kcp-help {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.kcp-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 12px 22px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--orange);
+    color: white;
+    font: inherit;
+    font-weight: 750;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+
+.kcp-save:hover {
+    background: #ed5737;
+    transform: translateY(-1px);
+}
+
+.kcp-mobile-options {
+    display: none;
+}
+
+.kcp-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    color: var(--ink);
+    text-decoration: none;
+    transition: background .2s, border-color .2s;
+}
+
+.kcp-option:hover {
+    background: #fffaf8;
+    border-color: #ffc4b3;
+    color: var(--ink);
+}
+
+.kcp-option-icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    border-radius: 13px;
+    background: #fff0e9;
+    color: var(--orange);
+    font-size: 1.5rem;
+}
+
+.kcp-option-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.kcp-option-copy strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.kcp-option-copy small {
+    display: block;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+.kcp-arrow {
+    color: #9ba0ad;
+    font-size: 1.35rem;
+}
+
+.kcp-badge {
+    display: inline-block;
+    margin-left: 5px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #f1f2f5;
+    color: #777d89;
+    font-size: .7rem;
+    vertical-align: middle;
+}
+
+.kcp-flash {
+    margin-bottom: 16px;
+}
+
+/* Mobile: summary card and stacked settings options */
+@media (max-width: 767px) {
+    .kcp-page {
+        margin: 20px auto 24px;
+        padding: 0 14px;
+    }
+
+    .kcp-heading {
+        margin-bottom: 20px;
+    }
+
+    .kcp-heading-icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .kcp-heading h1 {
+        font-size: 1.4rem;
+    }
+
+    .kcp-heading p {
+        font-size: .9rem;
+    }
+
+    .kcp-desktop-layout {
+        display: block;
+    }
+
+    .kcp-profile-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        text-align: left;
+        padding: 18px;
+        margin-bottom: 12px;
+        border-radius: 17px;
+    }
+
+    .kcp-avatar {
+        width: 62px;
+        height: 62px;
+        flex: 0 0 62px;
+        margin: 0;
+        font-size: 1.35rem;
+    }
+
+    .kcp-profile-card .kcp-divider,
+    .kcp-profile-card .kcp-details,
+    .kcp-desktop-form {
+        display: none;
+    }
+
+    .kcp-name {
+        font-size: 1rem;
+    }
+
+    .kcp-email {
+        font-size: .85rem;
+    }
+
+    .kcp-mobile-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        margin-top: 8px;
+        color: #626b7a;
+        font-size: .83rem;
+    }
+
+    .kcp-mobile-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        overflow-wrap: anywhere;
+    }
+
+    .kcp-mobile-options {
+        display: grid;
+        gap: 10px;
+    }
+
+    .kcp-option {
+        padding: 15px;
+    }
+
+    .kcp-mobile-options .kcp-option-disabled {
+        cursor: default;
+    }
+}
+
+/* Tablet / smaller desktop */
+@media (min-width: 768px) and (max-width: 991px) {
+    .kcp-page {
+        padding: 0 18px;
+    }
+
+    .kcp-desktop-layout {
+        grid-template-columns: minmax(220px, .8fr) minmax(0, 1.4fr);
+        gap: 13px;
+    }
+
+    .kcp-card {
+        padding: 19px;
+    }
+
+    .kcp-form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
 </style>
 {% endblock %}
+
 {% block body %}
 <main class="kcp-page">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}{% for category, message in messages %}
-      <div class="alert alert-{{ category }}">{{ message }}</div>
-    {% endfor %}{% endif %}
-  {% endwith %}
-  <header class="kcp-heading">
-    <span class="kcp-heading-icon" aria-hidden="true"><i class="bx bx-user-cog"></i></span>
-    <div><h1>Profile Settings</h1><p>View and update your profile information</p></div>
-  </header>
-  <section class="kcp-summary" aria-label="Customer profile summary">
-    <div class="kcp-avatar" aria-label="Profile initials">
-      {% set name_parts = (profile_user.name or 'King Cafe Guest').split() %}
-      {{ (name_parts[0][0] ~ (name_parts[-1][0] if name_parts|length > 1 else ''))|upper }}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} kcp-flash">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <header class="kcp-heading">
+        <span class="kcp-heading-icon" aria-hidden="true">
+            <i class="bx bx-user-cog"></i>
+        </span>
+        <div>
+            <h1>Profile Settings</h1>
+            <p>View and update your profile information</p>
+        </div>
+    </header>
+
+    <div class="kcp-desktop-layout">
+
+        <!-- Profile summary: desktop card and mobile summary -->
+        <section class="kcp-card kcp-profile-card"
+                 aria-label="Customer profile summary">
+
+            <div class="kcp-avatar" aria-label="Profile initials">
+                {% set name_parts = (profile_user.name or 'King Cafe Guest').split() %}
+                {{ (name_parts[0][0] ~
+                    (name_parts[-1][0] if name_parts|length > 1 else ''))|upper }}
+            </div>
+
+            <div class="kcp-info">
+                <h2 class="kcp-name">{{ profile_user.name }}</h2>
+                <div class="kcp-email">{{ profile_user.email }}</div>
+
+                <!-- Mobile-only contact information -->
+                <div class="kcp-mobile-meta">
+                    <span><i class="bx bx-phone"></i>
+                        {{ profile_user.mobile }}
+                    </span>
+
+                    {% if profile_user.date_of_birth %}
+                    <span>
+                        <i class="bx bx-calendar"></i>
+                        {{ profile_user.date_of_birth.strftime('%d %b %Y') }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Desktop contact information -->
+            <div class="kcp-divider"></div>
+
+            <div class="kcp-details">
+                <div class="kcp-detail">
+                    <i class="bx bx-phone"></i>
+                    <span>{{ profile_user.mobile }}</span>
+                </div>
+
+                <div class="kcp-detail">
+                    <i class="bx bx-envelope"></i>
+                    <span>{{ profile_user.email }}</span>
+                </div>
+
+                {% if profile_user.date_of_birth %}
+                <div class="kcp-detail">
+                    <i class="bx bx-calendar"></i>
+                    <span>
+                        Birthday
+                        {{ profile_user.date_of_birth.strftime('%d %b %Y') }}
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Desktop edit form -->
+        <section class="kcp-card kcp-desktop-form">
+            <h2 class="kcp-form-title">Edit Profile</h2>
+
+            <form method="POST"
+                  action="{{ url_for('customer.edit_profile') }}">
+
+                <div class="kcp-field">
+                    <label for="desktop-name">Full Name</label>
+                    <input id="desktop-name"
+                           name="name"
+                           type="text"
+                           maxlength="100"
+                           autocomplete="name"
+                           value="{{ profile_user.name }}"
+                           required>
+                </div>
+
+                <div class="kcp-form-row">
+                    <div class="kcp-field">
+                        <label for="desktop-mobile">WhatsApp / Mobile Number</label>
+                        <input id="desktop-mobile"
+                               name="mobile"
+                               type="tel"
+                               maxlength="15"
+                               autocomplete="tel"
+                               value="{{ profile_user.mobile }}"
+                               required>
+                    </div>
+
+                    <div class="kcp-field">
+                        <label for="desktop-email">Email Address</label>
+                        <input id="desktop-email"
+                               name="email"
+                               type="email"
+                               maxlength="100"
+                               autocomplete="email"
+                               value="{{ profile_user.email }}"
+                               required>
+                    </div>
+                </div>
+
+                <div class="kcp-field">
+                    <label for="desktop-dob">Date of Birth</label>
+                    <input id="desktop-dob"
+                           name="date_of_birth"
+                           type="date"
+                           value="{{ profile_user.date_of_birth.isoformat() if profile_user.date_of_birth else '' }}">
+                    <p class="kcp-help">Optional.</p>
+                </div>
+
+                <button type="submit" class="kcp-save">
+                    <i class="bx bx-save"></i>
+                    Save Changes
+                </button>
+            </form>
+        </section>
     </div>
-    <div class="kcp-info">
-      <h2 class="kcp-name">{{ profile_user.name }}</h2>
-      <div class="kcp-email">{{ profile_user.email }}</div>
-      <div class="kcp-meta">
-        <span><i class="bx bx-phone" aria-hidden="true"></i>{{ profile_user.mobile }}</span>
-        {% if profile_user.date_of_birth %}<span><i class="bx bx-calendar" aria-hidden="true"></i>Birthday {{ profile_user.date_of_birth.strftime('%d %b %Y') }}</span>{% endif %}
-      </div>
-    </div>
-  </section>
-  <nav class="kcp-list" aria-label="Profile settings">
-    <a class="kcp-item" href="{{ url_for('customer.edit_profile') }}">
-      <span class="kcp-item-icon" aria-hidden="true"><i class="bx bx-user"></i></span>
-      <span class="kcp-item-copy"><strong>Edit Profile</strong><small>Update your name, contact details and date of birth.</small></span>
-      <i class="bx bx-chevron-right kcp-arrow" aria-hidden="true"></i>
-    </a>
-    <div class="kcp-item" aria-label="Billing details coming soon">
-      <span class="kcp-item-icon" aria-hidden="true"><i class="bx bx-receipt"></i></span>
-      <span class="kcp-item-copy"><strong>Billing Details <span class="kcp-badge">Coming soon</span></strong><small>Manage GST and billing information.</small></span>
-      <i class="bx bx-chevron-right kcp-arrow" aria-hidden="true"></i>
-    </div>
-  </nav>
+
+    <!-- Mobile-only settings cards -->
+    <nav class="kcp-mobile-options" aria-label="Profile settings">
+
+        <a class="kcp-option"
+           href="{{ url_for('customer.edit_profile') }}">
+            <span class="kcp-option-icon" aria-hidden="true">
+                <i class="bx bx-user"></i>
+            </span>
+
+            <span class="kcp-option-copy">
+                <strong>Edit Profile</strong>
+                <small>Update your name, contact details and date of birth.</small>
+            </span>
+
+            <i class="bx bx-chevron-right kcp-arrow"
+               aria-hidden="true"></i>
+        </a>
+
+        <div class="kcp-option kcp-option-disabled"
+             aria-label="Billing details coming soon">
+
+            <span class="kcp-option-icon" aria-hidden="true">
+                <i class="bx bx-receipt"></i>
+            </span>
+
+            <span class="kcp-option-copy">
+                <strong>
+                    Billing Details
+                    <span class="kcp-badge">Coming soon</span>
+                </strong>
+                <small>Manage GST and billing information.</small>
+            </span>
+
+            <i class="bx bx-chevron-right kcp-arrow"
+               aria-hidden="true"></i>
+        </div>
+    </nav>
+
 </main>
 {% endblock %}
+```
