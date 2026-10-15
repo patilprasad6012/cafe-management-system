@@ -200,10 +200,23 @@ body.kc-sidebar-open { overflow: hidden; }
 
 /* Desktop: persistent sidebar and content area to its right */
 @media (min-width: 992px) {
-    .kc-main-content { margin-left: 276px; }
+    /* Reserve the sidebar's space for ALL page sections, including the footer.
+       The footer is outside .kc-main-content, so it needs its own offset. */
+    .kc-sidebar { width: 303px; transform: translateX(0) !important; }
+    .kc-main-content { margin-left: 303px; }
+    .site-footer {
+        margin-left: 303px;
+        width: calc(100% - 303px);
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1;
+    }
     .kc-sidebar-toggle, .kc-sidebar-close, .kc-sidebar-overlay { display: none !important; }
-    .kc-sidebar { transform: translateX(0) !important; }
-    .kc-global-bottom-nav { left: calc(276px + (100% - 276px)/2) !important; }
+    .kc-global-bottom-nav { left: calc(303px + (100% - 303px)/2) !important; }
+}
+@media (max-width: 991px) {
+    /* On mobile the sidebar overlays the page only while open; footer stays full width. */
+    .site-footer { margin-left: 0; width: 100%; }
 }
 /* Mobile/tablet: sidebar starts hidden and slides in when opened */
 @media (max-width: 991px) {
