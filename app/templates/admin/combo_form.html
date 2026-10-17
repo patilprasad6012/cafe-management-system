@@ -1,0 +1,24 @@
+{% extends 'admin/base_admin.html' %}
+{% block page_title %}{{ 'Edit Combo Offer' if combo else 'Add Combo Offer' }}{% endblock %}
+{% block content %}
+<style>
+.combo-form-wrap{max-width:850px;margin:10px auto;color:var(--text-color,#30251f)}.combo-form-card{background:var(--surface-color,#fff);padding:25px;border-radius:16px;box-shadow:var(--shadow-sm,0 4px 16px #0000000a)}.cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.cf-group{margin-bottom:16px}.cf-group label{display:block;font-weight:600;margin-bottom:7px}.cf-group input,.cf-group textarea{box-sizing:border-box;width:100%;padding:12px;border:1px solid var(--border-color,#ddd);border-radius:10px;font:inherit;background:var(--surface-color,#fff)}.cf-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:300px;overflow:auto;border:1px solid var(--border-color,#eee);padding:14px;border-radius:12px}.cf-item{display:flex;align-items:center;gap:8px;padding:9px;background:#faf8f6;border-radius:8px}.cf-actions{display:flex;gap:10px;flex-wrap:wrap}.cf-btn{border:1px solid #604333;background:#604333;color:white;padding:11px 17px;border-radius:24px;text-decoration:none;cursor:pointer;font:inherit;font-weight:600}.cf-btn.secondary{background:transparent;color:#604333}@media(max-width:600px){.cf-grid,.cf-items{grid-template-columns:1fr}.combo-form-card{padding:17px}}
+</style>
+<div class="combo-form-wrap"><div class="combo-form-card">
+  {% with messages = get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="alert alert-{{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+  <form method="POST" enctype="multipart/form-data">
+    <div class="cf-group"><label for="name">Combo name *</label><input id="name" name="name" maxlength="120" required value="{{ request.form.get('name', combo.name if combo else '') }}" placeholder="e.g. Burger + Fries + Coffee"></div>
+    <div class="cf-group"><label for="description">Description</label><textarea id="description" name="description" rows="3" placeholder="Describe what's included">{{ request.form.get('description', combo.description if combo else '') }}</textarea></div>
+    <div class="cf-grid">
+      <div class="cf-group"><label for="original_price">Original total price (₹) *</label><input id="original_price" name="original_price" type="number" min="0.01" step="0.01" required value="{{ request.form.get('original_price', combo.original_price if combo else '') }}"></div>
+      <div class="cf-group"><label for="offer_price">Combo offer price (₹) *</label><input id="offer_price" name="offer_price" type="number" min="0.01" step="0.01" required value="{{ request.form.get('offer_price', combo.offer_price if combo else '') }}"></div>
+    </div>
+    <div class="cf-group"><label>Choose food items included in this combo *</label><div class="cf-items">
+      {% for item in items %}<label class="cf-item"><input type="checkbox" name="item_ids" value="{{ item.id }}" {% if (item.id|string) in selected_ids %}checked{% endif %}> <span>{{ item.name }} — ₹{{ '%.2f'|format(item.price) }}</span></label>{% else %}<p>No active food items found. Add food items first.</p>{% endfor %}
+    </div></div>
+    <div class="cf-group"><label for="image">Combo image (PNG/JPG/WEBP)</label><input id="image" name="image" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp">{% if combo and combo.image_path %}<p>Current image is saved. Upload a new image only if you want to replace it.</p>{% endif %}</div>
+    <div class="cf-group"><label><input type="checkbox" name="is_available" {% if (request.method == 'POST' and 'is_available' in request.form) or (request.method != 'POST' and (combo is none or combo.is_available)) %}checked{% endif %}> Available for customers</label></div>
+    <div class="cf-actions"><button class="cf-btn" type="submit">{{ 'Save Combo Changes' if combo else 'Create Combo Offer' }}</button><a class="cf-btn secondary" href="{{ url_for('menu.manage_combos') }}">Cancel</a></div>
+  </form>
+</div></div>
+{% endblock %}
