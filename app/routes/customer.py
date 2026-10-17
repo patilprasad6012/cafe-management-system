@@ -261,6 +261,10 @@ def track_orders():
     orders = Order.query.filter(Order.customer_id == session['user_id'], Order.status.in_(active_statuses)).order_by(Order.created_at.desc()).all()
     return render_template('customer/track_orders.html', orders=orders)
 
+@customer_bp.route('/birthday-offers')
+@login_required
+def birthday_offers():
+    return render_template('customer/birthday_offers.html')
 
 @customer_bp.route('/order-history')
 @login_required
