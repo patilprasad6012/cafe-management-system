@@ -169,6 +169,83 @@
     border-bottom: 1px solid #eee;
     flex-shrink: 0;
 }
+  
+/* Smooth King Cafe mobile sidebar */
+.kc-sidebar {
+    transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.38s ease;
+    will-change: transform;
+}
+
+.kc-sidebar.is-open {
+    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.14);
+}
+
+/* Keep the complete King Cafe name visible */
+.kc-sidebar .brand-logo,
+.kc-sidebar .kc-brand,
+.kc-sidebar .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    max-width: 100%;
+    padding-left: 12px;
+    overflow: visible;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.kc-sidebar .brand-logo span,
+.kc-sidebar .kc-brand span,
+.kc-sidebar .sidebar-brand span {
+    display: inline-block;
+    overflow: visible;
+    white-space: nowrap;
+    letter-spacing: -0.5px;
+}
+
+/* Animate the close button */
+.kc-sidebar-close {
+    transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.kc-sidebar-close:hover {
+    transform: rotate(90deg);
+    background: #fff0e9;
+}
+
+/* Smooth menu links */
+.kc-sidebar a {
+    transition: background 0.22s ease,
+                color 0.22s ease,
+                padding-left 0.22s ease;
+}
+
+.kc-sidebar a:hover {
+    padding-left: 24px;
+}
+
+/* Respect accessibility preferences */
+@media (prefers-reduced-motion: reduce) {
+    .kc-sidebar,
+    .kc-sidebar a,
+    .kc-sidebar-close {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+body.kc-sidebar-open .kc-menu-toggle {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+}
+
+.kc-menu-toggle {
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+      
 .kc-sidebar-brand { font-size: 21px; font-weight: 800; color: #50362a; white-space: nowrap; }
 .kc-sidebar-brand span { color: #f16a45; }
 .kc-sidebar-close {
@@ -548,6 +625,11 @@ body.kc-sidebar-open { overflow: hidden; }
                 kcGlobalScannerBusy = false;
             }
         }
+        // When opening the sidebar:
+document.body.classList.add('kc-sidebar-open');
+
+// When closing the sidebar:
+document.body.classList.remove('kc-sidebar-open');
     </script>
     {% block extra_js %}{% endblock %}
 </body>
