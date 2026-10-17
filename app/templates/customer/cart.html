@@ -34,7 +34,8 @@
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <!-- Decrease -->
                         <form method="POST" action="{{ url_for('customer.cart') }}" style="margin: 0;">
-                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <input type="hidden" name="item_id" value="{{ item.item_id }}">
+                            <input type="hidden" name="item_type" value="{{ item.type }}">
                             <input type="hidden" name="action" value="decrease">
                             <button type="submit" style="background: var(--background-light); border: 1px solid var(--border-color); width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">-</button>
                         </form>
@@ -43,7 +44,8 @@
                         
                         <!-- Increase -->
                         <form method="POST" action="{{ url_for('customer.cart') }}" style="margin: 0;">
-                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <input type="hidden" name="item_id" value="{{ item.item_id }}">
+                            <input type="hidden" name="item_type" value="{{ item.type }}">
                             <input type="hidden" name="action" value="add">
                             <button type="submit" style="background: var(--primary-color); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
                         </form>
