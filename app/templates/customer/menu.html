@@ -18,24 +18,7 @@
   <div id="categoryFilters" class="category-filters" role="group" aria-label="Filter menu by category">
     <button type="button" class="category-filter active" data-category="all" aria-pressed="true">All</button>
     {% for cat in categories %}<button type="button" class="category-filter" data-category="{{ cat.id }}" aria-pressed="false">{{ cat.name }}</button>{% endfor %}
-  <div id="categoryFilters" class="category-filters">
-    <button type="button" class="category-filter active"
-            data-category="all" aria-pressed="true">
-        All
-    </button>
-
-    {% for cat in categories %}
-    <button type="button" class="category-filter"
-            data-category="{{ cat.id }}" aria-pressed="false">
-        {{ cat.name }}
-    </button>
-    {% endfor %}
-
-    <button type="button" class="category-filter"
-            data-category="combos" aria-pressed="false">
-        Combos 🎁
-    </button>
-</div>
+  
   </div>
 
   <div id="foodGrid" class="food-grid">
