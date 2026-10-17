@@ -1,0 +1,37 @@
+{% extends 'admin/base_admin.html' %}
+{% block page_title %}Combo Offers{% endblock %}
+{% block content %}
+<style>
+.combo-wrap{color:var(--text-color,#30251f)}.combo-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}.combo-btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:24px;border:1px solid #604333;text-decoration:none;cursor:pointer;font:inherit;font-weight:600}.combo-primary{background:#604333;color:white}.combo-secondary{background:transparent;color:#604333}.combo-table-wrap{background:var(--surface-color,#fff);padding:22px;border-radius:16px;box-shadow:var(--shadow-sm,0 4px 16px #0000000a);overflow-x:auto}.combo-table{width:100%;border-collapse:collapse;min-width:760px}.combo-table th,.combo-table td{text-align:left;padding:14px 10px;border-bottom:1px solid var(--border-color,#eee)}.combo-thumb{width:52px;height:52px;object-fit:cover;border-radius:10px;vertical-align:middle;margin-right:10px}.combo-status{display:inline-block;border-radius:20px;padding:5px 9px;font-size:.82rem;background:#dcfce7;color:#166534}.combo-status.off{background:#fee2e2;color:#991b1b}.combo-row-actions{display:flex;gap:7px;align-items:center}.combo-delete{border-color:#ef4444;color:#b91c1c;background:white}
+</style>
+<div class="combo-wrap">
+  <div class="combo-actions">
+    <a class="combo-btn combo-primary" href="{{ url_for('menu.add_combo') }}">+ Add Combo Offer</a>
+    <a class="combo-btn combo-secondary" href="{{ url_for('menu.manage_menu') }}">Back to Menu Management</a>
+  </div>
+  <div class="combo-table-wrap">
+    <table class="combo-table">
+      <thead><tr><th>Combo</th><th>Items included</th><th>Original price</th><th>Offer price</th><th>Availability</th><th>Actions</th></tr></thead>
+      <tbody>
+      {% for combo in combos %}
+        <tr>
+          <td>
+            {% if combo.image_path %}<img class="combo-thumb" src="{{ url_for('menu.uploaded_food_image', filename=combo.image_path.replace('\\','/').split('/')[-1]) }}" alt="{{ combo.name }}" onerror="this.style.display='none'">{% endif %}
+            <strong>{{ combo.name }}</strong><br><small>{{ combo.description or '' }}</small>
+          </td>
+          <td>{% for item in combo.items %}{{ item.name }}{% if not loop.last %}, {% endif %}{% else %}No items{% endfor %}</td>
+          <td><s>₹{{ '%.2f'|format(combo.original_price) }}</s></td>
+          <td><strong>₹{{ '%.2f'|format(combo.offer_price) }}</strong></td>
+          <td><span class="combo-status {% if not combo.is_available or not combo.is_active %}off{% endif %}">{{ 'Available' if combo.is_available and combo.is_active else 'Unavailable' }}</span></td>
+          <td><div class="combo-row-actions">
+            <a class="combo-btn combo-secondary" href="{{ url_for('menu.edit_combo', combo_id=combo.id) }}">Edit</a>
+            <form method="POST" action="{{ url_for('menu.toggle_combo_availability', combo_id=combo.id) }}"><button class="combo-btn combo-secondary" type="submit">{{ 'Disable' if combo.is_available else 'Enable' }}</button></form>
+            <form method="POST" action="{{ url_for('menu.delete_combo', combo_id=combo.id) }}" onsubmit="return confirm('Delete this combo offer? This cannot be undone.');"><button class="combo-btn combo-delete" type="submit">Delete</button></form>
+          </div></td>
+        </tr>
+      {% else %}<tr><td colspan="6" style="text-align:center;padding:28px">No combo offers created yet. Select “Add Combo Offer” to create one.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
