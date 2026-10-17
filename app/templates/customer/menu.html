@@ -14,6 +14,67 @@
   {% endif %}
   <div class="alerts">{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="alert alert-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}</div>
 
+{% if combo_offers %}
+<section class="combo-section" aria-labelledby="combo-title">
+  <div class="combo-heading">
+    <div>
+      <span class="combo-eyebrow">SPECIAL DEALS</span>
+      <h2 id="combo-title">🔥 Combo Offers</h2>
+      <p>More favourites, better prices!</p>
+    </div>
+  </div>
+
+  <div class="combo-grid">
+    {% for combo in combo_offers %}
+    <article class="combo-card">
+      {% if combo.image_path %}
+      <img
+        class="combo-image"
+        src="{{ url_for('menu.uploaded_food_image', filename=combo.image_path.replace('\\', '/').split('/')[-1]) }}"
+        alt="{{ combo.name }}"
+        loading="lazy"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="combo-placeholder" style="display:none">
+        <i class="bx bx-food-menu"></i>
+        <span>Image unavailable</span>
+      </div>
+      {% else %}
+      <div class="combo-placeholder">
+        <i class="bx bx-food-menu"></i>
+        <span>King Cafe Special</span>
+      </div>
+      {% endif %}
+
+      <div class="combo-content">
+        <span class="combo-badge">SPECIAL COMBO</span>
+        <h3>{{ combo.name }}</h3>
+        <p>{{ combo.description or 'Enjoy more of your favourites together!' }}</p>
+
+        <div class="combo-prices">
+          <span class="combo-original">
+            ₹{{ "%.2f"|format(combo.original_price|float) }}
+          </span>
+          <strong>
+            ₹{{ "%.2f"|format(combo.offer_price|float) }}
+          </strong>
+          {% if combo.original_price|float > combo.offer_price|float %}
+          <span class="combo-saving">
+            SAVE ₹{{ "%.2f"|format((combo.original_price|float - combo.offer_price|float)) }}
+          </span>
+          {% endif %}
+        </div>
+
+        <button type="button" class="btn btn-primary combo-order-button"
+          disabled title="Combo ordering requires cart integration">
+          Ordering setup pending
+        </button>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
   <div id="categoryFilters" class="category-filters" role="group" aria-label="Filter menu by category">
     <button type="button" class="category-filter active" data-category="all" aria-pressed="true">All</button>
     {% for cat in categories %}<button type="button" class="category-filter" data-category="{{ cat.id }}" aria-pressed="false">{{ cat.name }}</button>{% endfor %}
@@ -67,6 +128,171 @@
 .menu-empty>i{display:block;font-size:3rem;margin-bottom:10px}
 @media(max-width:560px){.food-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.food-card-image,.food-card-placeholder{height:135px}.food-card-content{padding:12px}.food-card-heading h3{font-size:.94rem}.food-card-description{font-size:.8rem}.food-card-price{font-size:1rem}.add-to-cart-button{padding:7px 10px;font-size:.8rem}}
 @media(max-width:360px){.food-grid{grid-template-columns:1fr}.food-card-image,.food-card-placeholder{height:180px}}
+
+.combo-section {
+  margin: 10px 0 32px;
+}
+
+.combo-heading {
+  margin-bottom: 16px;
+}
+
+.combo-eyebrow {
+  color: var(--primary-color);
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.combo-heading h2 {
+  margin: 5px 0;
+  font-size: 1.65rem;
+  font-weight: 800;
+}
+
+.combo-heading p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.combo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  gap: 18px;
+}
+
+.combo-card {
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.combo-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.combo-image,
+.combo-placeholder {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: #f4e6d8;
+}
+
+.combo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-muted);
+}
+
+.combo-placeholder i {
+  font-size: 2.8rem;
+}
+
+.combo-content {
+  padding: 16px;
+}
+
+.combo-badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: #fff0e8;
+  color: #c94c2e;
+  font-size: .7rem;
+  font-weight: 800;
+}
+
+.combo-content h3 {
+  margin: 10px 0 6px;
+  font-size: 1.1rem;
+}
+
+.combo-content p {
+  min-height: 40px;
+  margin: 0 0 14px;
+  color: var(--text-muted);
+  font-size: .88rem;
+  line-height: 1.5;
+}
+
+.combo-prices {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.combo-prices strong {
+  font-size: 1.25rem;
+  color: var(--secondary-color);
+}
+
+.combo-original {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.combo-saving {
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+.combo-order-button {
+  width: 100%;
+  opacity: .65;
+  cursor: not-allowed;
+}
+
+@media(max-width:560px) {
+  .combo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .combo-image,
+  .combo-placeholder {
+    height: 125px;
+  }
+
+  .combo-content {
+    padding: 11px;
+  }
+
+  .combo-heading h2 {
+    font-size: 1.4rem;
+  }
+
+  .combo-content h3 {
+    font-size: .95rem;
+  }
+
+  .combo-content p {
+    font-size: .8rem;
+  }
+
+  .combo-prices {
+    gap: 6px;
+  }
+
+  .combo-prices strong {
+    font-size: 1.05rem;
+  }
+}
+
 </style>
 
 <script>
