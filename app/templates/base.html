@@ -155,7 +155,26 @@
     transition: transform .28s ease;
     overflow: hidden;
 }
-.kc-sidebar.open { transform: translateX(0); }
+.kc-sidebar.open { transform: translateX(0); box-shadow: 12px 0 48px rgba(34,20,14,.20); }
+.kc-sidebar.open .kc-sidebar-brand { animation: kcBrandReveal .55s cubic-bezier(.2,.8,.2,1) both; }
+.kc-sidebar.open .kc-sidebar-header::after { animation: kcBrandLine .55s .12s ease-out both; }
+.kc-sidebar.open .kc-sidebar-links a { animation: kcNavItemReveal .38s cubic-bezier(.2,.8,.2,1) both; }
+.kc-sidebar.open .kc-sidebar-links a:nth-of-type(1) { animation-delay: .04s; }
+.kc-sidebar.open .kc-sidebar-links a:nth-of-type(2) { animation-delay: .08s; }
+.kc-sidebar.open .kc-sidebar-links a:nth-of-type(3) { animation-delay: .12s; }
+.kc-sidebar.open .kc-sidebar-links a:nth-of-type(4) { animation-delay: .16s; }
+.kc-sidebar.open .kc-sidebar-links a:nth-of-type(5) { animation-delay: .20s; }
+.kc-sidebar.open .kc-sidebar-links a:nth-of-type(6) { animation-delay: .24s; }
+.kc-sidebar.open .kc-sidebar-links a:nth-of-type(7) { animation-delay: .28s; }
+@keyframes kcBrandReveal {
+     from { opacity: 0; transform: translateY(8px) scale(.96); }
+     to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes kcBrandLine { to { transform: scaleX(1); } }
+@keyframes kcNavItemReveal {
+     from { opacity: 0; transform: translateX(-12px); }
+     to { opacity: 1; transform: translateX(0); }
+}
 .kc-sidebar-overlay.open {
     opacity: 1;
     visibility: visible;
@@ -198,6 +217,15 @@
 .kc-sidebar-user-email { margin-top: 4px; color: #888; font-size: 12px; overflow-wrap: anywhere; }
 .kc-sidebar-logout { display: flex; align-items: center; gap: 10px; color: #e54848; text-decoration: none; padding: 8px 0; }
 body.kc-sidebar-open { overflow: hidden; }
+body.kc-sidebar-open .kc-sidebar-toggle {
+     opacity: 0;
+     visibility: hidden;
+     pointer-events: none;
+     transform: scale(.9);
+}
+.kc-sidebar-toggle {
+     transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+}
 
 /* Desktop: persistent sidebar and content area to its right */
 @media (min-width: 992px) {
@@ -549,11 +577,6 @@ body.kc-sidebar-open { overflow: hidden; }
                 kcGlobalScannerBusy = false;
             }
         }
-        // When opening the sidebar:
-document.body.classList.add('kc-sidebar-open');
-
-// When closing the sidebar:
-document.body.classList.remove('kc-sidebar-open');
     </script>
     {% block extra_js %}{% endblock %}
 </body>
