@@ -313,7 +313,10 @@ body.kc-sidebar-open .kc-sidebar-toggle {
         <a href="{{ url_for('customer.order_history') }}" {% if request.endpoint == 'customer.order_history' %}class="active" aria-current="page"{% endif %}>
             <i class="bx bx-history"></i> Order History
         </a>
-
+        <a href="{{ url_for('customer.birthday_offers') }}" {% if request.endpoint == 'customer.birthday_offers' %}class="active" aria-current="page"{% endif %}> 
+            <i class="bx bx-gift"></i> Birthday Offers
+        </a>
+        
         <div class="kc-sidebar-section">Account</div>
 
         <a href="{{ url_for('customer.profile') }}" {% if request.endpoint in ['customer.profile', 'customer.edit_profile'] %}class="active" aria-current="page"{% endif %}>
