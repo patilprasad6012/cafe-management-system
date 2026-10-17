@@ -100,3 +100,29 @@ class Notification(db.Model):
     message = db.Column(db.String(255), nullable=False)
     is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# Add this block at the END of app/models/models.py (after Notification).
+# MenuItem is already defined above this block.
+
+combo_offer_items = db.Table(
+    'combo_offer_items',
+    db.Column('combo_id', db.Integer, db.ForeignKey('combo_offers.id'), primary_key=True),
+    db.Column('menu_item_id', db.Integer, db.ForeignKey('menu_items.id'), primary_key=True),
+)
+
+
+class ComboOffer(db.Model):
+    __tablename__ = 'combo_offers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text)
+    original_price = db.Column(db.Numeric(10, 2), nullable=False)
+    offer_price = db.Column(db.Numeric(10, 2), nullable=False)
+    image_path = db.Column(db.String(255))
+    is_available = db.Column(db.Boolean, default=True, nullable=False)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    items = db.relationship('MenuItem', secondary=combo_offer_items, lazy='select')
+
