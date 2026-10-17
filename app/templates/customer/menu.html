@@ -14,64 +14,108 @@
   {% endif %}
   <div class="alerts">{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="alert alert-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}</div>
 
+
 {% if combo_offers %}
 <section class="combo-section" aria-labelledby="combo-title">
-  <div class="combo-heading">
-    <div>
-      <span class="combo-eyebrow">SPECIAL DEALS</span>
-      <h2 id="combo-title">🔥 Combo Offers</h2>
-      <p>More favourites, better prices!</p>
-    </div>
-  </div>
-
-  <div class="combo-grid">
-    {% for combo in combo_offers %}
-    <article class="combo-card">
-      {% if combo.image_path %}
-      <img
-        class="combo-image"
-        src="{{ url_for('menu.uploaded_food_image', filename=combo.image_path.replace('\\', '/').split('/')[-1]) }}"
-        alt="{{ combo.name }}"
-        loading="lazy"
-        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-      <div class="combo-placeholder" style="display:none">
-        <i class="bx bx-food-menu"></i>
-        <span>Image unavailable</span>
-      </div>
-      {% else %}
-      <div class="combo-placeholder">
-        <i class="bx bx-food-menu"></i>
-        <span>King Cafe Special</span>
-      </div>
-      {% endif %}
-
-      <div class="combo-content">
-        <span class="combo-badge">SPECIAL COMBO</span>
-        <h3>{{ combo.name }}</h3>
-        <p>{{ combo.description or 'Enjoy more of your favourites together!' }}</p>
-
-        <div class="combo-prices">
-          <span class="combo-original">
-            ₹{{ "%.2f"|format(combo.original_price|float) }}
-          </span>
-          <strong>
-            ₹{{ "%.2f"|format(combo.offer_price|float) }}
-          </strong>
-          {% if combo.original_price|float > combo.offer_price|float %}
-          <span class="combo-saving">
-            SAVE ₹{{ "%.2f"|format((combo.original_price|float - combo.offer_price|float)) }}
-          </span>
-          {% endif %}
+    <div class="combo-heading">
+        <div>
+            <span class="combo-eyebrow">SPECIAL DEALS</span>
+            <h2 id="combo-title">🔥 Combo Offers</h2>
+            <p>More favourites, better prices!</p>
         </div>
+    </div>
 
-        <button type="button" class="btn btn-primary combo-order-button"
-          disabled title="Combo ordering requires cart integration">
-          Ordering setup pending
-        </button>
-      </div>
-    </article>
-    {% endfor %}
-  </div>
+    <div class="combo-grid">
+        {% for combo in combo_offers %}
+        <article class="combo-card">
+
+            {% if combo.image_path %}
+            <img
+                class="combo-image"
+                src="{{ url_for('menu.uploaded_food_image', filename=combo.image_path.replace('\\', '/').split('/')[-1]) }}"
+                alt="{{ combo.name }}"
+                loading="lazy"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+
+            <div class="combo-placeholder" style="display:none">
+                <i class="bx bx-food-menu"></i>
+                <span>Image unavailable</span>
+            </div>
+            {% else %}
+            <div class="combo-placeholder">
+                <i class="bx bx-food-menu"></i>
+                <span>King Cafe Special</span>
+            </div>
+            {% endif %}
+
+            <div class="combo-content">
+                <span class="combo-badge">SPECIAL COMBO</span>
+
+                <h3>{{ combo.name }}</h3>
+
+                <p>
+                    {{ combo.description or
+                    'Enjoy more of your favourites together!' }}
+                </p>
+
+                <div class="combo-prices">
+                    <span class="combo-original">
+                        ₹{{ "%.2f"|format(combo.original_price|float) }}
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(combo.offer_price|float) }}
+                    </strong>
+
+                    {% if combo.original_price|float > combo.offer_price|float %}
+                    <span class="combo-saving">
+                        SAVE ₹{{ "%.2f"|format(
+                            combo.original_price|float -
+                            combo.offer_price|float
+                        ) }}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <form
+                    method="POST"
+                    action="{{ url_for('customer.cart') }}"
+                    class="combo-order-form">
+
+                    <input
+                        type="hidden"
+                        name="item_id"
+                        value="{{ combo.id }}">
+
+                    <input
+                        type="hidden"
+                        name="item_type"
+                        value="combo">
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="add">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary combo-order-button"
+                        {% if not combo.is_active or not combo.is_available %}
+                        disabled
+                        {% endif %}>
+
+                        {% if combo.is_active and combo.is_available %}
+                            Add Combo to Cart — ₹{{ "%.2f"|format(combo.offer_price|float) }}
+                        {% else %}
+                            Currently Unavailable
+                        {% endif %}
+                    </button>
+                </form>
+
+            </div>
+        </article>
+        {% endfor %}
+    </div>
 </section>
 {% endif %}
 
