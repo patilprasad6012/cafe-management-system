@@ -169,73 +169,7 @@
     border-bottom: 1px solid #eee;
     flex-shrink: 0;
 }
-  
-
-/* FIX: Mobile sidebar header and brand overlap */
-@media (max-width: 768px) {
-    .sidebar-header,
-    .sidebar-brand-header,
-    .sidebar-top {
-        position: relative;
-        display: flex !important;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        min-height: 86px;
-        padding: 16px 18px !important;
-        box-sizing: border-box;
-    }
-
-    /* Keep brand text in its own space */
-    .sidebar-header .brand-logo,
-    .sidebar-brand-header .brand-logo,
-    .sidebar-top .brand-logo,
-    .sidebar-header .kc-brand,
-    .sidebar-brand-header .kc-brand,
-    .sidebar-top .kc-brand {
-        position: static !important;
-        display: inline-flex;
-        align-items: center;
-        flex: 1 1 auto;
-        min-width: 0;
-        margin: 0 !important;
-        padding: 0 !important;
-        white-space: nowrap;
-        overflow: visible;
-        font-size: 1.35rem !important;
-    }
-
-    /* The hamburger belongs in the page header, not over the logo */
-    .kc-menu-toggle {
-        position: fixed !important;
-        top: 16px;
-        left: 16px;
-        z-index: 1200;
-    }
-
-    /* Reserve space for the hamburger when the sidebar is closed */
-    body:not(.kc-sidebar-open) .kc-menu-toggle {
-        position: fixed !important;
-    }
-
-    /* Close button stays at the right edge */
-    .kc-sidebar-close {
-        position: static !important;
-        flex: 0 0 36px;
-        width: 36px;
-        height: 36px;
-        display: grid;
-        place-items: center;
-        margin: 0 !important;
-    }
-
-    /* Hide hamburger while the sidebar is open */
-    body.kc-sidebar-open .kc-menu-toggle {
-        display: none !important;
-    }
-}
-
-      
+        
 .kc-sidebar-brand { font-size: 21px; font-weight: 800; color: #50362a; white-space: nowrap; }
 .kc-sidebar-brand span { color: #f16a45; }
 .kc-sidebar-close {
