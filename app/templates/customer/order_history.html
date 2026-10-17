@@ -4,7 +4,6 @@
 
 {% block body %}
 <div class="container mt-4" style="padding: 25px;">
-
     <a href="{{ url_for('customer.dashboard') }}"
        class="btn btn-outline"
        style="display: inline-block; margin-bottom: 20px;">
@@ -18,112 +17,66 @@
 
     {% if orders %}
         {% for order in orders %}
-        <div style="
-            background: var(--surface-color);
-            padding: 22px;
-            margin-bottom: 20px;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-        ">
-
-            <div style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 10px;
-            ">
+        <div style="background: var(--surface-color); padding: 22px; margin-bottom: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <h3>Order #{{ order.id }}</h3>
-
-                <span style="
-                    padding: 6px 10px;
-                    border-radius: 6px;
-                    background: var(--background-light);
-                    font-weight: 600;
-                ">
-                    {{ order.status.replace('_', ' ') }}
+                <span style="padding: 6px 10px; border-radius: 6px; background: var(--background-light); font-weight: 600;">
+                    {{ (order.status or 'UNKNOWN').replace('_', ' ') }}
                 </span>
             </div>
 
-            <p>
-                <strong>Order Date:</strong>
-                {{ order.created_at.strftime('%d-%m-%Y %I:%M %p') }}
+            <p><strong>Order Date:</strong>
+                {% if order.created_at %}{{ order.created_at.strftime('%d-%m-%Y %I:%M %p') }}{% else %}N/A{% endif %}
             </p>
-
-            <p>
-                <strong>Table:</strong>
-                {{ order.table.table_number if order.table else 'N/A' }}
-            </p>
-
-            <p>
-                <strong>Payment Status:</strong>
-                {{ order.payment_status or 'PENDING' }}
-            </p>
+            <p><strong>Table:</strong> {{ order.table.table_number if order.table else 'N/A' }}</p>
+            <p><strong>Payment Status:</strong> {{ order.payment_status or 'PENDING' }}</p>
 
             <hr style="margin: 15px 0;">
-
             <h4>Items Ordered</h4>
 
             {% for item in order.items %}
-            <div style="
-                display: flex;
-                justify-content: space-between;
-                gap: 12px;
-                margin: 10px 0;
-            ">
+            <div style="display: flex; justify-content: space-between; gap: 12px; margin: 10px 0;">
                 <span>
-                    {{ item.menu_item.name if item.menu_item else 'Food item' }}
+                    {% if item.combo_offer %}
+                        {{ item.combo_offer.name }} (Combo)
+                    {% elif item.menu_item %}
+                        {{ item.menu_item.name }}
+                    {% else %}
+                        Food item
+                    {% endif %}
                     × {{ item.quantity }}
                 </span>
-
                 <strong>
-                    ₹{{ "%.2f"|format(item.price_at_time * item.quantity) }}
+                    ₹{{ "%.2f"|format((item.price_at_time|float) * (item.quantity|int)) }}
                 </strong>
             </div>
+            {% else %}
+            <p style="color: var(--text-muted);">No item details are available for this order.</p>
             {% endfor %}
 
             <hr style="margin: 15px 0;">
-
             <h3 style="text-align: right;">
-                Total: ₹{{ "%.2f"|format(order.grand_total) }}
+                Total: ₹{{ "%.2f"|format(order.grand_total|float) }}
             </h3>
 
             {% if order.status not in ['COMPLETED', 'CANCELLED', 'REJECTED'] %}
             <div style="text-align: right; margin-top: 15px;">
-                <a href="{{ url_for('customer.track_orders') }}"
-                   class="btn btn-primary"
-                   style="display: inline-block; width: auto;">
+                <a href="{{ url_for('customer.track_orders') }}" class="btn btn-primary" style="display: inline-block; width: auto;">
                     Track Order
                 </a>
             </div>
             {% endif %}
-
         </div>
         {% endfor %}
-
     {% else %}
-        <div style="
-            background: var(--surface-color);
-            padding: 35px;
-            border-radius: var(--radius-md);
-            text-align: center;
-        ">
-            <i class='bx bx-receipt'
-               style="font-size: 3rem; color: var(--primary-color);"></i>
-
+        <div style="background: var(--surface-color); padding: 35px; border-radius: var(--radius-md); text-align: center;">
+            <i class="bx bx-receipt" style="font-size: 3rem; color: var(--primary-color);"></i>
             <h3 style="margin: 15px 0;">No Order History Yet</h3>
-
-            <p style="color: var(--text-muted);">
-                Your orders will appear here after you place an order.
-            </p>
-
-            <a href="{{ url_for('customer.menu') }}"
-               class="btn btn-primary"
-               style="display: inline-block; width: auto; margin-top: 15px;">
+            <p style="color: var(--text-muted);">Your orders will appear here after you place an order.</p>
+            <a href="{{ url_for('customer.menu') }}" class="btn btn-primary" style="display: inline-block; width: auto; margin-top: 15px;">
                 Browse Menu
             </a>
         </div>
     {% endif %}
-
 </div>
 {% endblock %}
