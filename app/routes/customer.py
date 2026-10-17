@@ -132,54 +132,104 @@ def menu():
 @customer_bp.route('/cart', methods=['GET', 'POST'])
 @login_required
 def cart():
+    
+# Shopping Cart: regular menu items + combo offers
+@customer_bp.route('/cart', methods=['GET', 'POST'])
+@login_required
+def cart():
     if 'cart' not in session:
         session['cart'] = {}
 
     if request.method == 'POST':
-        item_id = request.form.get('item_id')
-        action = request.form.get('action')
-        item = db.session.get(MenuItem, item_id) if item_id else None
+        item_id = request.form.get('item_id', '').strip()
+        action = request.form.get('action', 'add')
+        item_type = request.form.get('item_type', 'menu')
+        cart_key = f'combo_{item_id}' if item_type == 'combo' else str(item_id)
 
-        if not item or not item.is_available or not item.is_active:
-            flash('This item is currently unavailable.', 'error')
-            return redirect(url_for('customer.menu'))
+        if not item_id.isdigit() or item_type not in ('menu', 'combo'):
+            flash('Invalid item.', 'error')
+            return redirect(url_for('customer.cart'))
 
-        str_item_id = str(item_id)
-        if action == 'add':
-            if str_item_id in session['cart']:
-                session['cart'][str_item_id]['quantity'] += 1
-            else:
-                session['cart'][str_item_id] = {
-                    'name': item.name,
-                    'price': str(item.price),
-                    'quantity': 1,
-                    'image': item.image_path
-                }
-            flash(f'{item.name} added to cart!', 'success')
-        elif action == 'decrease' and str_item_id in session['cart']:
-            session['cart'][str_item_id]['quantity'] -= 1
-            if session['cart'][str_item_id]['quantity'] <= 0:
-                session['cart'].pop(str_item_id)
-        elif action == 'remove' and str_item_id in session['cart']:
-            session['cart'].pop(str_item_id)
-            flash(f'{item.name} removed from cart.', 'info')
+        details = session['cart'].get(cart_key)
 
+        if action in ('decrease', 'remove'):
+            if details:
+                if action == 'remove':
+                    session['cart'].pop(cart_key, None)
+                else:
+                    details['quantity'] -= 1
+                    if details['quantity'] <= 0:
+                        session['cart'].pop(cart_key, None)
+                    else:
+                        session['cart'][cart_key] = details
+                session.modified = True
+            return redirect(url_for('customer.cart'))
+
+        if action != 'add':
+            flash('Invalid cart action.', 'error')
+            return redirect(url_for('customer.cart'))
+
+        if item_type == 'combo':
+            item = db.session.get(ComboOffer, int(item_id))
+            if not item or not item.is_active or not item.is_available:
+                flash('This combo is currently unavailable.', 'error')
+                return redirect(url_for('customer.menu'))
+
+            name = item.name
+            price = item.offer_price
+            image_path = item.image_path
+        else:
+            item = db.session.get(MenuItem, int(item_id))
+            if not item or not item.is_active or not item.is_available:
+                flash('This food item is currently unavailable.', 'error')
+                return redirect(url_for('customer.menu'))
+
+            name = item.name
+            price = item.discount_price if item.discount_price is not None else item.price
+            image_path = item.image_path
+
+        if details:
+            details['quantity'] += 1
+        else:
+            details = {
+                'name': name,
+                'price': str(price),
+                'quantity': 1,
+                'image': image_path,
+                'type': item_type,
+                'item_id': int(item_id)
+            }
+
+        session['cart'][cart_key] = details
         session.modified = True
+        flash(f'{name} added to cart!', 'success')
         return redirect(url_for('customer.cart'))
 
     subtotal = Decimal('0.00')
     cart_items = []
-    for item_id, details in session.get('cart', {}).items():
-        item_total = Decimal(details['price']) * details['quantity']
-        subtotal += item_total
-        details['id'] = item_id
-        details['total'] = str(item_total)
+
+    for cart_key, details in session.get('cart', {}).items():
+        details = dict(details)
+        details.setdefault('type', 'menu')
+        details.setdefault('item_id', int(cart_key))
+        details['id'] = details['item_id']
+        details['cart_key'] = cart_key
+        details['total'] = str(
+            Decimal(str(details['price'])) * int(details['quantity'])
+        )
+        subtotal += Decimal(details['total'])
         cart_items.append(details)
 
-    tax = subtotal * Decimal('0.05')
+    tax = (subtotal * Decimal('0.05')).quantize(Decimal('0.01'))
     grand_total = subtotal + tax
-    return render_template('customer/cart.html', cart_items=cart_items,
-                           subtotal=subtotal, tax=tax, grand_total=grand_total)
+
+    return render_template(
+        'customer/cart.html',
+        cart_items=cart_items,
+        subtotal=subtotal,
+        tax=tax,
+        grand_total=grand_total
+    )
 
 
 # Checkout and Place Order
