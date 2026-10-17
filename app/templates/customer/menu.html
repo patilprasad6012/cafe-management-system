@@ -18,7 +18,7 @@
   <div id="categoryFilters" class="category-filters" role="group" aria-label="Filter menu by category">
     <button type="button" class="category-filter active" data-category="all" aria-pressed="true">All</button>
     {% for cat in categories %}<button type="button" class="category-filter" data-category="{{ cat.id }}" aria-pressed="false">{{ cat.name }}</button>{% endfor %}
-  
+    {% if combo_offers %}<button type="button" class="category-filter" data-category="combos" aria-pressed="false">Combos 🎁</button>{% endif %}
   </div>
 
   <div id="foodGrid" class="food-grid">
@@ -176,9 +176,17 @@ document.addEventListener('DOMContentLoaded', function () {
       const comboCategories = (card.dataset.categoryIds || '')
         .trim().split(/\s+/).filter(Boolean);
       const isCombo = card.classList.contains('combo-card');
-      const show = category === 'all' || (
-        isCombo ? comboCategories.includes(category) : regularCategory === category
-      );
+      let show;
+
+      if (category === 'all') {
+        show = true;
+      } else if (category === 'combos') {
+        show = isCombo;
+      } else {
+        show = isCombo
+          ? comboCategories.includes(category)
+          : regularCategory === category;
+      }
 
       card.hidden = !show;
       if (show) visibleCount++;
