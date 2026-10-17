@@ -126,13 +126,8 @@ def menu():
         combo_offers=combo_offers
     )
     return render_template('customer/menu.html', categories=categories, items=items)
-
-
-# Shopping Cart
-@customer_bp.route('/cart', methods=['GET', 'POST'])
-@login_required
-def cart():
     
+
 # Shopping Cart: regular menu items + combo offers
 @customer_bp.route('/cart', methods=['GET', 'POST'])
 @login_required
