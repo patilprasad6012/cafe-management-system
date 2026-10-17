@@ -4,6 +4,7 @@ from app import db
 from app.utils.decorators import login_required
 from decimal import Decimal
 from datetime import date
+from app.models.models import ComboOffer
 from sqlalchemy.exc import IntegrityError
 from app.services.ai_assistant import CafeAIAssistant
 import re
