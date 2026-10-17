@@ -77,11 +77,21 @@ class Order(db.Model):
 
 class OrderItem(db.Model):
     __tablename__ = 'order_items'
+
     id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
-    menu_item_id = db.Column(db.Integer, db.ForeignKey('menu_items.id'))
+    order_id = db.Column(
+        db.Integer, db.ForeignKey('orders.id'), nullable=False
+    )
+    menu_item_id = db.Column(
+        db.Integer, db.ForeignKey('menu_items.id'), nullable=True
+    )
+    combo_offer_id = db.Column(
+        db.Integer, db.ForeignKey('combo_offers.id'), nullable=True
+    )
     quantity = db.Column(db.Integer, nullable=False)
     price_at_time = db.Column(db.Numeric(10, 2), nullable=False)
+
+    combo_offer = db.relationship('ComboOffer', lazy='joined')
 
 
 class OrderStatusHistory(db.Model):
