@@ -3,14 +3,120 @@
 {% block title %}Birthday Offers - King Cafe{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h2>🎂 Birthday Offers</h2>
-    <p>Celebrate your special day with King Cafe!</p>
+<div class="container mt-4 birthday-page">
+  <a href="{{ url_for('customer.dashboard') }}" class="btn btn-outline birthday-back">← Back to Dashboard</a>
 
-    <div class="card" style="padding: 24px; margin-top: 20px;">
-        <h3>🎁 Birthday Special</h3>
-        <p>Enjoy special birthday deals on your favourite food and drinks.</p>
-        <p>Ask our cafe team about available birthday offers.</p>
+  <section class="birthday-hero">
+    <div class="birthday-hero-copy">
+      <span class="birthday-eyebrow">A LITTLE EXTRA JOY</span>
+      <h1>🎂 Birthday Offers</h1>
+      <p>Celebrate your special day with King Cafe!</p>
+      <p class="birthday-subtitle">Good food, sweet treats, and lovely moments make birthdays even better.</p>
+      <a class="birthday-primary-btn" href="{{ url_for('customer.menu') }}">Explore Our Menu <span aria-hidden="true">→</span></a>
     </div>
+    <div class="birthday-hero-art" aria-hidden="true">
+      <div class="birthday-confetti confetti-one">✦</div>
+      <div class="birthday-cake">🎂</div>
+      <div class="birthday-confetti confetti-two">✧</div>
+      <div class="birthday-gift">🎁</div>
+      <div class="birthday-heart">♥</div>
+    </div>
+  </section>
+
+  <div class="birthday-section-heading">
+    <div>
+      <span class="birthday-eyebrow">MADE FOR YOUR DAY</span>
+      <h2>Birthday Specials</h2>
+      <p>Choose a treat for your celebration.</p>
+    </div>
+    <span class="birthday-heading-icon" aria-hidden="true">🎉</span>
+  </div>
+
+  <section class="birthday-offer-grid" aria-label="Birthday offers">
+    <article class="birthday-offer-card">
+      <div class="birthday-offer-art art-peach"><span aria-hidden="true">🍕</span><span class="art-mini" aria-hidden="true">🍟</span></div>
+      <div class="birthday-offer-content">
+        <span class="birthday-offer-tag">BIRTHDAY FEAST</span>
+        <h3>Celebrate with a Combo</h3>
+        <p>Make your birthday meal special with your favourite cafe combo.</p>
+        <div class="birthday-offer-note">Ask our team which combos are included.</div>
+        <a class="birthday-claim-btn" href="{{ url_for('customer.menu') }}">Explore Combos <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+
+    <article class="birthday-offer-card">
+      <div class="birthday-offer-art art-coffee"><span aria-hidden="true">☕</span><span class="art-mini" aria-hidden="true">✨</span></div>
+      <div class="birthday-offer-content">
+        <span class="birthday-offer-tag">A LITTLE TREAT</span>
+        <h3>Birthday Drink Treat</h3>
+        <p>Add a favourite coffee or cold drink to your birthday celebration.</p>
+        <div class="birthday-offer-note">Ask staff about current birthday drink deals.</div>
+        <a class="birthday-claim-btn" href="{{ url_for('customer.menu') }}">Browse Drinks <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+
+    <article class="birthday-offer-card">
+      <div class="birthday-offer-art art-lilac"><span aria-hidden="true">🎁</span><span class="art-mini" aria-hidden="true">💛</span></div>
+      <div class="birthday-offer-content">
+        <span class="birthday-offer-tag">YOUR SPECIAL DAY</span>
+        <h3>Ask About Your Birthday Perk</h3>
+        <p>Let the King Cafe team know you are celebrating a birthday.</p>
+        <div class="birthday-offer-note">Offer availability and terms are confirmed by staff.</div>
+        <a class="birthday-claim-btn" href="{{ url_for('customer.menu') }}">Choose Your Treat <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+  </section>
+
+  <section class="birthday-howto">
+    <div class="birthday-howto-icon" aria-hidden="true">🎈</div>
+    <div>
+      <h2>How to claim a birthday offer</h2>
+      <p>Choose your food or drink, then speak to the King Cafe team before placing your order. Keep a valid birthday ID handy if requested. The team will confirm which offers are available and any conditions.</p>
+    </div>
+  </section>
+
+  <p class="birthday-footnote">Birthday offers shown here are promotional information only. Discounts or free items are not automatically applied through this page.</p>
 </div>
+
+<style>
+.birthday-page{padding:12px 0 55px;color:var(--text-main)}
+.birthday-back{display:inline-block;margin-bottom:20px;text-decoration:none}
+.birthday-hero{position:relative;display:flex;align-items:center;justify-content:space-between;gap:22px;overflow:hidden;padding:clamp(24px,5vw,52px);border:1px solid #f0dfd2;border-radius:24px;background:linear-gradient(120deg,#fff0e9 0%,#fffaf5 56%,#f8e9dc 100%);box-shadow:var(--shadow-sm)}
+.birthday-hero-copy{position:relative;z-index:1;max-width:610px}
+.birthday-eyebrow{display:inline-block;color:#b85c43;font-size:.74rem;font-weight:800;letter-spacing:1.6px}
+.birthday-hero h1{margin:10px 0;font-size:clamp(2rem,4vw,3.1rem);line-height:1.12;color:#5d4034}
+.birthday-hero p{margin:0 0 8px;font-size:1.08rem;color:#604d45}
+.birthday-hero .birthday-subtitle{max-width:500px;color:#79685f;font-size:.95rem;line-height:1.65;margin-bottom:22px}
+.birthday-primary-btn,.birthday-claim-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;border:0;border-radius:999px;background:#604235;color:#fff;font-weight:700;transition:transform .2s ease,background .2s ease}
+.birthday-primary-btn{padding:12px 20px}
+.birthday-primary-btn:hover,.birthday-claim-btn:hover{background:#493126;transform:translateY(-2px);color:#fff}
+.birthday-hero-art{position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 220px;min-height:210px;border-radius:50%;background:rgba(255,255,255,.6)}
+.birthday-cake{font-size:6rem;filter:drop-shadow(0 8px 6px rgba(80,50,35,.12))}
+.birthday-gift{position:absolute;right:14px;bottom:22px;font-size:2.4rem;transform:rotate(8deg)}
+.birthday-confetti{position:absolute;color:#d4775d;font-size:2rem}.confetti-one{top:22px;left:30px}.confetti-two{right:28px;top:30px;color:#c19a43}.birthday-heart{position:absolute;left:20px;bottom:28px;color:#d4775d;font-size:1.5rem}
+.birthday-section-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:34px 0 18px}
+.birthday-section-heading h2{margin:5px 0;font-size:clamp(1.45rem,3vw,2rem);color:var(--text-main)}
+.birthday-section-heading p{margin:0;color:var(--text-muted)}
+.birthday-heading-icon{font-size:2.4rem}
+.birthday-offer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:18px}
+.birthday-offer-card{min-width:0;overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--border-color);border-radius:18px;background:var(--surface-color);box-shadow:var(--shadow-sm);transition:transform .2s ease,box-shadow .2s ease}
+.birthday-offer-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.birthday-offer-art{position:relative;display:flex;align-items:center;justify-content:center;min-height:145px;font-size:4.1rem}
+.art-peach{background:linear-gradient(135deg,#ffede3,#f9d8c4)}.art-coffee{background:linear-gradient(135deg,#f4e8d8,#e6d0b7)}.art-lilac{background:linear-gradient(135deg,#f3e8f5,#e7d7ee)}
+.birthday-offer-art .art-mini{position:absolute;right:24%;bottom:16px;font-size:1.8rem}
+.birthday-offer-content{display:flex;flex:1;flex-direction:column;align-items:flex-start;padding:20px}
+.birthday-offer-tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#fff0e8;color:#bd5136;font-size:.68rem;font-weight:800;letter-spacing:.5px}
+.birthday-offer-content h3{margin:13px 0 8px;font-size:1.12rem;line-height:1.35}
+.birthday-offer-content p{margin:0 0 14px;color:var(--text-muted);font-size:.91rem;line-height:1.6}
+.birthday-offer-note{width:100%;box-sizing:border-box;margin-top:auto;margin-bottom:16px;padding:10px 12px;border-radius:10px;background:var(--background-light);color:var(--text-muted);font-size:.78rem;line-height:1.5}
+.birthday-claim-btn{width:100%;box-sizing:border-box;padding:11px 14px;font-size:.88rem}
+.birthday-howto{display:flex;align-items:flex-start;gap:16px;margin-top:28px;padding:22px;border:1px solid #f0dfd2;border-radius:18px;background:#fff8f3}
+.birthday-howto-icon{font-size:2rem}
+.birthday-howto h2{margin:0 0 7px;font-size:1.15rem;color:#5d4034}
+.birthday-howto p{margin:0;color:#78675e;font-size:.9rem;line-height:1.65}
+.birthday-footnote{margin:16px 2px 0;color:var(--text-muted);font-size:.78rem;line-height:1.5}
+@media(max-width:850px){.birthday-offer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.birthday-hero-art{flex-basis:175px;min-height:175px}.birthday-cake{font-size:5rem}}
+@media(max-width:560px){.birthday-page{padding-top:5px}.birthday-hero{padding:25px 20px}.birthday-hero-art{flex:0 0 90px;min-height:90px;background:transparent}.birthday-cake{font-size:3.6rem}.birthday-gift{right:0;bottom:2px;font-size:1.5rem}.birthday-confetti{font-size:1.2rem}.confetti-one{top:0;left:0}.confetti-two{right:0;top:0}.birthday-heart{left:0;bottom:0;font-size:1rem}.birthday-hero h1{font-size:1.9rem}.birthday-hero p{font-size:.95rem}.birthday-offer-grid{grid-template-columns:1fr;gap:14px}.birthday-offer-card{display:grid;grid-template-columns:105px minmax(0,1fr)}.birthday-offer-art{min-height:100%;font-size:2.8rem}.birthday-offer-art .art-mini{right:8px;bottom:10px;font-size:1.1rem}.birthday-offer-content{padding:14px}.birthday-offer-content h3{font-size:1rem;margin:10px 0 6px}.birthday-offer-content p{font-size:.82rem;margin-bottom:10px}.birthday-offer-note{font-size:.72rem;padding:8px;margin-bottom:10px}.birthday-claim-btn{font-size:.8rem;padding:9px 10px}.birthday-howto{padding:17px;gap:10px}}
+@media(max-width:380px){.birthday-hero{display:block}.birthday-hero-art{display:none}.birthday-offer-card{grid-template-columns:85px minmax(0,1fr)}.birthday-offer-content{padding:11px}.birthday-offer-tag{font-size:.6rem}}
+</style>
 {% endblock %}
