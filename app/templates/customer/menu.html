@@ -40,7 +40,12 @@
     </article>
     {% else %}<div class="menu-empty" id="serverEmptyState"><i class='bx bx-sad'></i><p>No food items are currently available.</p></div>{% endfor %}
 
-    {% for combo in combo_offers %}
+
+  </div>
+  {% if combo_offers %}
+  <section id="comboSection" class="combo-section" aria-label="Combo offers">
+    <div id="comboGrid" class="food-grid combo-grid">
+      {% for combo in combo_offers %}
     <article class="food-card combo-card" data-category-ids="{% for food in combo.items %}{{ food.category_id }} {% endfor %}">
       {% if combo.image_path %}
       <img class="food-card-image combo-image" src="{{ url_for('menu.uploaded_food_image', filename=combo.image_path.replace('\\', '/').split('/')[-1]) }}" alt="{{ combo.name }}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -72,8 +77,9 @@
         </form>
       </div>
     </article>
-    {% endfor %}
-  </div>
+      {% endfor %}    </div>
+  </section>
+  {% endif %}
   <div id="filterEmptyState" class="menu-empty" hidden><i class='bx bx-search-alt'></i><p>No available items in this category yet.</p><button type="button" id="resetFilters" class="btn btn-primary">Show all items</button></div>
 </div>
 
@@ -130,7 +136,8 @@
   color: var(--text-muted);
 }
 
-.combo-card {border:1px solid var(--border-color)}
+.combo-grid{margin-top:18px;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),300px));align-items:start}
+.combo-card {border:1px solid var(--border-color);height:fit-content}
 .combo-image,.combo-placeholder {height:190px}
 .combo-placeholder {display:flex}
 .combo-content {padding:18px}
@@ -173,23 +180,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     cards.forEach(card => {
       const regularCategory = card.dataset.categoryId || '';
-      const comboCategories = (card.dataset.categoryIds || '')
-        .trim().split(/\s+/).filter(Boolean);
-      const isCombo = card.classList.contains('combo-card');
-      let show;
-
-      if (category === 'all') {
-        show = true;
-      } else if (category === 'combos') {
-        show = isCombo;
-      } else {
-        show = isCombo
-          ? comboCategories.includes(category)
-          : regularCategory === category;
-      }
-
+      const show = category === 'all' || regularCategory === category;
       card.hidden = !show;
       if (show) visibleCount++;
+    });
+
+    // Keep combos in their own grid so their card height never stretches food cards.
+    const comboSection = document.getElementById('comboSection');
+    const comboCards = comboSection ? Array.from(comboSection.querySelectorAll('.combo-card')) : [];
+    const showCombos = category === 'all' || category === 'combos';
+    if (comboSection) comboSection.hidden = !showCombos;
+    comboCards.forEach(card => {
+      card.hidden = !showCombos;
+      if (category === 'combos' && showCombos) visibleCount++;
     });
 
     buttons.forEach(button => {
@@ -199,6 +202,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     emptyState.hidden = visibleCount > 0;
+    const emptyMessage = emptyState.querySelector('p');
+    if (emptyMessage) {
+      emptyMessage.textContent = category === 'combos'
+        ? 'No combo offers are currently available.'
+        : 'No available items in this category yet.';
+    }
     const serverEmpty = document.getElementById('serverEmptyState');
     if (serverEmpty) serverEmpty.hidden = true;
   }
