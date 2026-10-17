@@ -107,7 +107,24 @@ def menu():
         session['table_number'] = table_number
 
     categories = Category.query.filter_by(is_active=True).all()
-    items = MenuItem.query.filter_by(is_active=True, is_available=True).all()
+
+    items = MenuItem.query.filter_by(
+        is_active=True,
+        is_available=True
+    ).all()
+
+    # Fetch active and available combo offers
+    combo_offers = ComboOffer.query.filter_by(
+        is_active=True,
+        is_available=True
+    ).order_by(ComboOffer.created_at.desc()).all()
+
+    return render_template(
+        'customer/menu.html',
+        categories=categories,
+        items=items,
+        combo_offers=combo_offers
+    )
     return render_template('customer/menu.html', categories=categories, items=items)
 
 
