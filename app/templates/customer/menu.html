@@ -18,103 +18,9 @@
 {% if combo_offers %}
 <section class="combo-section" aria-labelledby="combo-title">
     <div class="combo-heading">
-        <div>
-            <span class="combo-eyebrow">SPECIAL DEALS</span>
-            <h2 id="combo-title">🔥 Combo Offers</h2>
-            <p>More favourites, better prices!</p>
-        </div>
-    </div>
-
-    <div class="combo-grid">
-        {% for combo in combo_offers %}
-        <article class="combo-card">
-
-            {% if combo.image_path %}
-            <img
-                class="combo-image"
-                src="{{ url_for('menu.uploaded_food_image', filename=combo.image_path.replace('\\', '/').split('/')[-1]) }}"
-                alt="{{ combo.name }}"
-                loading="lazy"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-
-            <div class="combo-placeholder" style="display:none">
-                <i class="bx bx-food-menu"></i>
-                <span>Image unavailable</span>
-            </div>
-            {% else %}
-            <div class="combo-placeholder">
-                <i class="bx bx-food-menu"></i>
-                <span>King Cafe Special</span>
-            </div>
-            {% endif %}
-
-            <div class="combo-content">
-                <span class="combo-badge">SPECIAL COMBO</span>
-
-                <h3>{{ combo.name }}</h3>
-
-                <p>
-                    {{ combo.description or
-                    'Enjoy more of your favourites together!' }}
-                </p>
-
-                <div class="combo-prices">
-                    <span class="combo-original">
-                        ₹{{ "%.2f"|format(combo.original_price|float) }}
-                    </span>
-
-                    <strong>
-                        ₹{{ "%.2f"|format(combo.offer_price|float) }}
-                    </strong>
-
-                    {% if combo.original_price|float > combo.offer_price|float %}
-                    <span class="combo-saving">
-                        SAVE ₹{{ "%.2f"|format(
-                            combo.original_price|float -
-                            combo.offer_price|float
-                        ) }}
-                    </span>
-                    {% endif %}
-                </div>
-
-                <form
-                    method="POST"
-                    action="{{ url_for('customer.cart') }}"
-                    class="combo-order-form">
-
-                    <input
-                        type="hidden"
-                        name="item_id"
-                        value="{{ combo.id }}">
-
-                    <input
-                        type="hidden"
-                        name="item_type"
-                        value="combo">
-
-                    <input
-                        type="hidden"
-                        name="action"
-                        value="add">
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary combo-order-button"
-                        {% if not combo.is_active or not combo.is_available %}
-                        disabled
-                        {% endif %}>
-
-                        {% if combo.is_active and combo.is_available %}
-                            Add Combo to Cart — ₹{{ "%.2f"|format(combo.offer_price|float) }}
-                        {% else %}
-                            Currently Unavailable
-                        {% endif %}
-                    </button>
-                </form>
-
-            </div>
-        </article>
-        {% endfor %}
+        <span class="combo-eyebrow">SPECIAL DEALS</span>
+        <h2 id="combo-title">🔥 Combo Offers</h2>
+        <p>More favourites, better prices!</p>
     </div>
 </section>
 {% endif %}
@@ -142,6 +48,40 @@
       </div>
     </article>
     {% else %}<div class="menu-empty" id="serverEmptyState"><i class='bx bx-sad'></i><p>No food items are currently available.</p></div>{% endfor %}
+
+    {% for combo in combo_offers %}
+    <article class="food-card combo-card" data-category-ids="{% for food in combo.items %}{{ food.category_id }} {% endfor %}">
+      {% if combo.image_path %}
+      <img class="food-card-image combo-image" src="{{ url_for('menu.uploaded_food_image', filename=combo.image_path.replace('\\', '/').split('/')[-1]) }}" alt="{{ combo.name }}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="food-card-placeholder combo-placeholder" style="display:none"><i class="bx bx-food-menu"></i><span>Image unavailable</span></div>
+      {% else %}
+      <div class="food-card-placeholder combo-placeholder"><i class="bx bx-food-menu"></i><span>King Cafe Special</span></div>
+      {% endif %}
+      <div class="food-card-content combo-content">
+        <span class="combo-badge">SPECIAL COMBO</span>
+        <h3>{{ combo.name }}</h3>
+        <p class="food-card-description">{{ combo.description or 'Enjoy more of your favourites together!' }}</p>
+        {% if combo.items %}
+        <p class="combo-includes">Includes: {% for food in combo.items %}{{ food.name }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+        {% endif %}
+        <div class="combo-prices">
+          <span class="combo-original">₹{{ "%.2f"|format(combo.original_price|float) }}</span>
+          <strong>₹{{ "%.2f"|format(combo.offer_price|float) }}</strong>
+          {% if combo.original_price|float > combo.offer_price|float %}
+          <span class="combo-saving">SAVE ₹{{ "%.2f"|format(combo.original_price|float - combo.offer_price|float) }}</span>
+          {% endif %}
+        </div>
+        <form method="POST" action="{{ url_for('customer.cart') }}" class="combo-order-form">
+          <input type="hidden" name="item_id" value="{{ combo.id }}">
+          <input type="hidden" name="item_type" value="combo">
+          <input type="hidden" name="action" value="add">
+          <button type="submit" class="btn btn-primary combo-order-button" {% if not combo.is_active or not combo.is_available %}disabled{% endif %}>
+            {% if combo.is_active and combo.is_available %}Add Combo to Cart — ₹{{ "%.2f"|format(combo.offer_price|float) }}{% else %}Currently Unavailable{% endif %}
+          </button>
+        </form>
+      </div>
+    </article>
+    {% endfor %}
   </div>
   <div id="filterEmptyState" class="menu-empty" hidden><i class='bx bx-search-alt'></i><p>No available items in this category yet.</p><button type="button" id="resetFilters" class="btn btn-primary">Show all items</button></div>
 </div>
@@ -199,142 +139,29 @@
   color: var(--text-muted);
 }
 
-.combo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
-  gap: 18px;
-}
-
-.combo-card {
-  min-width: 0;
-  overflow: hidden;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-
-.combo-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-}
-
-.combo-image,
-.combo-placeholder {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  background: #f4e6d8;
-}
-
-.combo-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 8px;
-  color: var(--text-muted);
-}
-
-.combo-placeholder i {
-  font-size: 2.8rem;
-}
-
-.combo-content {
-  padding: 16px;
-}
-
-.combo-badge {
-  display: inline-block;
-  padding: 5px 9px;
-  border-radius: 20px;
-  background: #fff0e8;
-  color: #c94c2e;
-  font-size: .7rem;
-  font-weight: 800;
-}
-
-.combo-content h3 {
-  margin: 10px 0 6px;
-  font-size: 1.1rem;
-}
-
-.combo-content p {
-  min-height: 40px;
-  margin: 0 0 14px;
-  color: var(--text-muted);
-  font-size: .88rem;
-  line-height: 1.5;
-}
-
-.combo-prices {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.combo-prices strong {
-  font-size: 1.25rem;
-  color: var(--secondary-color);
-}
-
-.combo-original {
-  color: var(--text-muted);
-  text-decoration: line-through;
-}
-
-.combo-saving {
-  padding: 4px 7px;
-  border-radius: 6px;
-  background: #dcfce7;
-  color: #166534;
-  font-size: .72rem;
-  font-weight: 800;
-}
-
-.combo-order-button {
-  width: 100%;
-  opacity: .65;
-  cursor: not-allowed;
-}
+.combo-card {border:1px solid var(--border-color)}
+.combo-image,.combo-placeholder {height:190px}
+.combo-placeholder {display:flex}
+.combo-content {padding:18px}
+.combo-badge {display:inline-block;padding:5px 9px;border-radius:20px;background:#fff0e8;color:#c94c2e;font-size:.7rem;font-weight:800}
+.combo-content h3 {margin:10px 0 6px;font-size:1.05rem}
+.combo-includes {font-size:.8rem;color:var(--text-muted);margin:0 0 12px}
+.combo-prices {display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.combo-prices strong {font-size:1.25rem;color:var(--secondary-color)}
+.combo-original {color:var(--text-muted);text-decoration:line-through}
+.combo-saving {padding:4px 7px;border-radius:6px;background:#dcfce7;color:#166534;font-size:.72rem;font-weight:800}
+.combo-order-form {margin-top:auto}
+.combo-order-button {width:100%;white-space:normal;opacity:1;cursor:pointer}
+.combo-order-button:disabled {opacity:.6;cursor:not-allowed}
 
 @media(max-width:560px) {
-  .combo-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .combo-image,
-  .combo-placeholder {
-    height: 125px;
-  }
-
-  .combo-content {
-    padding: 11px;
-  }
-
-  .combo-heading h2 {
-    font-size: 1.4rem;
-  }
-
-  .combo-content h3 {
-    font-size: .95rem;
-  }
-
-  .combo-content p {
-    font-size: .8rem;
-  }
-
-  .combo-prices {
-    gap: 6px;
-  }
-
-  .combo-prices strong {
-    font-size: 1.05rem;
-  }
+  .combo-image,.combo-placeholder {height:135px}
+  .combo-content {padding:12px}
+  .combo-heading h2 {font-size:1.4rem}
+  .combo-content h3 {font-size:.94rem}
+  .combo-content p {font-size:.8rem}
+  .combo-prices {gap:6px}
+  .combo-prices strong {font-size:1.05rem}
 }
 
 </style>
@@ -352,9 +179,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function applyFilter(category) {
     let visibleCount = 0;
+
     cards.forEach(card => {
-      const itemCategory = card.dataset.categoryId || '';
-      const show = category === 'all' || itemCategory === category;
+      const regularCategory = card.dataset.categoryId || '';
+      const comboCategories = (card.dataset.categoryIds || '')
+        .trim().split(/\s+/).filter(Boolean);
+      const isCombo = card.classList.contains('combo-card');
+      const show = category === 'all' || (
+        isCombo ? comboCategories.includes(category) : regularCategory === category
+      );
+
       card.hidden = !show;
       if (show) visibleCount++;
     });
@@ -367,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     emptyState.hidden = visibleCount > 0;
     const serverEmpty = document.getElementById('serverEmptyState');
-    if (serverEmpty) serverEmpty.hidden = cards.length > 0;
+    if (serverEmpty) serverEmpty.hidden = true;
   }
 
   filters.addEventListener('click', event => {
